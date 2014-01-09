@@ -391,10 +391,10 @@
     <ClCompile Include="..\compiler\SearchSymbol.cpp">
       <Filter>translator_hlsl\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\compiler\glslang_tab.cpp">
-      <Filter>translator_common</Filter>
-    </ClCompile>
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="..\compiler\glslang_tab.cpp">
+      <Filter>translator_common\Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\common\angleutils.h">
