@@ -1,8 +1,10 @@
 Debug
 Debug_Win32
+Debug_ARM
 Debug_x64
 Release
 Release_Win32
+Release_ARM
 Release_x64
 *.sln
 *.sdf
