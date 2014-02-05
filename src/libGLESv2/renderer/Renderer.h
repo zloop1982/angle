@@ -13,13 +13,20 @@
 #include "libGLESv2/Uniform.h"
 #include "libGLESv2/angletypes.h"
 
+#include "common/winrtplatform.h"
+
+#if defined(ANGLE_PLATFORM_WP8)
+#define D3DCOMPILE_OPTIMIZATION_LEVEL3            (1 << 15)
+#endif // #if defined(ANGLE_PLATFORM_WP8)
+
 #if !defined(ANGLE_COMPILE_OPTIMIZATION_LEVEL)
 #define ANGLE_COMPILE_OPTIMIZATION_LEVEL D3DCOMPILE_OPTIMIZATION_LEVEL3
-#endif
+#endif // ANGLE_COMPILE_OPTIMIZATION_LEVEL
 
 const int versionWindowsVista = MAKEWORD(0x00, 0x06);
 const int versionWindows7 = MAKEWORD(0x01, 0x06);
 
+#if !defined(ANGLE_PLATFORM_WINRT)
 // Return the version of the operating system in a format suitable for ordering
 // comparison.
 inline int getComparableOSVersion()
@@ -29,6 +36,7 @@ inline int getComparableOSVersion()
     int minorVersion = HIBYTE(LOWORD(version));
     return MAKEWORD(minorVersion, majorVersion);
 }
+#endif // #if !defined(ANGLE_PLATFORM_WINRT)
 
 namespace egl
 {
@@ -113,7 +121,7 @@ class Renderer
 
     virtual void sync(bool block) = 0;
 
-    virtual SwapChain *createSwapChain(HWND window, HANDLE shareHandle, GLenum backBufferFormat, GLenum depthBufferFormat) = 0;
+    virtual SwapChain *createSwapChain(EGLNativeWindowType window, HANDLE shareHandle, GLenum backBufferFormat, GLenum depthBufferFormat) = 0;
 
     virtual void setSamplerState(gl::SamplerType type, int index, const gl::SamplerState &sampler) = 0;
     virtual void setTexture(gl::SamplerType type, int index, gl::Texture *texture) = 0;
@@ -163,6 +171,7 @@ class Renderer
     virtual bool getLuminanceTextureSupport() = 0;
     virtual bool getLuminanceAlphaTextureSupport() = 0;
     bool getVertexTextureSupport() const { return getMaxVertexTextureImageUnits() > 0; }
+    bool getCompilerSupport() const { return mHasCompiler; }
     virtual unsigned int getMaxVertexTextureImageUnits() const = 0;
     virtual unsigned int getMaxCombinedTextureImageUnits() const = 0;
     virtual unsigned int getReservedVertexUniformVectors() const = 0;
@@ -213,7 +222,9 @@ class Renderer
 
     // Shader operations
     virtual ShaderExecutable *loadExecutable(const void *function, size_t length, rx::ShaderType type) = 0;
+#if !defined(ANGLE_PLATFORM_WP8)
     virtual ShaderExecutable *compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type, D3DWorkaroundType workaround) = 0;
+#endif //#if !defined(ANGLE_PLATFORM_WP9
 
     // Image operations
     virtual Image *createImage() = 0;
@@ -244,6 +255,7 @@ class Renderer
 
     HMODULE mD3dCompilerModule;
     pCompileFunc mD3DCompileFunc;
+    bool mHasCompiler;
 };
 
 }
