@@ -18,6 +18,10 @@
 #include "libGLESv2/renderer/d3d11/InputLayoutCache.h"
 #include "libGLESv2/renderer/RenderTarget.h"
 
+#if defined(ANGLE_PLATFORM_WINRT)
+#include <wrl/client.h>
+#include <d3d11_1.h>
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
 namespace gl
 {
 class Renderbuffer;
@@ -39,7 +43,7 @@ enum
 class Renderer11 : public Renderer
 {
   public:
-    Renderer11(egl::Display *display, HDC hDc);
+      Renderer11(egl::Display *display, EGLNativeDisplayType hDc);
     virtual ~Renderer11();
 
     static Renderer11 *makeRenderer11(Renderer *renderer);
@@ -52,7 +56,7 @@ class Renderer11 : public Renderer
 
     virtual void sync(bool block);
 
-    virtual SwapChain *createSwapChain(HWND window, HANDLE shareHandle, GLenum backBufferFormat, GLenum depthBufferFormat);
+    virtual SwapChain *createSwapChain(EGLNativeWindowType window, HANDLE shareHandle, GLenum backBufferFormat, GLenum depthBufferFormat);
 
     virtual void setSamplerState(gl::SamplerType type, int index, const gl::SamplerState &sampler);
     virtual void setTexture(gl::SamplerType type, int index, gl::Texture *texture);
@@ -155,7 +159,9 @@ class Renderer11 : public Renderer
 
     // Shader operations
     virtual ShaderExecutable *loadExecutable(const void *function, size_t length, rx::ShaderType type);
+#if !defined(ANGLE_PLATFORM_WP8)
     virtual ShaderExecutable *compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type, D3DWorkaroundType workaround);
+#endif
 
     // Image operations
     virtual Image *createImage();
@@ -176,7 +182,14 @@ class Renderer11 : public Renderer
     // D3D11-renderer specific methods
     ID3D11Device *getDevice() { return mDevice; }
     ID3D11DeviceContext *getDeviceContext() { return mDeviceContext; };
+#if defined(ANGLE_PLATFORM_WINRT)
+
+    IDXGIFactory2 *getDxgiFactory() { return mDxgiFactory; };
+#else
     IDXGIFactory *getDxgiFactory() { return mDxgiFactory; };
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
+
+    D3D_FEATURE_LEVEL getFeatureLevel() const { return mFeatureLevel; }
 
     bool getRenderTargetResource(gl::Renderbuffer *colorbuffer, unsigned int *subresourceIndex, ID3D11Texture2D **resource);
     void unapplyRenderTargets();
@@ -187,12 +200,15 @@ class Renderer11 : public Renderer
   private:
     DISALLOW_COPY_AND_ASSIGN(Renderer11);
 
+	EGLint createDevice();
+
+
     void drawLineLoop(GLsizei count, GLenum type, const GLvoid *indices, int minIndex, gl::Buffer *elementArrayBuffer);
     void drawTriangleFan(GLsizei count, GLenum type, const GLvoid *indices, int minIndex, gl::Buffer *elementArrayBuffer, int instances);
 
     void readTextureData(ID3D11Texture2D *texture, unsigned int subResource, const gl::Rectangle &area,
-                         GLenum sourceFormat, GLenum format, GLenum type, GLsizei outputPitch, bool packReverseRowOrder,
-                         GLint packAlignment, void *pixels);
+        GLenum sourceFormat, GLenum format, GLenum type, GLsizei outputPitch, bool packReverseRowOrder,
+        GLint packAlignment, void *pixels);
 
     void maskedClear(const gl::ClearParameters &clearParams, gl::Framebuffer *frameBuffer);
     rx::Range getViewportBounds() const;
@@ -203,7 +219,7 @@ class Renderer11 : public Renderer
 
     HMODULE mD3d11Module;
     HMODULE mDxgiModule;
-    HDC mDc;
+    EGLNativeDisplayType mDc;
 
     bool mDeviceLost;
 
@@ -348,8 +364,11 @@ class Renderer11 : public Renderer
     IDXGIAdapter *mDxgiAdapter;
     DXGI_ADAPTER_DESC mAdapterDescription;
     char mDescription[128];
+#if defined(ANGLE_PLATFORM_WINRT)
+    IDXGIFactory2 *mDxgiFactory;
+#else
     IDXGIFactory *mDxgiFactory;
-
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
     // Cached device caps
     bool mBGRATextureSupport;
 };
