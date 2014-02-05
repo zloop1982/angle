@@ -59,8 +59,10 @@ class Image
                                     int inputPitch, const void *input, size_t outputPitch, void *output);
     static void loadAlphaDataToNative(GLsizei width, GLsizei height,
                                       int inputPitch, const void *input, size_t outputPitch, void *output);
+#if !defined(_M_ARM)
     static void loadAlphaDataToBGRASSE2(GLsizei width, GLsizei height,
                                         int inputPitch, const void *input, size_t outputPitch, void *output);
+#endif
     static void loadAlphaFloatDataToRGBA(GLsizei width, GLsizei height,
                                          int inputPitch, const void *input, size_t outputPitch, void *output);
     static void loadAlphaHalfFloatDataToRGBA(GLsizei width, GLsizei height,
@@ -93,8 +95,11 @@ class Image
                                          int inputPitch, const void *input, size_t outputPitch, void *output);
     static void loadRGBHalfFloatDataToRGBA(GLsizei width, GLsizei height,
                                            int inputPitch, const void *input, size_t outputPitch, void *output);
+#if !defined(_M_ARM)
     static void loadRGBAUByteDataToBGRASSE2(GLsizei width, GLsizei height,
-                                            int inputPitch, const void *input, size_t outputPitch, void *output);
+
+                                          int inputPitch, const void *input, size_t outputPitch, void *output);
+#endif
     static void loadRGBAUByteDataToBGRA(GLsizei width, GLsizei height,
                                         int inputPitch, const void *input, size_t outputPitch, void *output);
     static void loadRGBAUByteDataToNative(GLsizei width, GLsizei height,

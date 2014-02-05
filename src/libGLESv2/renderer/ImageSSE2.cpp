@@ -15,6 +15,7 @@
 namespace rx
 {
 
+#if !defined(_M_ARM)
 void Image::loadRGBAUByteDataToBGRASSE2(GLsizei width, GLsizei height,
                                         int inputPitch, const void *input, size_t outputPitch, void *output)
 {
@@ -96,5 +97,5 @@ void Image::loadAlphaDataToBGRASSE2(GLsizei width, GLsizei height,
         }
     }
 }
-
+#endif
 }
