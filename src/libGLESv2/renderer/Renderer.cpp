@@ -11,7 +11,9 @@
 #include "libGLESv2/main.h"
 #include "libGLESv2/Program.h"
 #include "libGLESv2/renderer/Renderer.h"
+#if !defined(ANGLE_PLATFORM_WINRT)
 #include "libGLESv2/renderer/d3d9/Renderer9.h"
+#endif
 #include "libGLESv2/renderer/d3d11/Renderer11.h"
 #include "libGLESv2/utilities.h"
 #include "third_party/trace_event/trace_event.h"
@@ -21,6 +23,19 @@
 #define ANGLE_ENABLE_D3D11 0
 #endif
 
+// d3dcompiler is available to Windows Store Apps (winrt) in Windows 8.1
+// using Visual Studio 2013
+#if defined(ANGLE_PLATFORM_WP8)
+    #pragma message("Warning: d3dcompiler dll is not available for Windows Phone 8.0. Must use precompiled shaders.")
+#elif defined(ANGLE_PLATFORM_WINRT)
+#if (_MSC_VER >= 1800)
+    #pragma comment(lib,"d3dcompiler.lib")
+#else
+    #pragma message("Warning: Visual Studio 2013 and Windows 8.1 required for Windows Store App certification")
+    #pragma message("Warning: Visual Studio 2012 d3dcompiler dll is available only for development of a Windows Store App.")
+    #pragma message("Warning: d3dcompiler dll is not available for Windows 8.0 Store Apps. Must use precompiled shaders.")
+#endif // (_MSC_VER >= 1800)
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
 namespace rx
 {
 
@@ -28,6 +43,7 @@ Renderer::Renderer(egl::Display *display) : mDisplay(display)
 {
     mD3dCompilerModule = NULL;
     mD3DCompileFunc = NULL;
+    mHasCompiler = TRUE;
 }
 
 Renderer::~Renderer()
@@ -42,6 +58,21 @@ Renderer::~Renderer()
 bool Renderer::initializeCompiler()
 {
     TRACE_EVENT0("gpu", "initializeCompiler");
+#if defined(ANGLE_PLATFORM_WP8)
+    mD3dCompilerModule = NULL;
+    mD3DCompileFunc = NULL;
+    mHasCompiler = false;
+    return true;
+#endif //#if defined(ANGLE_PLATFORM_WP8)
+
+#if defined(ANGLE_PLATFORM_WINRT) && (_MSC_VER >= 1800)
+    ERR("No D3D compiler module available - must use precompiled shaders\n");
+    mD3dCompilerModule = NULL;
+    mD3DCompileFunc = reinterpret_cast<pCompileFunc>(D3DCompile);
+    mHasCompiler = true;
+    return true;
+#endif // #if defined(ANGLE_PLATFORM_WINRT) && (_MSC_VER >= 1800)
+
 #if defined(ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES)
     // Find a D3DCompiler module that had already been loaded based on a predefined list of versions.
     static TCHAR* d3dCompilerNames[] = ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES;
@@ -53,17 +84,30 @@ bool Renderer::initializeCompiler()
             break;
         }
     }
+#else
+    // Load the version of the D3DCompiler DLL associated with the Direct3D version ANGLE was built with.
+#if defined(ANGLE_PLATFORM_WINRT)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+    mD3dCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
+#else
+    mD3dCompilerModule = LoadPackagedLibrary((LPCWSTR)D3DCOMPILER_DLL, 0);
+#endif
+    if (!mD3dCompilerModule)
+    {
+        ERR("No D3D compiler module found - must use precompiled shaders\n");
+        mD3DCompileFunc = NULL;
+        mHasCompiler = false;
+        return true;
+    }
+#else
+    mD3dCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
+#endif //
 #endif  // ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES
 
     if (!mD3dCompilerModule)
     {
-        // Load the version of the D3DCompiler DLL associated with the Direct3D version ANGLE was built with.
-        mD3dCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
-    }
-
-    if (!mD3dCompilerModule)
-    {
         ERR("No D3D compiler module found - aborting!\n");
+        mHasCompiler = FALSE;
         return false;
     }
 
@@ -73,6 +117,7 @@ bool Renderer::initializeCompiler()
     return mD3DCompileFunc != NULL;
 }
 
+#if !defined(ANGLE_PLATFORM_WP8)
 // Compiles HLSL code into executable binaries
 ShaderBlob *Renderer::compileToBinary(gl::InfoLog &infoLog, const char *hlsl, const char *profile, UINT optimizationFlags, bool alternateFlags)
 {
@@ -147,7 +192,11 @@ ShaderBlob *Renderer::compileToBinary(gl::InfoLog &infoLog, const char *hlsl, co
         }
         else
         {
+#if defined(ANGLE_PLATFORM_WINRT)
+            if (result == E_OUTOFMEMORY)
+#else
             if (result == D3DERR_OUTOFVIDEOMEMORY || result == E_OUTOFMEMORY)
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
             {
                 return gl::error(GL_OUT_OF_MEMORY, (ShaderBlob*) NULL);
             }
@@ -166,17 +215,27 @@ ShaderBlob *Renderer::compileToBinary(gl::InfoLog &infoLog, const char *hlsl, co
 
     return NULL;
 }
+#endif // #if !defined(ANGLE_PLATFORM_WP8)
 
 }
 
 extern "C"
 {
 
-rx::Renderer *glCreateRenderer(egl::Display *display, HDC hDc, EGLNativeDisplayType displayId)
+    rx::Renderer *glCreateRenderer(egl::Display *display, EGLNativeDisplayType hDc, EGLNativeDisplayType displayId)
 {
     rx::Renderer *renderer = NULL;
     EGLint status = EGL_BAD_ALLOC;
     
+#if defined(ANGLE_PLATFORM_WINRT)
+	renderer = new rx::Renderer11(display, hDc);
+	if (renderer)
+	{
+		status = renderer->initialize();
+	}
+
+	return status == EGL_SUCCESS ? renderer : NULL;
+#else
     if (ANGLE_ENABLE_D3D11 ||
         displayId == EGL_D3D11_ELSE_D3D9_DISPLAY_ANGLE ||
         displayId == EGL_D3D11_ONLY_DISPLAY_ANGLE)
@@ -200,9 +259,12 @@ rx::Renderer *glCreateRenderer(egl::Display *display, HDC hDc, EGLNativeDisplayT
         // Failed to create a D3D11 renderer, try creating a D3D9 renderer
         delete renderer;
     }
+#endif
 
+#if !defined(ANGLE_PLATFORM_WINRT)
     bool softwareDevice = (displayId == EGL_SOFTWARE_DISPLAY_ANGLE);
     renderer = new rx::Renderer9(display, hDc, softwareDevice);
+#endif //#if !defined(ANGLE_PLATFORM_WINRT)
     
     if (renderer)
     {
