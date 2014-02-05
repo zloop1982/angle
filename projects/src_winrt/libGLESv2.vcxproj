@@ -1,0 +1,368 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|ARM">
+      <Configuration>Debug</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Debug|x64">
+      <Configuration>Debug</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|ARM">
+      <Configuration>Release</Configuration>
+      <Platform>ARM</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|x64">
+      <Configuration>Release</Configuration>
+      <Platform>x64</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{86A563B1-5150-44F3-BBFB-C348E1D15450}</ProjectGuid>
+    <Keyword>Win32Proj</Keyword>
+    <ProjectName>
+    </ProjectName>
+    <RootNamespace>libGLESv2</RootNamespace>
+    <DefaultLanguage>en-US</DefaultLanguage>
+    <MinimumVisualStudioVersion>12.0</MinimumVisualStudioVersion>
+    <AppContainerApplication>true</AppContainerApplication>
+    <ApplicationType>Windows Store</ApplicationType>
+    <ApplicationTypeRevision>8.1</ApplicationTypeRevision>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'" Label="Configuration">
+    <ConfigurationType>DynamicLibrary</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <PlatformToolset>v120</PlatformToolset>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>$(OutDir)obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <GenerateManifest>false</GenerateManifest>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>$(OutDir)obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <GenerateManifest>false</GenerateManifest>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>$(OutDir)obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <GenerateManifest>false</GenerateManifest>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>$(OutDir)obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <GenerateManifest>false</GenerateManifest>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>$(OutDir)obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <GenerateManifest>false</GenerateManifest>
+    <IgnoreImportLibrary>false</IgnoreImportLibrary>
+    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
+    <IntDir>$(OutDir)obj\$(ProjectName)\</IntDir>
+  </PropertyGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;_DEBUG;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|arm'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|arm'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;_DEBUG;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT("d3dcompiler_46.dll"), TEXT("d3dcompiler_43.dll") };ANGLE_ENABLE_PERF;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+    <ClCompile>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;NDEBUG;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT("d3dcompiler_46.dll"), TEXT("d3dcompiler_43.dll") };%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718;%(DisableSpecificWarnings)</DisableSpecificWarnings>
+    </ClCompile>
+    <Link>
+      <SubSystem>Console</SubSystem>
+      <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
+      <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
+      <AdditionalDependencies>d3d11.lib;dxguid.lib;kernel32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2.def</ModuleDefinitionFile>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\common\winrtangle.h" />
+    <ClInclude Include="..\..\src\common\winrtangleutils.h" />
+    <ClInclude Include="..\..\src\common\winrtplatform.h" />
+    <ClInclude Include="..\..\src\common\winrtutils.h" />
+    <ClInclude Include="..\..\src\libGLESv2\resource.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Buffer.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Shader.h" />
+    <ClInclude Include="..\..\src\libGLESv2\BinaryStream.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Renderbuffer.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Constants.h" />
+    <ClInclude Include="..\..\src\libGLESv2\TLSWinrt.h" />
+    <ClInclude Include="..\..\src\libGLESv2\utilities.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Program.h" />
+    <ClInclude Include="..\..\src\libGLESv2\HandleAllocator.h" />
+    <ClInclude Include="..\..\src\libGLESv2\precompiled.h" />
+    <ClInclude Include="..\..\src\libGLESv2\ProgramBinary.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Context.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Query.h" />
+    <ClInclude Include="..\..\src\libGLESv2\ResourceManager.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Texture.h" />
+    <ClInclude Include="..\..\src\libGLESv2\angletypes.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Uniform.h" />
+    <ClInclude Include="..\..\src\libGLESv2\main.h" />
+    <ClInclude Include="..\..\src\libGLESv2\mathutil.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Fence.h" />
+    <ClInclude Include="..\..\src\libGLESv2\Framebuffer.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\IndexDataManager.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\Renderer.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\SwapChain.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\TextureStorage.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\ShaderExecutable.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\QueryImpl.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\ShaderCache.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\IndexBuffer.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\IndexRangeCache.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\FenceImpl.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\Image.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\generatemip.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\RenderTarget.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\VertexDataManager.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\BufferStorage.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\VertexBuffer.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\InputLayoutCache.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\renderer11_utils.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\SwapChain11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\VertexBuffer11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\TextureStorage11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\ShaderExecutable11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\RenderStateCache.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\Fence11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\Renderer11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\IndexBuffer11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\BufferStorage11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\RenderTarget11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\Query11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\Image11.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\shaders\compiled\passthrough11vs.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\shaders\compiled\clear11vs.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\shaders\compiled\passthroughlum11ps.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\shaders\compiled\passthroughrgb11ps.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\shaders\compiled\passthroughlumalpha11ps.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\shaders\compiled\clearmultiple11ps.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\shaders\compiled\passthroughrgba11ps.h" />
+    <ClInclude Include="..\..\src\libGLESv2\renderer\d3d11\shaders\compiled\clearsingle11ps.h" />
+    <ClInclude Include="..\..\src\common\RefCountObject.h" />
+    <ClInclude Include="..\..\src\common\event_tracer.h" />
+    <ClInclude Include="..\..\src\common\commit.h" />
+    <ClInclude Include="..\..\src\common\debug.h" />
+    <ClInclude Include="..\..\src\common\version.h" />
+    <ClInclude Include="..\..\src\common\angleutils.h" />
+    <ClInclude Include="..\..\src\third_party\murmurhash\MurmurHash3.h" />
+    <ClInclude Include="..\..\src\third_party\winrt\ThreadEmulation\ThreadEmulation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\common\winrtangle.cpp" />
+    <ClCompile Include="..\..\src\common\winrtangleutils.cpp" />
+    <ClCompile Include="..\..\src\common\winrtutils.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\libGLESv2.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\precompiled.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\HandleAllocator.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Context.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Fence.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\ProgramBinary.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Buffer.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Renderbuffer.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Program.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Shader.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\TLSWinrt.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Uniform.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\main.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\utilities.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Float16ToFloat32.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\ResourceManager.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Texture.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Framebuffer.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\Query.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\VertexBuffer.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\IndexDataManager.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\Image.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\IndexBuffer.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\BufferStorage.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\ImageSSE2.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\VertexDataManager.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\IndexRangeCache.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\Renderer.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\TextureStorage.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\RenderTarget11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\InputLayoutCache.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\IndexBuffer11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\TextureStorage11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\renderer11_utils.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\ShaderExecutable11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\SwapChain11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\Query11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\VertexBuffer11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\Renderer11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\Image11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\Fence11.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\RenderStateCache.cpp" />
+    <ClCompile Include="..\..\src\libGLESv2\renderer\d3d11\BufferStorage11.cpp" />
+    <ClCompile Include="..\..\src\common\event_tracer.cpp" />
+    <ClCompile Include="..\..\src\common\RefCountObject.cpp" />
+    <ClCompile Include="..\..\src\common\debug.cpp" />
+    <ClCompile Include="..\..\src\third_party\murmurhash\MurmurHash3.cpp" />
+    <ClCompile Include="..\..\src\third_party\winrt\ThreadEmulation\ThreadEmulation.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="translator.vcxproj">
+      <Project>{4A630126-A984-4AC7-8534-94E9DC864307}</Project>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="preprocessor.vcxproj">
+      <Project>{7A3093AF-D58D-4020-ABE4-3B6F8292292A}</Project>
+    </ProjectReference>
+  </ItemGroup>
+</Project>
