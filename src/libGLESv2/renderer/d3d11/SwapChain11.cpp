@@ -11,14 +11,27 @@
 
 #include "libGLESv2/renderer/d3d11/renderer11_utils.h"
 #include "libGLESv2/renderer/d3d11/Renderer11.h"
-
+#if defined(ANGLE_PLATFORM_WINRT)
+#include "common/winrtutils.h"
+#include "common/winrtangle.h"
+#include "common/winrtangleutils.h"
+#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthrough11vs.h"
+#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthroughrgba11ps.h"
+#if !defined(ANGLE_PLATFORM_WP8)
+#include <windows.ui.xaml.media.dxinterop.h>
+#endif // #if !defined(ANGLE_PLATFORM_WP8)
+using namespace Microsoft::WRL;
+using namespace ABI::Windows::UI::Core;
+using namespace Windows::Foundation;
+#else
 #include "libGLESv2/renderer/d3d11/shaders/compiled/passthrough11vs.h"
 #include "libGLESv2/renderer/d3d11/shaders/compiled/passthroughrgba11ps.h"
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
 
 namespace rx
 {
 
-SwapChain11::SwapChain11(Renderer11 *renderer, HWND window, HANDLE shareHandle,
+    SwapChain11::SwapChain11(Renderer11 *renderer, EGLNativeWindowType window, HANDLE shareHandle,
                          GLenum backBufferFormat, GLenum depthBufferFormat)
     : mRenderer(renderer), SwapChain(window, shareHandle, backBufferFormat, depthBufferFormat)
 {
@@ -276,55 +289,94 @@ EGLint SwapChain11::resetOffscreenTexture(int backbufferWidth, int backbufferHei
 EGLint SwapChain11::resize(EGLint backbufferWidth, EGLint backbufferHeight)
 {
     ID3D11Device *device = mRenderer->getDevice();
+    HRESULT result = S_OK;
 
     if (device == NULL)
     {
         return EGL_BAD_ACCESS;
     }
 
-    // EGL allows creating a surface with 0x0 dimension, however, DXGI does not like 0x0 swapchains
-    if (backbufferWidth < 1 || backbufferHeight < 1)
+    // Can only call resize if we have already created our resources
+    ASSERT(mBackBufferTexture && mBackBufferRTView);
+
+    if (mBackBufferTexture)
     {
-        return EGL_SUCCESS;
+        mBackBufferTexture->Release();
+        mBackBufferTexture = NULL;
     }
 
-    // Can only call resize if we have already created our swap buffer and resources
-    ASSERT(mSwapChain && mBackBufferTexture && mBackBufferRTView);
-
-    SafeRelease(mBackBufferTexture);
-    SafeRelease(mBackBufferRTView);
-
-    // Resize swap chain
-    DXGI_FORMAT backbufferDXGIFormat = gl_d3d11::ConvertRenderbufferFormat(mBackBufferFormat);
-    HRESULT result = mSwapChain->ResizeBuffers(2, backbufferWidth, backbufferHeight, backbufferDXGIFormat, 0);
-
-    if (FAILED(result))
+    if (mBackBufferRTView)
     {
-        ERR("Error resizing swap chain buffers: 0x%08X", result);
-        release();
+        mBackBufferRTView->Release();
+        mBackBufferRTView = NULL;
+    }  
 
-        if (d3d11::isDeviceLostError(result))
+    if(mSwapChain)
+    {
+        // Resize swap chain
+        DXGI_FORMAT backbufferDXGIFormat = gl_d3d11::ConvertRenderbufferFormat(mBackBufferFormat);
+        HRESULT result = S_OK;
+
+        result = mSwapChain->ResizeBuffers(2, backbufferWidth, backbufferHeight, backbufferDXGIFormat, 0);
+
+        if (FAILED(result))
         {
-            return EGL_CONTEXT_LOST;
-        }
-        else
+            ERR("Error resizing swap chain buffers: 0x%08X", result);
+            release();
+
+            if (d3d11::isDeviceLostError(result))
+            {
+                return EGL_CONTEXT_LOST;
+            }
+            else
+            {
+                return EGL_BAD_ALLOC;
+            }
+        }  
+    }
+
+#if defined(ANGLE_PLATFORM_WP8)
+    ComPtr<IWinrtEglWindow> iWinRTWindow;
+    result = winrtangleutils::getIWinRTWindow(mWindow, &iWinRTWindow);
+    if(SUCCEEDED(result)) 
+    {
+        if(winrtangleutils::hasIPhoneXamlWindow(iWinRTWindow))
         {
-            return EGL_BAD_ALLOC;
+            ComPtr<IWinPhone8XamlD3DWindow> iPhoneWindow;
+            result = winrtangleutils::getIPhoneXamlWindow(mWindow, &iPhoneWindow);
+            ASSERT(SUCCEEDED(result));
+                
+            ComPtr<ID3D11Texture2D> backBuffer;
+            result = winrtangleutils::getBackBuffer(iPhoneWindow, &backBuffer);
+            ASSERT(SUCCEEDED(result));
+            mBackBufferTexture = backBuffer.Get();
+            mBackBufferTexture->AddRef();
+            d3d11::SetDebugName(mBackBufferTexture, "Back buffer texture");
+
+            ComPtr<ID3D11RenderTargetView> rtv;
+            result = winrtangleutils::getID3D11RenderTargetView(iPhoneWindow, &rtv);
+            ASSERT(SUCCEEDED(result));
+            mBackBufferRTView = rtv.Get();
+            mBackBufferRTView->AddRef();
+            d3d11::SetDebugName(mBackBufferRTView, "Back buffer render target");
         }
     }
+#endif
 
-    result = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBufferTexture);
-    ASSERT(SUCCEEDED(result));
-    if (SUCCEEDED(result))
+    if(mSwapChain)
     {
-        d3d11::SetDebugName(mBackBufferTexture, "Back buffer texture");
-    }
-
-    result = device->CreateRenderTargetView(mBackBufferTexture, NULL, &mBackBufferRTView);
-    ASSERT(SUCCEEDED(result));
-    if (SUCCEEDED(result))
-    {
-        d3d11::SetDebugName(mBackBufferRTView, "Back buffer render target");
+        result = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBufferTexture);
+        ASSERT(SUCCEEDED(result));
+        if (SUCCEEDED(result))
+        {
+            d3d11::SetDebugName(mBackBufferTexture, "Back buffer texture");
+        }
+        result = device->CreateRenderTargetView(mBackBufferTexture, NULL, &mBackBufferRTView);
+        ASSERT(SUCCEEDED(result));
+        if (SUCCEEDED(result))
+        {
+            d3d11::SetDebugName(mBackBufferRTView, "Back buffer render target");
+        }
     }
 
     return resetOffscreenTexture(backbufferWidth, backbufferHeight);
@@ -333,6 +385,7 @@ EGLint SwapChain11::resize(EGLint backbufferWidth, EGLint backbufferHeight)
 EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swapInterval)
 {
     ID3D11Device *device = mRenderer->getDevice();
+    HRESULT result = S_OK;
 
     if (device == NULL)
     {
@@ -341,9 +394,24 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
 
     // Release specific resources to free up memory for the new render target, while the
     // old render target still exists for the purpose of preserving its contents.
-    SafeRelease(mSwapChain);
-    SafeRelease(mBackBufferTexture);
-    SafeRelease(mBackBufferRTView);
+    if (mSwapChain)
+    {
+        mSwapChain->Release();
+        mSwapChain = NULL;
+    }
+
+    if (mBackBufferTexture)
+    {
+        mBackBufferTexture->Release();
+        mBackBufferTexture = NULL;
+    }
+
+    if (mBackBufferRTView)
+    {
+        mBackBufferRTView->Release();
+        mBackBufferRTView = NULL;  
+
+    }
 
     mSwapInterval = static_cast<unsigned int>(swapInterval);
     if (mSwapInterval > 4)
@@ -361,8 +429,23 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
 
     if (mWindow)
     {
-        IDXGIFactory *factory = mRenderer->getDxgiFactory();
+#if !defined(ANGLE_PLATFORM_WINRT)
+        // We cannot create a swap #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+        // for an HWND that is owned by a different process
+        DWORD currentProcessId = GetCurrentProcessId();
+        DWORD wndProcessId;
+        GetWindowThreadProcessId(mWindow, &wndProcessId);
 
+        if (currentProcessId != wndProcessId)
+        {
+            ERR("Could not create swap chain, window owned by different process");
+            release();
+            return EGL_BAD_NATIVE_WINDOW;
+        }
+#endif //#if !defined(ANGLE_PLATFORM_WINRT)
+
+#if !defined(ANGLE_PLATFORM_WINRT)
+        IDXGIFactory *factory = mRenderer->getDxgiFactory();
         DXGI_SWAP_CHAIN_DESC swapChainDesc = {0};
         swapChainDesc.BufferCount = 2;
         swapChainDesc.BufferDesc.Format = gl_d3d11::ConvertRenderbufferFormat(mBackBufferFormat);
@@ -378,8 +461,96 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
         swapChainDesc.SampleDesc.Count = 1;
         swapChainDesc.SampleDesc.Quality = 0;
         swapChainDesc.Windowed = TRUE;
+        result = factory->CreateSwapChain(device, &swapChainDesc, &mSwapChain);
 
-        HRESULT result = factory->CreateSwapChain(device, &swapChainDesc, &mSwapChain);
+#elif defined(ANGLE_PLATFORM_WP8)
+        ComPtr<IWinrtEglWindow> iWinRTWindow;
+        result = winrtangleutils::getIWinRTWindow(mWindow, &iWinRTWindow);
+        if(SUCCEEDED(result)) 
+        {
+            if(winrtangleutils::hasIPhoneXamlWindow(iWinRTWindow))
+            {
+                ComPtr<IWinPhone8XamlD3DWindow> iPhoneWindow;
+                result = winrtangleutils::getIPhoneXamlWindow(mWindow, &iPhoneWindow);
+                ASSERT(SUCCEEDED(result));
+                
+                ComPtr<ID3D11Texture2D> backBuffer;
+                result = winrtangleutils::getBackBuffer(iPhoneWindow, &backBuffer);
+                ASSERT(SUCCEEDED(result));
+                mBackBufferTexture = backBuffer.Get();
+                mBackBufferTexture->AddRef();
+
+                ComPtr<ID3D11RenderTargetView> rtv;
+                result = winrtangleutils::getID3D11RenderTargetView(iPhoneWindow, &rtv);
+                ASSERT(SUCCEEDED(result));
+                mBackBufferRTView = rtv.Get();
+                mBackBufferRTView->AddRef();
+            }
+            else
+            {
+                IUnknown* iWindow = iWinRTWindow->GetWindowInterface().Get();
+                IDXGIFactory2 *factory = mRenderer->getDxgiFactory();
+                DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
+                swapChainDesc.Width = static_cast<UINT>(backbufferWidth); // Match the size of the window.
+                swapChainDesc.Height = static_cast<UINT>(backbufferHeight);
+                swapChainDesc.Format = DXGI_FORMAT_B8G8R8A8_UNORM; // This is the most common swap chain format.
+                swapChainDesc.Stereo = false;
+                swapChainDesc.SampleDesc.Count = 1; // Don't use multi-sampling.
+                swapChainDesc.SampleDesc.Quality = 0;
+                swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+                swapChainDesc.BufferCount = 1; // On phone, only single buffering is supported.
+                swapChainDesc.Scaling = DXGI_SCALING_STRETCH; // On phone, only stretch and aspect-ratio stretch scaling are allowed.
+                swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_DISCARD; // On phone, no swap effects are supported.
+                swapChainDesc.Flags = 0;
+
+                result = factory->CreateSwapChainForCoreWindow(
+                    device,
+                    iWindow,
+                    &swapChainDesc,
+                    nullptr, // Allow on all displays.
+                    &mSwapChain
+                    );
+            }
+        }
+#elif defined(ANGLE_PLATFORM_WINRT)
+        ComPtr<IWinrtEglWindow> iWinRTWindow;
+        result = mWindow.As(&iWinRTWindow);
+        if(SUCCEEDED(result))
+        {
+            IUnknown* iWindow = iWinRTWindow->GetWindowInterface().Get();
+            bool isPanel = winrt::isSwapChainBackgroundPanel(iWindow);
+            IDXGIFactory2 *factory = mRenderer->getDxgiFactory();
+            DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {0};
+            swapChainDesc.Width = backbufferWidth;
+            swapChainDesc.Height = backbufferHeight;
+            swapChainDesc.Format = gl_d3d11::ConvertRenderbufferFormat(mBackBufferFormat);
+            swapChainDesc.Stereo = FALSE;
+            swapChainDesc.SampleDesc.Count = 1;
+            swapChainDesc.SampleDesc.Quality = 0;
+            swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
+            swapChainDesc.BufferCount = 2;
+            swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; //must be used for winrt
+            swapChainDesc.Scaling = isPanel ? DXGI_SCALING_STRETCH : DXGI_SCALING_NONE;
+            if (isPanel)
+            {
+                ComPtr<ISwapChainBackgroundPanelNative> panelNative;
+
+                result = iWinRTWindow->GetWindowInterface().As(&panelNative);
+                if SUCCEEDED(result)
+                {
+                    result = factory->CreateSwapChainForComposition(device, &swapChainDesc, nullptr, &mSwapChain);
+                    if SUCCEEDED(result)
+                    {
+                        panelNative->SetSwapChain(mSwapChain);
+                    }
+                }
+            }
+            else
+            {
+                result = factory->CreateSwapChainForCoreWindow(device, iWindow, &swapChainDesc, nullptr, &mSwapChain);
+            }
+        }
+#endif // #if !defined(ANGLE_PLATFORM_WINRT)
 
         if (FAILED(result))
         {
@@ -392,31 +563,22 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
             }
             else
             {
-                // We cannot create a swap chain for an HWND that is owned by a different process on some versions of
-                // windows
-                DWORD currentProcessId = GetCurrentProcessId();
-                DWORD wndProcessId;
-                GetWindowThreadProcessId(mWindow, &wndProcessId);
-
-                if (currentProcessId != wndProcessId)
-                {
-                    ERR("Could not create swap chain, window owned by different process");
-                    return EGL_BAD_NATIVE_WINDOW;
-                }
-                else
-                {
-                    return EGL_BAD_ALLOC;
-                }
+                return EGL_BAD_ALLOC;
             }
         }
 
-        result = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBufferTexture);
-        ASSERT(SUCCEEDED(result));
-        d3d11::SetDebugName(mBackBufferTexture, "Back buffer texture");
+        if(mSwapChain)
+        {
+            result = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBufferTexture);
+            ASSERT(SUCCEEDED(result));
 
-        result = device->CreateRenderTargetView(mBackBufferTexture, NULL, &mBackBufferRTView);
-        ASSERT(SUCCEEDED(result));
+            result = device->CreateRenderTargetView(mBackBufferTexture, NULL, &mBackBufferRTView);
+            ASSERT(SUCCEEDED(result));
+        }
+
+        d3d11::SetDebugName(mBackBufferTexture, "Back buffer texture");
         d3d11::SetDebugName(mBackBufferRTView, "Back buffer render target");
+
     }
 
     // If we are resizing the swap chain, we don't wish to recreate all the static resources
@@ -464,7 +626,10 @@ void SwapChain11::initPassThroughResources()
     samplerDesc.BorderColor[2] = 0.0f;
     samplerDesc.BorderColor[3] = 0.0f;
     samplerDesc.MinLOD = 0;
-    samplerDesc.MaxLOD = D3D11_FLOAT32_MAX;
+    if (device->GetFeatureLevel() <= D3D_FEATURE_LEVEL_9_3)
+        samplerDesc.MaxLOD = FLT_MAX; //breaks Surface RT if 0.0f
+    else
+        samplerDesc.MaxLOD = 0.0f;
 
     result = device->CreateSamplerState(&samplerDesc, &mPassThroughSampler);
     ASSERT(SUCCEEDED(result));
@@ -492,17 +657,49 @@ void SwapChain11::initPassThroughResources()
 // parameters should be validated/clamped by caller
 EGLint SwapChain11::swapRect(EGLint x, EGLint y, EGLint width, EGLint height)
 {
+    HRESULT result = S_OK;
+
+#if defined(ANGLE_PLATFORM_WP8)
+    ComPtr<IWinrtEglWindow> iWinRTWindow;
+    result = winrtangleutils::getIWinRTWindow(mWindow, &iWinRTWindow);
+    if(SUCCEEDED(result)) 
+    {
+        if(winrtangleutils::hasIPhoneXamlWindow(iWinRTWindow))
+        {
+            ComPtr<IWinPhone8XamlD3DWindow> iPhoneWindow;
+            result = winrtangleutils::getIPhoneXamlWindow(mWindow, &iPhoneWindow);
+            ASSERT(SUCCEEDED(result));
+                
+            ComPtr<ID3D11Texture2D> backBuffer;
+            result = winrtangleutils::getBackBuffer(iPhoneWindow, &backBuffer);
+            ASSERT(SUCCEEDED(result));
+            if(backBuffer.Get() != mBackBufferTexture)
+            {
+                mBackBufferTexture = backBuffer.Get();
+                d3d11::SetDebugName(mBackBufferTexture, "Back buffer texture");
+
+                ComPtr<ID3D11RenderTargetView> rtv;
+                result = winrtangleutils::getID3D11RenderTargetView(iPhoneWindow, &rtv);
+                ASSERT(SUCCEEDED(result));
+                mBackBufferRTView = rtv.Get();
+                d3d11::SetDebugName(mBackBufferRTView, "Back buffer render target");
+            }
+        }
+    }
+#else
+
     if (!mSwapChain)
     {
         return EGL_SUCCESS;
-    }
+    }  
+#endif
 
     ID3D11Device *device = mRenderer->getDevice();
     ID3D11DeviceContext *deviceContext = mRenderer->getDeviceContext();
 
     // Set vertices
     D3D11_MAPPED_SUBRESOURCE mappedResource;
-    HRESULT result = deviceContext->Map(mQuadVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+    result = deviceContext->Map(mQuadVB, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
     if (FAILED(result))
     {
         return EGL_BAD_ACCESS;
@@ -542,7 +739,11 @@ EGLint SwapChain11::swapRect(EGLint x, EGLint y, EGLint width, EGLint height)
 
     // Apply shaders
     deviceContext->IASetInputLayout(mPassThroughIL);
-    deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+#if defined(ANGLE_PLATFORM_WINRT)
+    deviceContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+#else
+   deviceContext->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLESTRIP);
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
     deviceContext->VSSetShader(mPassThroughVS, NULL, 0);
     deviceContext->PSSetShader(mPassThroughPS, NULL, 0);
     deviceContext->GSSetShader(NULL, NULL, 0);

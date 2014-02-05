@@ -9,8 +9,10 @@
 #ifndef LIBGLESV2_RENDERER_SWAPCHAIN11_H_
 #define LIBGLESV2_RENDERER_SWAPCHAIN11_H_
 
+
 #include "common/angleutils.h"
 #include "libGLESv2/renderer/SwapChain.h"
+#include "common/winrtplatform.h"
 
 namespace rx
 {
@@ -19,7 +21,7 @@ class Renderer11;
 class SwapChain11 : public SwapChain
 {
   public:
-    SwapChain11(Renderer11 *renderer, HWND window, HANDLE shareHandle,
+      SwapChain11(Renderer11 *renderer, EGLNativeWindowType window, HANDLE shareHandle,
                 GLenum backBufferFormat, GLenum depthBufferFormat);
     virtual ~SwapChain11();
 
@@ -55,7 +57,11 @@ class SwapChain11 : public SwapChain
     unsigned int mSwapInterval;
     bool mPassThroughResourcesInit;
 
+#if defined(ANGLE_PLATFORM_WINRT)
+    IDXGISwapChain1 *mSwapChain;
+#else
     IDXGISwapChain *mSwapChain;
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
 
     ID3D11Texture2D *mBackBufferTexture;
     ID3D11RenderTargetView *mBackBufferRTView;
