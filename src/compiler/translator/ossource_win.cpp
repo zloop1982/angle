@@ -13,6 +13,10 @@
 #error Trying to build a windows specific file in a non windows build.
 #endif
 
+#if defined(ANGLE_OS_WINRT)
+using namespace ThreadEmulation;
+#endif // #if defined(ANGLE_OS_WINRT)
+
 
 //
 // Thread Local Storage Operations
