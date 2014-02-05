@@ -9,8 +9,16 @@
 #include "libEGL/main.h"
 
 #include "common/debug.h"
+#include "common/winrtplatform.h"
 
+
+#if defined(ANGLE_PLATFORM_WINRT)
+#include "TLSWinrt.h"
+__declspec(thread) DWORD currentTLS = TLS_OUT_OF_INDEXES;
+__declspec( thread ) egl::Current glContext;
+#else
 static DWORD currentTLS = TLS_OUT_OF_INDEXES;
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
 
 namespace egl
 {
@@ -49,13 +57,14 @@ void DeallocateCurrent()
 
 }
 
+#if !defined(ANGLE_PLATFORM_WINRT)
 extern "C" BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
 {
     switch (reason)
     {
       case DLL_PROCESS_ATTACH:
         {
-#if defined(ANGLE_ENABLE_TRACE)
+#if !defined(ANGLE_DISABLE_TRACE)
             FILE *debug = fopen(TRACE_OUTPUT_FILE, "rt");
 
             if (debug)
@@ -100,6 +109,59 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved
 
     return TRUE;
 }
+#else
+extern "C" BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved)
+{
+    switch (reason)
+    {
+    case DLL_PROCESS_ATTACH:
+    {
+#if !defined(ANGLE_DISABLE_TRACE)
+        FILE *debug = fopen(TRACE_OUTPUT_FILE, "rt");
+
+        if (debug)
+        {
+            fclose(debug);
+            debug = fopen(TRACE_OUTPUT_FILE, "wt");   // Erase
+
+            if (debug)
+            {
+                fclose(debug);
+            }
+        }
+#endif
+    }
+        break;
+    case DLL_THREAD_ATTACH:
+    {
+
+        currentTLS = TlsAlloc();
+
+        if (currentTLS == TLS_OUT_OF_INDEXES)
+        {
+            return FALSE;
+        }
+        egl::AllocateCurrent();
+    }
+        break;
+    case DLL_THREAD_DETACH:
+    {
+        egl::DeallocateCurrent();
+    }
+        break;
+    case DLL_PROCESS_DETACH:
+    {
+        egl::DeallocateCurrent();
+        TlsFree(currentTLS);
+    }
+        break;
+    default:
+        break;
+    }
+
+    return TRUE;
+}
+#endif
 
 namespace egl
 {
