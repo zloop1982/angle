@@ -73,9 +73,30 @@
 #endif
 #include <windows.h>
 
+#if defined(WINAPI_FAMILY)
+
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP) && !defined(__cplusplus_winrt)
+
 typedef HDC     EGLNativeDisplayType;
 typedef HBITMAP EGLNativePixmapType;
 typedef HWND    EGLNativeWindowType;
+
+#else
+
+#include <wrl\client.h>
+typedef Microsoft::WRL::ComPtr<IUnknown> EGLNativeWindowType;
+typedef Microsoft::WRL::ComPtr<IUnknown> EGLNativeDisplayType;
+typedef HBITMAP EGLNativePixmapType;
+
+#endif
+
+#elif defined(_WIN32) || defined(_WIN64)
+
+typedef HDC     EGLNativeDisplayType;
+typedef HBITMAP EGLNativePixmapType;
+typedef HWND    EGLNativeWindowType;
+
+#endif
 
 #elif defined(__WINSCW__) || defined(__SYMBIAN32__)  /* Symbian */
 
