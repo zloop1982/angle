@@ -92,6 +92,10 @@ inline bool supportsSSE2()
         return supports;
     }
 
+// ARM builds on WinRT do not support SSE2
+#if _M_ARM
+    supports = false;
+#else
     int info[4];
     __cpuid(info, 0);
     
@@ -101,7 +105,7 @@ inline bool supportsSSE2()
 
         supports = (info[3] >> 26) & 1;
     }
-
+#endif
     checked = true;
 
     return supports;
