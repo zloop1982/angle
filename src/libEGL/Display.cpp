@@ -40,13 +40,13 @@ egl::Display *Display::getDisplay(EGLNativeDisplayType displayId)
     
     // FIXME: Check if displayId is a valid display device context
 
-    egl::Display *display = new egl::Display(displayId, (HDC)displayId);
+    egl::Display *display = new egl::Display(displayId, displayId);
 
     displays[displayId] = display;
     return display;
 }
 
-Display::Display(EGLNativeDisplayType displayId, HDC deviceContext) : mDc(deviceContext)
+Display::Display(EGLNativeDisplayType displayId, EGLNativeDisplayType deviceContext) : mDc(deviceContext)
 {
     mDisplayId = displayId;
     mRenderer = NULL;
@@ -186,7 +186,7 @@ bool Display::getConfigAttrib(EGLConfig config, EGLint attribute, EGLint *value)
 
 
 
-EGLSurface Display::createWindowSurface(HWND window, EGLConfig config, const EGLint *attribList)
+EGLSurface Display::createWindowSurface(EGLNativeWindowType window, EGLConfig config, const EGLint *attribList)
 {
     const Config *configuration = mConfigSet.get(config);
     EGLint postSubBufferSupported = EGL_FALSE;
@@ -456,7 +456,7 @@ bool Display::isValidSurface(egl::Surface *surface)
     return mSurfaceSet.find(surface) != mSurfaceSet.end();
 }
 
-bool Display::hasExistingWindowSurface(HWND window)
+bool Display::hasExistingWindowSurface(EGLNativeWindowType window)
 {
     for (SurfaceSet::iterator surface = mSurfaceSet.begin(); surface != mSurfaceSet.end(); surface++)
     {
@@ -471,7 +471,11 @@ bool Display::hasExistingWindowSurface(HWND window)
 
 void Display::initExtensionString()
 {
+#if defined(ANGLE_PLATFORM_WINRT)
+    bool swiftShader = false;
+#else
     HMODULE swiftShader = GetModuleHandle(TEXT("swiftshader_d3d9.dll"));
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
     bool shareHandleSupported = mRenderer->getShareHandleSupport();
 
     mExtensionString = "";
