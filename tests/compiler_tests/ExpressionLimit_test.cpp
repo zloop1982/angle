@@ -22,15 +22,7 @@ protected:
     virtual void SetUp()
     {
         memset(&resources, 0, sizeof(resources));
-
-        ASSERT_TRUE(ShInitialize() != 0) << "Could not ShInitialize";
-
         GenerateResources(&resources);
-    }
-
-    virtual void TearDown()
-    {
-        ASSERT_TRUE(ShFinalize() != 0);
     }
 
     // Set up the per compile resources
@@ -153,7 +145,7 @@ protected:
                                 const char* source,
                                 int compileOptions,
                                 const char* expected_error) {
-        bool success = ShCompile(compiler, &source, 1, compileOptions);
+        bool success = ShCompile(compiler, &source, 1, compileOptions) != 0;
         if (success) {
             success = !expected_error;
         } else {

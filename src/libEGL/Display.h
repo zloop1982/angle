@@ -11,8 +11,6 @@
 #ifndef LIBEGL_DISPLAY_H_
 #define LIBEGL_DISPLAY_H_
 
-#include "common/system.h"
-
 #include <set>
 #include <vector>
 
@@ -69,12 +67,12 @@ class Display
   private:
     DISALLOW_COPY_AND_ASSIGN(Display);
 
-    Display(EGLNativeDisplayType displayId, AngleNativeWindowHDC deviceContext);
+    Display(EGLNativeDisplayType displayId, EGLNativeDisplayType deviceContext);
 
     bool restoreLostDevice();
 
     EGLNativeDisplayType mDisplayId;
-    const AngleNativeWindowHDC mDc;
+    const EGLNativeDisplayType mDc;
 
     bool mSoftwareDevice;
     

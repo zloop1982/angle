@@ -11,7 +11,10 @@
 #include "libGLESv2/main.h"
 #include "libGLESv2/Program.h"
 #include "libGLESv2/renderer/Renderer.h"
-#include "libGLESv2/renderer/Renderer11.h"
+#if !defined(ANGLE_PLATFORM_WINRT)
+#include "libGLESv2/renderer/d3d9/Renderer9.h"
+#endif
+#include "libGLESv2/renderer/d3d11/Renderer11.h"
 #include "libGLESv2/utilities.h"
 #include "third_party/trace_event/trace_event.h"
 
@@ -36,8 +39,6 @@
     #pragma message("Warning: Visual Studio 2012 d3dcompiler dll is available only for development of a Windows Store App.")
     #pragma message("Warning: d3dcompiler dll is not available for Windows 8.0 Store Apps. Must use precompiled shaders.")
 #endif // (_MSC_VER >= 1800)
-#else 
-#include "libGLESv2/renderer/Renderer9.h"
 #endif // #if defined(ANGLE_PLATFORM_WINRT)
 
 namespace rx
@@ -89,24 +90,24 @@ bool Renderer::initializeCompiler()
         }
     }
 #else
-    // Load the version of the D3DCompiler DLL associated with the Direct3D version ANGLE was built with.
-#if defined(ANGLE_PLATFORM_WINRT)
-#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
-    mD3dCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
-#else
-    mD3dCompilerModule = LoadPackagedLibrary((LPCWSTR)D3DCOMPILER_DLL, 0);
-#endif
     if (!mD3dCompilerModule)
     {
+        // Load the version of the D3DCompiler DLL associated with the Direct3D version ANGLE was built with.
+#if defined(ANGLE_PLATFORM_WINRT)
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+        mD3dCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
+#else
+        mD3dCompilerModule = LoadPackagedLibrary((LPCWSTR)D3DCOMPILER_DLL, 0);
+#endif // WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
         ERR("No D3D compiler module found - must use precompiled shaders\n");
         mD3DCompileFunc = NULL;
         mHasCompiler = false;
         return true;
-    }
 #else
-    mD3dCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
-#endif //
-#endif  // ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES
+        mD3dCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
+#endif // defined(ANGLE_PLATFORM_WINRT)
+    }
+#endif // ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES
 
     if (!mD3dCompilerModule)
     {
@@ -225,7 +226,7 @@ ShaderBlob *Renderer::compileToBinary(gl::InfoLog &infoLog, const char *hlsl, co
 extern "C"
 {
 
-rx::Renderer *glCreateRenderer(egl::Display *display, AngleNativeWindowHDC hDc, EGLNativeDisplayType displayId)
+rx::Renderer *glCreateRenderer(egl::Display *display, EGLNativeDisplayType hDc, EGLNativeDisplayType displayId)
 {
     rx::Renderer *renderer = NULL;
     EGLint status = EGL_BAD_ALLOC;

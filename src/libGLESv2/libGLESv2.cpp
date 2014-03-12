@@ -758,7 +758,7 @@ void __stdcall glBufferData(GLenum target, GLsizeiptr size, const GLvoid* data, 
                 return gl::error(GL_INVALID_OPERATION);
             }
 
-            buffer->bufferData(data, size, usage, target);
+            buffer->bufferData(data, size, usage);
         }
     }
     catch(std::bad_alloc&)
@@ -812,7 +812,7 @@ void __stdcall glBufferSubData(GLenum target, GLintptr offset, GLsizeiptr size, 
                 return gl::error(GL_INVALID_VALUE);
             }
 
-            buffer->bufferSubData(data, size, offset, target);
+            buffer->bufferSubData(data, size, offset);
         }
     }
     catch(std::bad_alloc&)
@@ -3846,9 +3846,9 @@ const GLubyte* __stdcall glGetString(GLenum name)
           case GL_RENDERER:
             return (GLubyte*)((context != NULL) ? context->getRendererString() : "ANGLE");
           case GL_VERSION:
-            return (GLubyte*)"OpenGL ES 2.0 (ANGLE " VERSION_STRING ")";
+            return (GLubyte*)"OpenGL ES 2.0 (ANGLE " ANGLE_VERSION_STRING ")";
           case GL_SHADING_LANGUAGE_VERSION:
-            return (GLubyte*)"OpenGL ES GLSL ES 1.00 (ANGLE " VERSION_STRING ")";
+            return (GLubyte*)"OpenGL ES GLSL ES 1.00 (ANGLE " ANGLE_VERSION_STRING ")";
           case GL_EXTENSIONS:
             return (GLubyte*)((context != NULL) ? context->getExtensionString() : "");
           default:

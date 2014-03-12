@@ -15,7 +15,7 @@
 #include "libGLESv2/mathutil.h"
 #include "libGLESv2/utilities.h"
 #if !defined(ANGLE_PLATFORM_WINRT)
-#include "libGLESv2/renderer/Blit.h"
+#include "libGLESv2/renderer/d3d9/Blit.h"
 #endif // #if !defined(ANGLE_PLATFORM_WINRT)
 #include "libGLESv2/Renderbuffer.h"
 #include "libGLESv2/renderer/Image.h"
@@ -1372,10 +1372,10 @@ void TextureCubeMap::storage(GLsizei levels, GLenum internalformat, GLsizei size
 
     for (int level = 0; level < levels; level++)
     {
+        GLsizei mipSize = std::max(1, size >> level);
         for (int face = 0; face < 6; face++)
         {
-            mImageArray[face][level]->redefine(mRenderer, internalformat, size, size, true);
-            size = std::max(1, size >> 1);
+            mImageArray[face][level]->redefine(mRenderer, internalformat, mipSize, mipSize, true);
         }
     }
 

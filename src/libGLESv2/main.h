@@ -10,7 +10,6 @@
 #define LIBGLESV2_MAIN_H_
 
 #include "common/debug.h"
-#include "common/system.h"
 
 
 namespace egl
@@ -59,7 +58,7 @@ gl::Context *glCreateContext(const gl::Context *shareContext, rx::Renderer *rend
 void glDestroyContext(gl::Context *context);
 void glMakeCurrent(gl::Context *context, egl::Display *display, egl::Surface *surface);
 gl::Context *glGetCurrentContext();
-rx::Renderer *glCreateRenderer(egl::Display *display, AngleNativeWindowHDC hDc, EGLNativeDisplayType displayId);
+rx::Renderer *glCreateRenderer(egl::Display *display, EGLNativeDisplayType hDc, EGLNativeDisplayType displayId);
 void glDestroyRenderer(rx::Renderer *renderer);
 
 __eglMustCastToProperFunctionPointerType __stdcall glGetProcAddress(const char *procname);

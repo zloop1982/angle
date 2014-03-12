@@ -340,7 +340,7 @@ void PrintActiveVariables(ShHandle compiler, ShShaderInfo varType, bool mapLongV
             case SH_SAMPLER_EXTERNAL_OES: typeName = "GL_SAMPLER_EXTERNAL_OES"; break;
             default: assert(0);
         }
-        printf("%u: name:%s type:%s size:%d", i, name, typeName, size);
+        printf("%lu: name:%s type:%s size:%d", i, name, typeName, size);
         if (mapLongVariableNames)
             printf(" mapped name:%s", mappedName);
         printf("\n");
@@ -369,7 +369,7 @@ static bool ReadShaderSource(const char* fileName, ShaderSource& source) {
     // string is added to vector.
     do {
         char* data = new char[len + 1];
-        int nread = fread(data, 1, len, in);
+        int nread = static_cast<int>(fread(data, 1, len, in));
         data[nread] = '\0';
         source.push_back(data);
 

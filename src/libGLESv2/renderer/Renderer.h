@@ -101,6 +101,12 @@ enum ShaderType
     SHADER_GEOMETRY
 };
 
+enum D3DWorkaroundType
+{
+    ANGLE_D3D_WORKAROUND_NONE,
+    ANGLE_D3D_WORKAROUND_SM3_OPTIMIZER
+};
+
 class Renderer
 {
   public:
@@ -121,7 +127,7 @@ class Renderer
     virtual void setTexture(gl::SamplerType type, int index, gl::Texture *texture) = 0;
 
     virtual void setRasterizerState(const gl::RasterizerState &rasterState) = 0;
-    virtual void setBlendState(const gl::BlendState &blendState, const gl::Color &blendColor,
+    virtual void setBlendState(gl::Framebuffer *framebuffer, const gl::BlendState &blendState, const gl::Color &blendColor,
                                unsigned int sampleMask) = 0;
     virtual void setDepthStencilState(const gl::DepthStencilState &depthStencilState, int stencilRef,
                                       int stencilBackRef, bool frontFaceCCW) = 0;
@@ -217,7 +223,7 @@ class Renderer
     // Shader operations
     virtual ShaderExecutable *loadExecutable(const void *function, size_t length, rx::ShaderType type) = 0;
 #if !defined(ANGLE_PLATFORM_WP8)
-    virtual ShaderExecutable *compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type) = 0;
+    virtual ShaderExecutable *compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type, D3DWorkaroundType workaround) = 0;
 #endif //#if !defined(ANGLE_PLATFORM_WP9
 
     // Image operations

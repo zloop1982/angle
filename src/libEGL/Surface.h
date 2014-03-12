@@ -34,7 +34,7 @@ class Config;
 class Surface
 {
   public:
-    Surface(Display *display, const egl::Config *config, EGLNativeWindowType window, EGLint postSubBufferSupported);
+    Surface(Display *display, const egl::Config *config, EGLNativeWindowType window, EGLint fixedSize, EGLint width, EGLint height, EGLint postSubBufferSupported);
     Surface(Display *display, const egl::Config *config, HANDLE shareHandle, EGLint width, EGLint height, EGLenum textureFormat, EGLenum textureTarget);
 
     ~Surface();
@@ -65,6 +65,7 @@ class Surface
     virtual void setBoundTexture(gl::Texture2D *texture);
     virtual gl::Texture2D *getBoundTexture() const;
 
+    EGLint isFixedSize() const;
 
 private:
     DISALLOW_COPY_AND_ASSIGN(Surface);
@@ -81,8 +82,7 @@ private:
     bool resetSwapChain(int backbufferWidth, int backbufferHeight);
     bool swapRect(EGLint x, EGLint y, EGLint width, EGLint height);
 
-    EGLNativeWindowType mWindow;
-
+    EGLNativeWindowType mWindow;            // Window that the surface is created for.
     bool mWindowSubclassed;        // Indicates whether we successfully subclassed mWindow for WM_RESIZE hooking
     const egl::Config *mConfig;    // EGL config surface was created with
     EGLint mHeight;                // Height of surface
@@ -102,6 +102,7 @@ private:
 //  EGLenum vgColorSpace;          // Color space for OpenVG
     EGLint mSwapInterval;
     EGLint mPostSubBufferSupported;
+    EGLint mFixedSize;
     
     bool mSwapIntervalDirty;
     gl::Texture2D *mTexture;
