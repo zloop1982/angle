@@ -13,6 +13,8 @@
 
 #include <algorithm>
 
+#include <algorithm>
+
 #include "libEGL/Surface.h"
 
 #include "common/debug.h"

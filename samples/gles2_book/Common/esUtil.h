@@ -94,7 +94,7 @@ typedef struct
 //  Extensions
 //
 
-#if 0
+//#if 0
 // TODO: figure out why these won't compile with GL_GLEXT_PROTOTYPES preprocessor directive
 extern PFNEGLCREATEIMAGEKHRPROC eglCreateImageKHR;
 extern PFNEGLDESTROYIMAGEKHRPROC eglDestroyImageKHR;
@@ -110,7 +110,7 @@ extern PFNGLISFENCENVPROC glIsFenceNV;
 extern PFNGLFINISHFENCENVPROC glFinishFenceNV;
 extern PFNGLSETFENCENVPROC glSetFenceNV;
 extern PFNGLTESTFENCENVPROC glTestFenceNV;
-#endif // #if !defined (ANGLE_PLATFORM_WINRT)
+//#endif // #if !defined (ANGLE_PLATFORM_WINRT)
 
 ///
 //  Public Functions

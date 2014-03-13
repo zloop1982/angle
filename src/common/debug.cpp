@@ -10,8 +10,6 @@
 #include <stdarg.h>
 
 #if defined(ANGLE_ENABLE_PERF)
-typedef DWORD D3DCOLOR;
-#else
 #include <d3d9.h>
 #endif
 

@@ -38,7 +38,7 @@
 #include <D3D11_1.h>
 #include <dxgi.h>
 #if !defined(ANGLE_PLATFORM_WP8)
-#include <D3Dcompiler.h>
+#include <d3dcompiler.h>
 #endif // #if !defined(ANGLE_PLATFORM_WP8)
 #else
 #include <d3d9.h>

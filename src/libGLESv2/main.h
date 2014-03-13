@@ -11,7 +11,6 @@
 
 #include "common/debug.h"
 
-
 namespace egl
 {
 class Display;
