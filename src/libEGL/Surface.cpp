@@ -350,8 +350,8 @@ bool Surface::checkForOutOfDateSwapChain()
         clientWidth = client.right - client.left;
         clientHeight = client.bottom - client.top;
         sizeDirty = clientWidth != getWidth() || clientHeight != getHeight();
-#endif // #if defined(ANGLE_PLATFORM_WINRT)
     }
+#endif // #if defined(ANGLE_PLATFORM_WINRT)
 
 
     bool wasDirty = (mSwapIntervalDirty || sizeDirty);
