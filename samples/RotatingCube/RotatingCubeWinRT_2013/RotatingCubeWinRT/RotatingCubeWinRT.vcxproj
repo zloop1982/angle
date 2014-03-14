@@ -144,11 +144,21 @@
     <None Include="RotatingCubeWinRT_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\libEGL\libEGL_winrt_2013.vcxproj">
-      <Project>{cd5990d7-2d62-490e-8436-ccd388893139}</Project>
+    <ProjectReference Include="..\..\..\..\projects\src\libEGL_winrt.vcxproj">
+      <Project>{e30d671b-3520-4753-9677-41687bf9e435}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\src\libGLESv2\libGLESv2_winrt_2013.vcxproj">
-      <Project>{5c1b40b9-6262-44a0-97a6-a8b9f032e6e0}</Project>
+    <ProjectReference Include="..\..\..\..\projects\src\libGLESv2_winrt.vcxproj">
+      <Project>{06fe7422-1550-4c34-b10e-8398d69dfaf0}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
