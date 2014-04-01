@@ -8,10 +8,12 @@
         'component%': 'static_library',
         'angle_build_tests%': '1',
         'angle_build_samples%': '1',
+        'angle_path%': '<(DEPTH)',
         # angle_code is set to 1 for the core ANGLE targets defined in src/build_angle.gyp.
         # angle_code is set to 0 for test code, sample code, and third party code.
         # When angle_code is 1, we build with additional warning flags on Mac and Linux.
         'angle_code%': 0,
+        'release_symbols%': 'true',
         'windows_sdk_path%': 'C:/Program Files (x86)/Windows Kits/8.0',
         'gcc_or_clang_warnings':
         [
@@ -93,7 +95,6 @@
                     'VCLinkerTool':
                     {
                         'FixedBaseAddress': '1',
-                        'GenerateDebugInformation': 'true',
                         'ImportLibrary': '$(OutDir)\\lib\\$(TargetName).lib',
                         'MapFileName': '$(OutDir)\\$(TargetName).map',
                         # Most of the executables we'll ever create are tests
@@ -143,6 +144,7 @@
                     },
                     'VCLinkerTool':
                     {
+                        'GenerateDebugInformation': 'true',
                         'LinkIncremental': '2',
                     },
                 },
@@ -166,6 +168,7 @@
                     },
                     'VCLinkerTool':
                     {
+                        'GenerateDebugInformation': '<(release_symbols)',
                         'LinkIncremental': '1',
                     },
                 },
@@ -209,8 +212,7 @@
                             '<(windows_sdk_path)/Lib/win8/um/x64',
                         ],
                     },
-                    'VCLibrarianTool':
-                    {
+                    'VCLibrarianTool': {
                         'AdditionalLibraryDirectories':
                         [
                             '<(windows_sdk_path)/Lib/win8/um/x64',
@@ -257,10 +259,7 @@
         {
             'target_defaults':
             {
-                'msvs_cygwin_dirs':
-                [
-                    '../third_party/cygwin'
-                ],
+                'msvs_cygwin_dirs': ['../third_party/cygwin'],
             },
         }],
         ['OS != "win" and OS != "mac"',

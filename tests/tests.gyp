@@ -75,9 +75,9 @@
                 'third_party/googletest/include',
                 'third_party/googlemock/include',
             ],
-            'sources':
+            'includes':
             [
-                '<!@(python <(angle_build_scripts_path)/enumerate_files.py preprocessor_tests -types *.cpp *.h)'
+                'preprocessor_tests/preprocessor_tests.gypi',
             ],
         },
 
@@ -86,7 +86,7 @@
             'type': 'executable',
             'dependencies':
             [
-                '../src/angle.gyp:translator_static',
+                '../src/angle.gyp:translator',
                 'gtest',
                 'gmock',
             ],
@@ -97,10 +97,62 @@
                 'third_party/googletest/include',
                 'third_party/googlemock/include',
             ],
-            'sources':
+            'includes':
             [
-                '<!@(python <(angle_build_scripts_path)/enumerate_files.py compiler_tests -types *.cpp *.h)'
+                'compiler_tests/compiler_tests.gypi',
             ],
         },
+    ],
+
+    'conditions':
+    [
+        ['OS=="win"',
+        {
+            'targets':
+            [
+                {
+                    'target_name': 'angle_tests',
+                    'type': 'executable',
+                    'dependencies':
+                    [
+                        '../src/angle.gyp:libGLESv2',
+                        '../src/angle.gyp:libEGL',
+                        'gtest',
+                        'gmock',
+                    ],
+                    'include_dirs':
+                    [
+                        '../include',
+                        'angle_tests',
+                        'third_party/googletest/include',
+                        'third_party/googlemock/include',
+                    ],
+                    'sources':
+                    [
+                        '<!@(python <(angle_build_scripts_path)/enumerate_files.py angle_tests -types *.cpp *.h *.inl)'
+                    ],
+                },
+                {
+                    'target_name': 'standalone_tests',
+                    'type': 'executable',
+                    'dependencies':
+                    [
+                        'gtest',
+                        'gmock',
+                    ],
+                    'include_dirs':
+                    [
+                        '../include',
+                        'angle_tests',
+                        'third_party/googletest/include',
+                        'third_party/googlemock/include',
+                    ],
+                    'sources':
+                    [
+                        '<!@(python <(angle_build_scripts_path)/enumerate_files.py standalone_tests -types *.cpp *.h)'
+                    ],
+                },
+            ],
+        }],
     ],
 }

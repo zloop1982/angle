@@ -244,9 +244,10 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\src\angle.gyp" />
+    <None Include="..\..\src\compiler\preprocessor\ExpressionParser.y"/>
+    <None Include="..\..\src\compiler\preprocessor\Tokenizer.l"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\compiler\preprocessor\length_limits.h" />
     <ClInclude Include="..\..\src\compiler\preprocessor\Tokenizer.h" />
     <ClInclude Include="..\..\src\compiler\preprocessor\Lexer.h" />
     <ClInclude Include="..\..\src\compiler\preprocessor\Token.h" />

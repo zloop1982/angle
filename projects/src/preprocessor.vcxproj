@@ -46,7 +46,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <MinimalRebuild>false</MinimalRebuild>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WIN32_WINNT=0x0600;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;_DEBUG;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT(&quot;d3dcompiler_46.dll&quot;), TEXT(&quot;d3dcompiler_43.dll&quot;) };%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WIN32_WINNT=0x0600;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;_DEBUG;ANGLE_COMPILE_OPTIMIZATION_LEVEL=D3DCOMPILE_OPTIMIZATION_LEVEL1;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT(&quot;d3dcompiler_46.dll&quot;), TEXT(&quot;d3dcompiler_43.dll&quot;) };%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreadedDebug</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -69,7 +69,7 @@
     <ResourceCompile>
       <AdditionalIncludeDirectories>C:\Program Files (x86)\Windows Kits\8.0\Include\shared;C:\Program Files (x86)\Windows Kits\8.0\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
-      <PreprocessorDefinitions>ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT(&quot;d3dcompiler_46.dll&quot;), TEXT(&quot;d3dcompiler_43.dll&quot;) };%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ANGLE_COMPILE_OPTIMIZATION_LEVEL=D3DCOMPILE_OPTIMIZATION_LEVEL1;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT(&quot;d3dcompiler_46.dll&quot;), TEXT(&quot;d3dcompiler_43.dll&quot;) };%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -82,7 +82,7 @@
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <MinimalRebuild>false</MinimalRebuild>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WIN32_WINNT=0x0600;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;NDEBUG;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT(&quot;d3dcompiler_46.dll&quot;), TEXT(&quot;d3dcompiler_43.dll&quot;) };%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WIN32_WINNT=0x0600;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;NDEBUG;ANGLE_COMPILE_OPTIMIZATION_LEVEL=D3DCOMPILE_OPTIMIZATION_LEVEL1;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT(&quot;d3dcompiler_46.dll&quot;), TEXT(&quot;d3dcompiler_43.dll&quot;) };%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <RuntimeLibrary>MultiThreaded</RuntimeLibrary>
       <RuntimeTypeInfo>false</RuntimeTypeInfo>
       <TreatWarningAsError>true</TreatWarningAsError>
@@ -96,7 +96,7 @@
       <AdditionalDependencies>kernel32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;user32.lib;uuid.lib;odbc32.lib;odbccp32.lib;delayimp.lib</AdditionalDependencies>
       <AdditionalLibraryDirectories>C:/Program Files (x86)/Windows Kits/8.0/Lib/win8/um/x86;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <FixedBaseAddress>false</FixedBaseAddress>
-      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <GenerateDebugInformation>false</GenerateDebugInformation>
       <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <MapFileName>$(OutDir)$(TargetName).map</MapFileName>
       <SubSystem>Console</SubSystem>
@@ -105,14 +105,15 @@
     <ResourceCompile>
       <AdditionalIncludeDirectories>C:\Program Files (x86)\Windows Kits\8.0\Include\shared;C:\Program Files (x86)\Windows Kits\8.0\Include\um;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <Culture>0x0409</Culture>
-      <PreprocessorDefinitions>ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT(&quot;d3dcompiler_46.dll&quot;), TEXT(&quot;d3dcompiler_43.dll&quot;) };%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>ANGLE_COMPILE_OPTIMIZATION_LEVEL=D3DCOMPILE_OPTIMIZATION_LEVEL1;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT(&quot;d3dcompiler_46.dll&quot;), TEXT(&quot;d3dcompiler_43.dll&quot;) };%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
     <None Include="..\..\src\angle.gyp"/>
+    <None Include="..\..\src\compiler\preprocessor\ExpressionParser.y"/>
+    <None Include="..\..\src\compiler\preprocessor\Tokenizer.l"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\..\src\compiler\preprocessor\length_limits.h"/>
     <ClInclude Include="..\..\src\compiler\preprocessor\Tokenizer.h"/>
     <ClInclude Include="..\..\src\compiler\preprocessor\Lexer.h"/>
     <ClInclude Include="..\..\src\compiler\preprocessor\Token.h"/>

@@ -50,11 +50,17 @@ enum TOperator {
     EOpPreDecrement,
 
     EOpConvIntToBool,
+    EOpConvUIntToBool,
     EOpConvFloatToBool,
     EOpConvBoolToFloat,
     EOpConvIntToFloat,
+    EOpConvUIntToFloat,
     EOpConvFloatToInt,
     EOpConvBoolToInt,
+    EOpConvUIntToInt,
+    EOpConvIntToUInt,
+    EOpConvFloatToUInt,
+    EOpConvBoolToUInt,
 
     //
     // binary operations
@@ -86,6 +92,7 @@ enum TOperator {
     EOpIndexDirect,
     EOpIndexIndirect,
     EOpIndexDirectStruct,
+    EOpIndexDirectInterfaceBlock,
 
     EOpVectorSwizzle,
 
@@ -155,6 +162,7 @@ enum TOperator {
     //
 
     EOpConstructInt,
+    EOpConstructUInt,
     EOpConstructBool,
     EOpConstructFloat,
     EOpConstructVec2,
@@ -166,6 +174,9 @@ enum TOperator {
     EOpConstructIVec2,
     EOpConstructIVec3,
     EOpConstructIVec4,
+    EOpConstructUVec2,
+    EOpConstructUVec3,
+    EOpConstructUVec4,
     EOpConstructMat2,
     EOpConstructMat3,
     EOpConstructMat4,
@@ -199,7 +210,6 @@ class TIntermTyped;
 class TIntermSymbol;
 class TIntermLoop;
 class TInfoSink;
-class TIntermRaw;
 
 //
 // Base class for the tree nodes
@@ -227,7 +237,6 @@ public:
     virtual TIntermSelection* getAsSelectionNode() { return 0; }
     virtual TIntermSymbol* getAsSymbolNode() { return 0; }
     virtual TIntermLoop* getAsLoopNode() { return 0; }
-    virtual TIntermRaw* getAsRawNode() { return 0; }
 
     // Replace a child node. Return true if |original| is a child
     // node and it is replaced; otherwise, return false.
@@ -263,18 +272,21 @@ public:
     TBasicType getBasicType() const { return type.getBasicType(); }
     TQualifier getQualifier() const { return type.getQualifier(); }
     TPrecision getPrecision() const { return type.getPrecision(); }
+    int getCols() const { return type.getCols(); }
+    int getRows() const { return type.getRows(); }
     int getNominalSize() const { return type.getNominalSize(); }
+    int getSecondarySize() const { return type.getSecondarySize(); }
     
+    bool isInterfaceBlock() const { return type.isInterfaceBlock(); }
     bool isMatrix() const { return type.isMatrix(); }
     bool isArray()  const { return type.isArray(); }
     bool isVector() const { return type.isVector(); }
     bool isScalar() const { return type.isScalar(); }
+    bool isScalarInt() const { return type.isScalarInt(); }
     const char* getBasicString() const { return type.getBasicString(); }
     const char* getQualifierString() const { return type.getQualifierString(); }
     TString getCompleteString() const { return type.getCompleteString(); }
 
-    int totalRegisterCount() const { return type.totalRegisterCount(); }
-    int elementRegisterCount() const { return type.elementRegisterCount(); }
     int getArraySize() const { return type.getArraySize(); }
 
 protected:
@@ -374,28 +386,6 @@ protected:
     TString symbol;
 };
 
-// A Raw node stores raw code, that the translator will insert verbatim
-// into the output stream. Useful for transformation operations that make
-// complex code that might not fit naturally into the GLSL model.
-class TIntermRaw : public TIntermTyped {
-public:
-    TIntermRaw(const TType &t, const TString &rawTextIn)
-        : TIntermTyped(t), rawText(rawTextIn)
-    {}
-
-    virtual bool hasSideEffects() const { return false; }
-
-    TString getRawText() const { return rawText; }
-
-    virtual void traverse(TIntermTraverser*);
-
-    virtual TIntermRaw* getAsRawNode() { return this; }
-    virtual bool replaceChildNode(TIntermNode *, TIntermNode *) { return false; }
-
-protected:
-    TString rawText;
-};
-
 class TIntermConstantUnion : public TIntermTyped {
 public:
     TIntermConstantUnion(ConstantUnion *unionPointer, const TType& t) : TIntermTyped(t), unionArrayPointer(unionPointer) { }
@@ -405,6 +395,7 @@ public:
     ConstantUnion* getUnionArrayPointer() const { return unionArrayPointer; }
     
     int getIConst(size_t index) const { return unionArrayPointer ? unionArrayPointer[index].getIConst() : 0; }
+    unsigned int getUConst(size_t index) const { return unionArrayPointer ? unionArrayPointer[index].getUConst() : 0; }
     float getFConst(size_t index) const { return unionArrayPointer ? unionArrayPointer[index].getFConst() : 0.0f; }
     bool getBConst(size_t index) const { return unionArrayPointer ? unionArrayPointer[index].getBConst() : false; }
 
@@ -607,7 +598,6 @@ public:
     virtual ~TIntermTraverser() {}
 
     virtual void visitSymbol(TIntermSymbol*) {}
-    virtual void visitRaw(TIntermRaw*) {}
     virtual void visitConstantUnion(TIntermConstantUnion*) {}
     virtual bool visitBinary(Visit visit, TIntermBinary*) {return true;}
     virtual bool visitUnary(Visit visit, TIntermUnary*) {return true;}

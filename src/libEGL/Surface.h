@@ -37,7 +37,7 @@ class Surface
     Surface(Display *display, const egl::Config *config, EGLNativeWindowType window, EGLint fixedSize, EGLint width, EGLint height, EGLint postSubBufferSupported);
     Surface(Display *display, const egl::Config *config, HANDLE shareHandle, EGLint width, EGLint height, EGLenum textureFormat, EGLenum textureTarget);
 
-    ~Surface();
+    virtual ~Surface();
 
     bool initialize();
     void release();

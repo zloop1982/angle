@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2002-2013 The ANGLE Project Authors. All rights reserved.
+// Copyright (c) 2002-2014 The ANGLE Project Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -15,6 +15,7 @@
 #include "compiler/translator/ShHandle.h"
 #include "compiler/translator/UnfoldShortCircuitAST.h"
 #include "compiler/translator/ValidateLimitations.h"
+#include "compiler/translator/ValidateOutputs.h"
 #include "compiler/translator/VariablePacker.h"
 #include "compiler/translator/depgraph/DependencyGraph.h"
 #include "compiler/translator/depgraph/DependencyGraphOutput.h"
@@ -22,9 +23,24 @@
 #include "compiler/translator/timing/RestrictVertexShaderTiming.h"
 #include "third_party/compiler/ArrayBoundsClamper.h"
 
-bool isWebGLBasedSpec(ShShaderSpec spec)
+bool IsWebGLBasedSpec(ShShaderSpec spec)
 {
      return spec == SH_WEBGL_SPEC || spec == SH_CSS_SHADERS_SPEC;
+}
+
+size_t GetGlobalMaxTokenSize()
+{
+    TParseContext *parseContext = GetGlobalParseContext();
+    // WebGL defines a max token legnth of 256, while ES2 leaves max token
+    // size undefined. ES3 defines a max size of 1024 characters.
+    if (IsWebGLBasedSpec(parseContext->shaderSpec))
+    {
+        return 256;
+    }
+    else
+    {
+        return 1024;
+    }
 }
 
 namespace {
@@ -95,6 +111,7 @@ TCompiler::~TCompiler()
 
 bool TCompiler::Init(const ShBuiltInResources& resources)
 {
+    shaderVersion = 100;
     maxUniformVectors = (shaderType == SH_VERTEX_SHADER) ?
         resources.MaxVertexUniformVectors :
         resources.MaxFragmentUniformVectors;
@@ -128,7 +145,7 @@ bool TCompiler::compile(const char* const shaderStrings[],
         return true;
 
     // If compiling for WebGL, validate loop and indexing as well.
-    if (isWebGLBasedSpec(shaderSpec))
+    if (IsWebGLBasedSpec(shaderSpec))
         compileOptions |= SH_VALIDATE_LOOP_INDEXING;
 
     // First string is path of source file if flag is set. The actual source follows.
@@ -155,6 +172,9 @@ bool TCompiler::compile(const char* const shaderStrings[],
     bool success =
         (PaParseStrings(numStrings - firstSource, &shaderStrings[firstSource], NULL, &parseContext) == 0) &&
         (parseContext.treeRoot != NULL);
+
+    shaderVersion = parseContext.getShaderVersion();
+
     if (success)
     {
         TIntermNode* root = parseContext.treeRoot;
@@ -162,6 +182,9 @@ bool TCompiler::compile(const char* const shaderStrings[],
 
         if (success)
             success = detectCallDepth(root, infoSink, (compileOptions & SH_LIMIT_CALL_STACK_DEPTH) != 0);
+
+        if (success && shaderVersion == 300 && shaderType == SH_FRAGMENT_SHADER)
+            success = validateOutputs(root);
 
         if (success && (compileOptions & SH_VALIDATE_LOOP_INDEXING))
             success = validateLimitations(root);
@@ -247,23 +270,25 @@ bool TCompiler::InitBuiltInSymbolTable(const ShBuiltInResources &resources)
     compileResources = resources;
 
     assert(symbolTable.isEmpty());
-    symbolTable.push();
+    symbolTable.push();   // COMMON_BUILTINS
+    symbolTable.push();   // ESSL1_BUILTINS
+    symbolTable.push();   // ESSL3_BUILTINS
 
     TPublicType integer;
     integer.type = EbtInt;
-    integer.size = 1;
-    integer.matrix = false;
+    integer.primarySize = 1;
+    integer.secondarySize = 1;
     integer.array = false;
 
     TPublicType floatingPoint;
     floatingPoint.type = EbtFloat;
-    floatingPoint.size = 1;
-    floatingPoint.matrix = false;
+    floatingPoint.primarySize = 1;
+    floatingPoint.secondarySize = 1;
     floatingPoint.array = false;
 
     TPublicType sampler;
-    sampler.size = 1;
-    sampler.matrix = false;
+    sampler.primarySize = 1;
+    sampler.secondarySize = 1;
     sampler.array = false;
 
     switch(shaderType)
@@ -336,6 +361,13 @@ bool TCompiler::detectCallDepth(TIntermNode* root, TInfoSink& infoSink, bool lim
     }
 }
 
+bool TCompiler::validateOutputs(TIntermNode* root)
+{
+    ValidateOutputs validateOutputs(infoSink.info, compileResources.MaxDrawBuffers);
+    root->traverse(&validateOutputs);
+    return (validateOutputs.numErrors() == 0);
+}
+
 void TCompiler::rewriteCSSShader(TIntermNode* root)
 {
     RenameFunction renamer("main(", "css_main(");
@@ -363,14 +395,14 @@ bool TCompiler::enforceTimingRestrictions(TIntermNode* root, bool outputGraph)
 
         // Output any errors first.
         bool success = enforceFragmentShaderTimingRestrictions(graph);
-        
+
         // Then, output the dependency graph.
         if (outputGraph)
         {
             TDependencyGraphOutput output(infoSink.info);
             output.outputAllSpanningTrees(graph);
         }
-        
+
         return success;
     }
     else

@@ -25,14 +25,11 @@
 #error Unsupported platform.
 #endif
 
-
-
 #if defined(ANGLE_OS_WIN)
 #define STRICT
 #define VC_EXTRALEAN 1
 #include <windows.h>
 #include "common\winrtplatform.h"
-
 #elif defined(ANGLE_OS_POSIX)
 #include <pthread.h>
 #include <semaphore.h>
@@ -71,7 +68,7 @@ inline void* OS_GetTLSValue(OS_TLSIndex nIndex)
     return TlsGetValue(nIndex);
 #elif defined(ANGLE_OS_POSIX)
     return pthread_getspecific(nIndex);
-#endif  // WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_APP)
+#endif  // ANGLE_OS_WIN
 }
 
 #endif // __OSINCLUDE_H

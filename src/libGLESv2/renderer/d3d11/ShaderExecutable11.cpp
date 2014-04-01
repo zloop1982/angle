@@ -10,7 +10,7 @@
 
 #include "libGLESv2/renderer/d3d11/ShaderExecutable11.h"
 
-#include "common/debug.h"
+#include "libGLESv2/renderer/d3d11/Renderer11.h"
 
 namespace rx
 {
@@ -21,8 +21,6 @@ ShaderExecutable11::ShaderExecutable11(const void *function, size_t length, ID3D
     mPixelExecutable = executable;
     mVertexExecutable = NULL;
     mGeometryExecutable = NULL;
-
-    mConstantBuffer = NULL;
 }
 
 ShaderExecutable11::ShaderExecutable11(const void *function, size_t length, ID3D11VertexShader *executable)
@@ -31,8 +29,6 @@ ShaderExecutable11::ShaderExecutable11(const void *function, size_t length, ID3D
     mVertexExecutable = executable;
     mPixelExecutable = NULL;
     mGeometryExecutable = NULL;
-
-    mConstantBuffer = NULL;
 }
 
 ShaderExecutable11::ShaderExecutable11(const void *function, size_t length, ID3D11GeometryShader *executable)
@@ -41,29 +37,13 @@ ShaderExecutable11::ShaderExecutable11(const void *function, size_t length, ID3D
     mGeometryExecutable = executable;
     mVertexExecutable = NULL;
     mPixelExecutable = NULL;
-
-    mConstantBuffer = NULL;
 }
 
 ShaderExecutable11::~ShaderExecutable11()
 {
-    if (mVertexExecutable)
-    {
-        mVertexExecutable->Release();
-    }
-    if (mPixelExecutable)
-    {
-        mPixelExecutable->Release();
-    }
-    if (mGeometryExecutable)
-    {
-        mGeometryExecutable->Release();
-    }
-    
-    if (mConstantBuffer)
-    {
-        mConstantBuffer->Release();
-    }
+    SafeRelease(mVertexExecutable);
+    SafeRelease(mPixelExecutable);
+    SafeRelease(mGeometryExecutable);
 }
 
 ShaderExecutable11 *ShaderExecutable11::makeShaderExecutable11(ShaderExecutable *executable)
@@ -87,23 +67,36 @@ ID3D11GeometryShader *ShaderExecutable11::getGeometryShader() const
     return mGeometryExecutable;
 }
 
-ID3D11Buffer *ShaderExecutable11::getConstantBuffer(ID3D11Device *device, unsigned int registerCount)
+UniformStorage11::UniformStorage11(Renderer11 *renderer, size_t initialSize)
+    : UniformStorage(initialSize),
+      mConstantBuffer(NULL)
 {
-    if (!mConstantBuffer && registerCount > 0)
+    ID3D11Device *d3d11Device = renderer->getDevice();
+
+    if (initialSize > 0)
     {
         D3D11_BUFFER_DESC constantBufferDescription = {0};
-        constantBufferDescription.ByteWidth = registerCount * sizeof(float[4]);
+        constantBufferDescription.ByteWidth = initialSize;
         constantBufferDescription.Usage = D3D11_USAGE_DYNAMIC;
         constantBufferDescription.BindFlags = D3D11_BIND_CONSTANT_BUFFER;
         constantBufferDescription.CPUAccessFlags = D3D11_CPU_ACCESS_WRITE;
         constantBufferDescription.MiscFlags = 0;
         constantBufferDescription.StructureByteStride = 0;
 
-        HRESULT result = device->CreateBuffer(&constantBufferDescription, NULL, &mConstantBuffer);
+        HRESULT result = d3d11Device->CreateBuffer(&constantBufferDescription, NULL, &mConstantBuffer);
         ASSERT(SUCCEEDED(result));
     }
+}
 
-    return mConstantBuffer;
+UniformStorage11::~UniformStorage11()
+{
+    SafeRelease(mConstantBuffer);
+}
+
+const UniformStorage11 *UniformStorage11::makeUniformStorage11(const UniformStorage *uniformStorage)
+{
+    ASSERT(HAS_DYNAMIC_TYPE(const UniformStorage11*, uniformStorage));
+    return static_cast<const UniformStorage11*>(uniformStorage);
 }
 
 }

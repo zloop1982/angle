@@ -145,6 +145,8 @@ Program::Program(rx::Renderer *renderer, ResourceManager *manager, GLuint handle
     mLinked = false;
     mRefCount = 0;
     mRenderer = renderer;
+
+    resetUniformBlockBindings();
 }
 
 Program::~Program()
@@ -247,6 +249,7 @@ bool Program::link()
     unlink(false);
 
     mInfoLog.reset();
+    resetUniformBlockBindings();
 
     mProgramBinary.set(new ProgramBinary(mRenderer));
     mLinked = mProgramBinary->link(mInfoLog, mAttributeBindings, mFragmentShader, mVertexShader);
@@ -523,6 +526,50 @@ bool Program::isValidated() const
     else
     {
         return false;
+    }
+}
+
+GLint Program::getActiveUniformBlockCount()
+{
+    ProgramBinary *programBinary = getProgramBinary();
+    if (programBinary)
+    {
+        return static_cast<GLint>(programBinary->getActiveUniformBlockCount());
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+GLint Program::getActiveUniformBlockMaxLength()
+{
+    ProgramBinary *programBinary = getProgramBinary();
+    if (programBinary)
+    {
+        return static_cast<GLint>(programBinary->getActiveUniformBlockMaxLength());
+    }
+    else
+    {
+        return 0;
+    }
+}
+
+void Program::bindUniformBlock(GLuint uniformBlockIndex, GLuint uniformBlockBinding)
+{
+    mUniformBlockBindings[uniformBlockIndex] = uniformBlockBinding;
+}
+
+GLuint Program::getUniformBlockBinding(GLuint uniformBlockIndex) const
+{
+    return mUniformBlockBindings[uniformBlockIndex];
+}
+
+void Program::resetUniformBlockBindings()
+{
+    for (unsigned int blockId = 0; blockId < IMPLEMENTATION_MAX_COMBINED_SHADER_UNIFORM_BUFFERS; blockId++)
+    {
+        mUniformBlockBindings[blockId] = 0;
     }
 }
 

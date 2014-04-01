@@ -5,7 +5,6 @@
 //
 
 #include "compiler/translator/osinclude.h"
-
 //
 // This file contains contains the window's specific functions
 //

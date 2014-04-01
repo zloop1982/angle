@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2002-2010 The ANGLE Project Authors. All rights reserved.
+// Copyright (c) 2002-2013 The ANGLE Project Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -768,7 +768,7 @@ EGLBoolean __stdcall eglSwapInterval(EGLDisplay dpy, EGLint interval)
         {
             return egl::error(EGL_BAD_SURFACE, EGL_FALSE);
         }
-        
+       
         draw_surface->setSwapInterval(interval);
 
         return egl::success(EGL_TRUE);
@@ -846,7 +846,7 @@ EGLContext __stdcall eglCreateContext(EGLDisplay dpy, EGLConfig config, EGLConte
             return EGL_NO_CONTEXT;
         }
 
-        EGLContext context = display->createContext(config, static_cast<gl::Context*>(share_context), reset_notification, robust_access);
+        EGLContext context = display->createContext(config, client_version, static_cast<gl::Context*>(share_context), reset_notification, robust_access);
 
         if (context)
             return egl::success(context);

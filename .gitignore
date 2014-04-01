@@ -10,12 +10,16 @@ Release_x64
 *.sdf
 *.ncb
 *.suo
+src/*.sln
 src/*.vcxproj
 src/*.vcxproj.filters
+samples/*.sln
 samples/*.vcxproj
 samples/*.vcxproj.filters
+tests/*.sln
 tests/*.vcxproj
 tests/*.vcxproj.filters
+build/*.sln
 build/*.vcxproj
 build/*.vcxproj.filters
 *.vcxproj.user

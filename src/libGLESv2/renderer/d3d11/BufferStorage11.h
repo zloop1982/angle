@@ -1,5 +1,5 @@
 //
-// Copyright (c) 2013 The ANGLE Project Authors. All rights reserved.
+// Copyright (c) 2013-2014 The ANGLE Project Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -19,9 +19,14 @@ class DirectBufferStorage11;
 
 enum BufferUsage
 {
-    BUFFER_USAGE_VERTEX,
+    BUFFER_USAGE_STAGING,
+    BUFFER_USAGE_VERTEX_OR_TRANSFORM_FEEDBACK,
     BUFFER_USAGE_INDEX,
+    BUFFER_USAGE_PIXEL_UNPACK,
+    BUFFER_USAGE_UNIFORM,
 };
+
+typedef size_t DataRevision;
 
 class BufferStorage11 : public BufferStorage
 {
@@ -36,34 +41,46 @@ class BufferStorage11 : public BufferStorage
     virtual void copyData(BufferStorage* sourceStorage, unsigned int size,
                           unsigned int sourceOffset, unsigned int destOffset);
     virtual void clear();
+    virtual void markTransformFeedbackUsage();
     virtual unsigned int getSize() const;
     virtual bool supportsDirectBinding() const;
 
     ID3D11Buffer *getBuffer(BufferUsage usage);
+    ID3D11ShaderResourceView *getSRV(DXGI_FORMAT srvFormat);
+
+    virtual bool isMapped() const;
+    virtual void *map(GLbitfield access);
+    virtual void unmap();
 
   private:
     Renderer11 *mRenderer;
-
-    ID3D11Buffer *mStagingBuffer;
-    unsigned int mStagingBufferSize;
+    bool mIsMapped;
 
     std::map<BufferUsage, DirectBufferStorage11*> mDirectBuffers;
 
-    unsigned int mSize;
+    typedef std::pair<ID3D11Buffer *, ID3D11ShaderResourceView *> BufferSRVPair;
+    std::map<DXGI_FORMAT, BufferSRVPair> mBufferResourceViews;
 
-    void *mResolvedData;
-    unsigned int mResolvedDataSize;
-    bool mResolvedDataValid;
+    std::vector<unsigned char> mResolvedData;
+    DataRevision mResolvedDataRevision;
 
     unsigned int mReadUsageCount;
     unsigned int mWriteUsageCount;
 
+    size_t mSize;
+
     void markBufferUsage();
+    DirectBufferStorage11 *getStagingBuffer();
+
+    DirectBufferStorage11 *getStorage(BufferUsage usage);
+    DirectBufferStorage11 *getLatestStorage() const;
 };
 
 // Each instance of BufferStorageD3DBuffer11 is specialized for a class of D3D binding points
-// - vertex buffers
+// - vertex/transform feedback buffers
 // - index buffers
+// - pixel unpack buffers
+// - uniform buffers
 class DirectBufferStorage11
 {
   public:
@@ -71,18 +88,22 @@ class DirectBufferStorage11
     ~DirectBufferStorage11();
 
     BufferUsage getUsage() const;
-    bool updateFromStagingBuffer(ID3D11Buffer *stagingBuffer, size_t size, size_t offset);
+    ID3D11Buffer *getD3DBuffer() const { return mDirectBuffer; }
+    size_t getSize() const {return mBufferSize; }
 
-    ID3D11Buffer *getD3DBuffer() { return mDirectBuffer; }
-    bool isDirty() const { return mDirty; }
-    void markDirty() { mDirty = true; }
+    bool copyFromStorage(DirectBufferStorage11 *source, size_t sourceOffset, size_t size, size_t destOffset);
+    void resize(size_t size, bool preserveData);
+
+    DataRevision getDataRevision() const { return mRevision; }
+    void setDataRevision(DataRevision rev) { mRevision = rev; }
 
   private:
     Renderer11 *mRenderer;
     const BufferUsage mUsage;
+    DataRevision mRevision;
+
     ID3D11Buffer *mDirectBuffer;
     size_t mBufferSize;
-    bool mDirty;
 
     static void fillBufferDesc(D3D11_BUFFER_DESC* bufferDesc, Renderer *renderer, BufferUsage usage, unsigned int bufferSize);
 };

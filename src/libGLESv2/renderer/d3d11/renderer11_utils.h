@@ -12,6 +12,9 @@
 
 #include "libGLESv2/angletypes.h"
 
+namespace rx
+{
+
 namespace gl_d3d11
 {
 
@@ -31,6 +34,8 @@ D3D11_TEXTURE_ADDRESS_MODE ConvertTextureWrap(GLenum wrap);
 FLOAT ConvertMinLOD(GLenum minFilter, unsigned int lodOffset);
 FLOAT ConvertMaxLOD(GLenum minFilter, unsigned int lodOffset);
 
+D3D11_QUERY ConvertQueryType(GLenum queryType);
+
 DXGI_FORMAT ConvertRenderbufferFormat(GLenum format);
 DXGI_FORMAT ConvertTextureFormat(GLenum format);
 }
@@ -48,6 +53,10 @@ GLenum ConvertTextureInternalFormat(DXGI_FORMAT format);
 namespace d3d11
 {
 
+void GenerateInitialTextureData(GLint internalFormat, GLuint clientVersion, GLuint width, GLuint height, GLuint depth,
+                                GLuint mipLevels, std::vector<D3D11_SUBRESOURCE_DATA> *outSubresourceData,
+                                std::vector< std::vector<BYTE> > *outData);
+
 struct PositionTexCoordVertex
 {
     float x, y;
@@ -55,13 +64,34 @@ struct PositionTexCoordVertex
 };
 void SetPositionTexCoordVertex(PositionTexCoordVertex* vertex, float x, float y, float u, float v);
 
+struct PositionLayerTexCoord3DVertex
+{
+    float x, y;
+    unsigned int l;
+    float u, v, s;
+};
+void SetPositionLayerTexCoord3DVertex(PositionLayerTexCoord3DVertex* vertex, float x, float y,
+                                      unsigned int layer, float u, float v, float s);
+
+template <typename T>
 struct PositionDepthColorVertex
 {
     float x, y, z;
-    float r, g, b, a;
+    T r, g, b, a;
 };
-void SetPositionDepthColorVertex(PositionDepthColorVertex* vertex, float x, float y, float z,
-                                 const gl::Color &color);
+
+template <typename T>
+void SetPositionDepthColorVertex(PositionDepthColorVertex<T>* vertex, float x, float y, float z,
+                                 const gl::Color<T> &color)
+{
+    vertex->x = x;
+    vertex->y = y;
+    vertex->z = z;
+    vertex->r = color.red;
+    vertex->g = color.green;
+    vertex->b = color.blue;
+    vertex->a = color.alpha;
+}
 
 size_t ComputePixelSizeBits(DXGI_FORMAT format);
 size_t ComputeBlockSizeBits(DXGI_FORMAT format);
@@ -75,19 +105,80 @@ DXGI_FORMAT GetDepthShaderResourceFormat(DXGI_FORMAT format);
 
 HRESULT SetDebugName(ID3D11DeviceChild *resource, const char *name);
 
+template <typename outType>
+outType* DynamicCastComObject(IUnknown* object)
+{
+    outType *outObject = NULL;
+    HRESULT result = object->QueryInterface(__uuidof(outType), reinterpret_cast<void**>(&outObject));
+    if (SUCCEEDED(result))
+    {
+        return outObject;
+    }
+    else
+    {
+        SafeRelease(outObject);
+        return NULL;
+    }
+}
+
 inline bool isDeviceLostError(HRESULT errorCode)
 {
     switch (errorCode)
     {
-      case DXGI_ERROR_DEVICE_HUNG:
-      case DXGI_ERROR_DEVICE_REMOVED:
-      case DXGI_ERROR_DEVICE_RESET:
-      case DXGI_ERROR_DRIVER_INTERNAL_ERROR:
-      case DXGI_ERROR_NOT_CURRENTLY_AVAILABLE:
+        case DXGI_ERROR_DEVICE_HUNG:
+        case DXGI_ERROR_DEVICE_REMOVED:
+        case DXGI_ERROR_DEVICE_RESET:
+        case DXGI_ERROR_DRIVER_INTERNAL_ERROR:
+        case DXGI_ERROR_NOT_CURRENTLY_AVAILABLE:
         return true;
-      default:
+        default:
         return false;
     }
+}
+
+template <unsigned int N>
+inline ID3D11VertexShader *CompileVS(ID3D11Device *device, const BYTE (&byteCode)[N], const char *name)
+{
+    ID3D11VertexShader *vs = NULL;
+    HRESULT result = device->CreateVertexShader(byteCode, N, NULL, &vs);
+    ASSERT(SUCCEEDED(result));
+    SetDebugName(vs, name);
+    return vs;
+}
+
+template <unsigned int N>
+inline ID3D11GeometryShader *CompileGS(ID3D11Device *device, const BYTE (&byteCode)[N], const char *name)
+{
+    ID3D11GeometryShader *gs = NULL;
+    HRESULT result = device->CreateGeometryShader(byteCode, N, NULL, &gs);
+    ASSERT(SUCCEEDED(result));
+    SetDebugName(gs, name);
+    return gs;
+}
+
+template <unsigned int N>
+inline ID3D11PixelShader *CompilePS(ID3D11Device *device, const BYTE (&byteCode)[N], const char *name)
+{
+    ID3D11PixelShader *ps = NULL;
+    HRESULT result = device->CreatePixelShader(byteCode, N, NULL, &ps);
+    ASSERT(SUCCEEDED(result));
+    SetDebugName(ps, name);
+    return ps;
+}
+
+// Copy data to small D3D11 buffers, such as for small constant buffers, which use one struct to
+// represent an entire buffer.
+template <class T>
+inline void SetBufferData(ID3D11DeviceContext *context, ID3D11Buffer *constantBuffer, const T &value)
+{
+    D3D11_MAPPED_SUBRESOURCE mappedResource;
+    context->Map(constantBuffer, 0, D3D11_MAP_WRITE_DISCARD, 0, &mappedResource);
+
+    memcpy(mappedResource.pData, &value, sizeof(T));
+
+    context->Unmap(constantBuffer, 0);
+}
+
 }
 
 }
