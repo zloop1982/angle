@@ -13,7 +13,7 @@
 
 namespace rx
 {
-#if !defined(WINAPI_FAMILY) //todo: rewrite this for ARM
+#if !defined(_M_ARM)
     void loadAlphaDataToBGRASSE2(int width, int height, int depth,
         const void *input, unsigned int inputRowPitch, unsigned int inputDepthPitch,
         void *output, unsigned int outputRowPitch, unsigned int outputDepthPitch)
@@ -103,6 +103,5 @@ namespace rx
             }
         }
     }
-#endif
-
+#endif //#if !defined(_M_ARM)
 }
