@@ -3603,6 +3603,9 @@ bool Context::skipDraw(GLenum drawMode)
 {
     if (drawMode == GL_POINTS)
     {
+#if defined(ANGLE_PLATFORM_WINRT)
+        return false;
+#else
         // ProgramBinary assumes non-point rendering if gl_PointSize isn't written,
         // which affects varying interpolation. Since the value of gl_PointSize is
         // undefined when not written, just skip drawing to avoid unexpected results.
@@ -3614,6 +3617,7 @@ bool Context::skipDraw(GLenum drawMode)
 
             return true;
         }
+#endif
     }
     else if (IsTriangleMode(drawMode))
     {

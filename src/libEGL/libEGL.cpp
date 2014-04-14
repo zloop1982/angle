@@ -821,7 +821,7 @@ EGLContext __stdcall eglCreateContext(EGLDisplay dpy, EGLConfig config, EGLConte
             }
         }
 
-        if (client_version != 2)
+        if (client_version != 2 && client_version != 3)
         {
             return egl::error(EGL_BAD_CONFIG, EGL_NO_CONTEXT);
         }
