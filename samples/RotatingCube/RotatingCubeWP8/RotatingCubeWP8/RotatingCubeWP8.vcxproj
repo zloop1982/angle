@@ -148,11 +148,21 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\src\libEGL\libEGL_phone.vcxproj">
-      <Project>{ab42a170-e370-4707-8cc6-1c51349c146f}</Project>
+    <ProjectReference Include="..\..\..\..\projects\src\libEGL_phone.vcxproj">
+      <Project>{d86961e6-4ca4-42b3-838b-3bbfa425957f}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\src\libGLESv2\libGLESv2_phone.vcxproj">
-      <Project>{0592f9c3-d727-4d41-bc9e-e43b269ad877}</Project>
+    <ProjectReference Include="..\..\..\..\projects\src\libGLESv2_phone.vcxproj">
+      <Project>{4bfdea95-3142-4e67-adbd-35c9f4935e21}</Project>
+      <Private>false</Private>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
+      <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
+      <LinkLibraryDependencies>true</LinkLibraryDependencies>
+      <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

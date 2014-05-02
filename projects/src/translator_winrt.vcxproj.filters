@@ -309,9 +309,6 @@
     <ClCompile Include="..\..\src\compiler\translator\glslang_tab.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\src\compiler\translator\Uniform.h">
-      <Filter>src\compiler\translator</Filter>
-    </ClInclude>
     <ClCompile Include="..\..\src\compiler\translator\SearchSymbol.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
@@ -345,9 +342,6 @@
     <ClInclude Include="..\..\src\compiler\translator\LoopInfo.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\src\compiler\translator\Uniform.cpp">
-      <Filter>src\compiler\translator</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\compiler\translator\DetectDiscontinuity.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
@@ -435,5 +429,27 @@
     <ClInclude Include="..\..\include\EGL\eglplatform.h">
       <Filter>include\EGL</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\common\utilities.cpp" />
+    <ClCompile Include="..\..\src\common\mathutil.cpp" />
+    <ClCompile Include="..\..\src\compiler\translator\HLSLLayoutEncoder.cpp" />
+    <ClCompile Include="..\..\src\compiler\translator\ShaderVariable.cpp" />
+    <ClCompile Include="..\..\src\compiler\translator\BlockLayoutEncoder.cpp" />
+    <ClCompile Include="..\..\src\compiler\translator\ValidateOutputs.cpp" />
+    <ClCompile Include="..\..\src\compiler\translator\FlagStd140Structs.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\common\mathutil.h" />
+    <ClInclude Include="..\..\src\common\utilities.h" />
+    <ClInclude Include="..\..\src\compiler\translator\FlagStd140Structs.h" />
+    <ClInclude Include="..\..\src\compiler\translator\length_limits.h" />
+    <ClInclude Include="..\..\src\compiler\translator\ValidateOutputs.h" />
+    <ClInclude Include="..\..\src\compiler\translator\HLSLLayoutEncoder.h" />
+    <ClInclude Include="..\..\src\compiler\translator\ShaderVariable.h" />
+    <ClInclude Include="..\..\src\compiler\translator\BlockLayoutEncoder.h" />
+    <ClInclude Include="..\..\include\GLES3\gl3ext.h" />
+    <ClInclude Include="..\..\include\GLES3\gl3.h" />
+    <ClInclude Include="..\..\include\GLES3\gl3platform.h" />
   </ItemGroup>
 </Project>

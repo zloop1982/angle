@@ -9,16 +9,13 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\angle.gyp"/>
+    <None Include="..\..\src\angle.gyp" />
     <ClCompile Include="..\..\src\compiler\preprocessor\ExpressionParser.cpp">
       <Filter>compiler\preprocessor</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\compiler\preprocessor\Input.cpp">
       <Filter>compiler\preprocessor</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\src\compiler\preprocessor\length_limits.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
     <ClCompile Include="..\..\src\compiler\preprocessor\Tokenizer.cpp">
       <Filter>compiler\preprocessor</Filter>
     </ClCompile>
@@ -88,5 +85,7 @@
     <ClInclude Include="..\..\src\compiler\preprocessor\DirectiveHandlerBase.h">
       <Filter>compiler\preprocessor</Filter>
     </ClInclude>
+    <None Include="..\..\src\compiler\preprocessor\ExpressionParser.y" />
+    <None Include="..\..\src\compiler\preprocessor\Tokenizer.l" />
   </ItemGroup>
 </Project>

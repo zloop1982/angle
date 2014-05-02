@@ -60,9 +60,6 @@
     <ClInclude Include="..\..\src\libEGL\Config.h">
       <Filter>src\libEGL</Filter>
     </ClInclude>
-    <None Include="..\..\src\libEGL\libEGL.def">
-      <Filter>src\libEGL</Filter>
-    </None>
     <ResourceCompile Include="..\..\src\libEGL\libEGL.rc">
       <Filter>src\libEGL</Filter>
     </ResourceCompile>
@@ -114,6 +111,7 @@
     <ClInclude Include="..\..\include\EGL\eglplatform.h">
       <Filter>include\EGL</Filter>
     </ClInclude>
+    <None Include="..\..\src\libEGL\libEGL_winrt.def" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\libEGL\TLSWinrt.cpp" />
@@ -126,6 +124,8 @@
     <ClCompile Include="..\..\src\common\winrtutils.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\common\mathutil.cpp" />
+    <ClCompile Include="..\..\src\common\utilities.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\libEGL\TLSWinrt.h" />
@@ -141,5 +141,11 @@
     <ClInclude Include="..\..\src\common\winrtutils.h">
       <Filter>src\common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\libEGL\main.h" />
+    <ClInclude Include="..\..\src\common\mathutil.h" />
+    <ClInclude Include="..\..\src\common\utilities.h" />
+    <ClInclude Include="..\..\include\GLES3\gl3ext.h" />
+    <ClInclude Include="..\..\include\GLES3\gl3.h" />
+    <ClInclude Include="..\..\include\GLES3\gl3platform.h" />
   </ItemGroup>
 </Project>

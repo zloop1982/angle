@@ -191,7 +191,10 @@ rx::ShaderExecutable *ProgramBinary::getVertexExecutableForInputLayout(const Ver
             return mVertexExecutables[executableIndex]->shaderExecutable();
         }
     }
-
+	
+#if defined(ANGLE_PLATFORM_WP8)
+	return NULL;
+#else
     // Generate new dynamic layout with attribute conversions
     const std::string &layoutHLSL = mDynamicHLSL->generateInputLayoutHLSL(inputLayout, mShaderAttributes);
 
@@ -216,6 +219,7 @@ rx::ShaderExecutable *ProgramBinary::getVertexExecutableForInputLayout(const Ver
     }
 
     return vertexExecutable;
+#endif // #if !defined(ANGLE_TARGET_WP8)
 }
 
 rx::ShaderExecutable *ProgramBinary::getGeometryExecutable() const

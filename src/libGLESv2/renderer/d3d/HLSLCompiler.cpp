@@ -26,13 +26,13 @@ bool HLSLCompiler::initialize()
 {
     TRACE_EVENT0("gpu", "initializeCompiler");
 #if defined(ANGLE_PLATFORM_WP8)
-    mD3dCompilerModule = NULL;
+    mD3DCompilerModule = NULL;
     mD3DCompileFunc = NULL;
     mHasCompiler = false;
     return true;
 #endif //#if defined(ANGLE_PLATFORM_WP8)
 
-#if defined(ANGLE_PLATFORM_WINRT) && (_MSC_VER >= 1800)
+#if defined(ANGLE_PLATFORM_WINRT) && (_MSC_VER >= 1800) && !defined(ANGLE_PLATFORM_WP8)
     ERR("No D3D compiler module available - must use precompiled shaders\n");
     mD3DCompilerModule = NULL;
     mD3DCompileFunc = reinterpret_cast<CompileFuncPtr>(D3DCompile);
@@ -68,7 +68,7 @@ bool HLSLCompiler::initialize()
 #if defined(ANGLE_PLATFORM_WINRT)
 #if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
         mD3DCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
-#else
+#elif !defined(ANGLE_PLATFORM_WP8)
         mD3DCompilerModule = LoadPackagedLibrary(D3DCOMPILER_DLL, 0);
 #endif //WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
     }
@@ -100,6 +100,7 @@ void HLSLCompiler::release()
     }
 }
 
+#if !defined(ANGLE_PLATFORM_WP8)
 ShaderBlob *HLSLCompiler::compileToBinary(gl::InfoLog &infoLog, const char *hlsl, const char *profile,
                                          unsigned int optimizationFlags, bool alternateFlags) const
 {
@@ -196,5 +197,6 @@ ShaderBlob *HLSLCompiler::compileToBinary(gl::InfoLog &infoLog, const char *hlsl
 
     return NULL;
 }
+#endif // #if !defined(ANGLE_PLATFORM_WP8)
 
 }
