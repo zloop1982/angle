@@ -1,0 +1,159 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{c3504746-56fb-42b1-8a77-9ee54f1ef6c3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EGL">
+      <UniqueIdentifier>{b7466381-e034-487d-90f1-299e9b402219}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GLES2">
+      <UniqueIdentifier>{e2fa89fa-ea7c-4d58-9a6f-e7fa764a144f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GLES3">
+      <UniqueIdentifier>{5077cc1e-4a8f-415d-95d0-d0818d951132}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GLSLANG">
+      <UniqueIdentifier>{73bc1f15-3cbd-4d25-a053-c9e9a83c0b34}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\KHR">
+      <UniqueIdentifier>{e632216a-6316-403e-ac99-ae053ef02482}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{7f0f8b24-edc0-435e-82ef-da515c9b8349}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{98d40737-59f2-406c-a259-3b4e66534788}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\libEGL">
+      <UniqueIdentifier>{9764a2a0-422f-4176-87f1-f4bf75909f2b}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\egl.h">
+      <Filter>include\EGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglext.h">
+      <Filter>include\EGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglplatform.h">
+      <Filter>include\EGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2.h">
+      <Filter>include\GLES2</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2ext.h">
+      <Filter>include\GLES2</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2platform.h">
+      <Filter>include\GLES2</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3.h">
+      <Filter>include\GLES3</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3ext.h">
+      <Filter>include\GLES3</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3platform.h">
+      <Filter>include\GLES3</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLSLANG\ShaderLang.h">
+      <Filter>include\GLSLANG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\KHR\khrplatform.h">
+      <Filter>include\KHR</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\angleutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\version.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Config.h">
+      <Filter>src\libEGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Display.h">
+      <Filter>src\libEGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\main.h">
+      <Filter>src\libEGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\resource.h">
+      <Filter>src\libEGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Surface.h">
+      <Filter>src\libEGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\TLSWinrt.h">
+      <Filter>src\libEGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\utilities.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Config.cpp">
+      <Filter>src\libEGL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Display.cpp">
+      <Filter>src\libEGL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\libEGL.cpp">
+      <Filter>src\libEGL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\main.cpp">
+      <Filter>src\libEGL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Surface.cpp">
+      <Filter>src\libEGL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\TLSWinrt.cpp">
+      <Filter>src\libEGL</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\utilities.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>

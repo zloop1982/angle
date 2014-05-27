@@ -1,0 +1,428 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="src">
+      <UniqueIdentifier>{06f85b86-393e-4348-993c-48771d1248cc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include">
+      <UniqueIdentifier>{ec499d3a-0807-4cfb-8de1-693ed1484c64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{1e672e27-edb7-408a-b8fb-d2cd40173986}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\compiler">
+      <UniqueIdentifier>{5e3f5c7b-9c0b-4046-8d00-f04d2e875dc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\compiler\translator">
+      <UniqueIdentifier>{29a0862b-7fce-4985-b195-fa8468e77350}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\third_party">
+      <UniqueIdentifier>{261c5d57-f7c6-41ec-8cef-f3f0150d5bfc}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\compiler\translator\depgraph">
+      <UniqueIdentifier>{e35477b2-bd69-4a77-9a0b-b8d92623f326}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\compiler\translator\timing">
+      <UniqueIdentifier>{29d27c74-6c31-41e9-a493-4371f8160d5f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\third_party\compiler">
+      <UniqueIdentifier>{66f3a4d2-89c6-4d5c-809f-2e9c28552818}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\angleutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\version.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\depgraph\DependencyGraph.h">
+      <Filter>src\compiler\translator\depgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\depgraph\DependencyGraphBuilder.h">
+      <Filter>src\compiler\translator\depgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\depgraph\DependencyGraphOutput.h">
+      <Filter>src\compiler\translator\depgraph</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\timing\RestrictFragmentShaderTiming.h">
+      <Filter>src\compiler\translator\timing</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\timing\RestrictVertexShaderTiming.h">
+      <Filter>src\compiler\translator\timing</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\BaseTypes.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\BlockLayoutEncoder.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\BuiltInFunctionEmulator.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\Common.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\compilerdebug.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ConstantUnion.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\DetectCallDepth.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\DetectDiscontinuity.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\Diagnostics.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\DirectiveHandler.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ExtensionBehavior.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\FlagStd140Structs.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ForLoopUnroll.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\glslang.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\glslang_tab.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\HashNames.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\HLSLLayoutEncoder.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\InfoSink.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\Initialize.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\InitializeDll.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\InitializeGlobals.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\InitializeParseContext.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\InitializeVariables.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\intermediate.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\length_limits.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\localintermediate.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\LoopInfo.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\MMap.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\NodeSearch.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\osinclude.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\OutputESSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\OutputGLSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\OutputGLSLBase.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\OutputHLSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ParseContext.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\PoolAlloc.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\Pragma.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\QualifierAlive.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\RemoveTree.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\RenameFunction.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\RewriteElseBlocks.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\SearchSymbol.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ShaderVariable.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ShHandle.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\SymbolTable.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\TranslatorESSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\TranslatorGLSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\TranslatorHLSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\Types.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\UnfoldShortCircuit.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\UnfoldShortCircuitAST.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\util.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ValidateLimitations.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ValidateOutputs.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\VariableInfo.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\VariablePacker.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\VersionGLSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\compiler\ArrayBoundsClamper.h">
+      <Filter>src\third_party\compiler</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\depgraph\DependencyGraph.cpp">
+      <Filter>src\compiler\translator\depgraph</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\depgraph\DependencyGraphBuilder.cpp">
+      <Filter>src\compiler\translator\depgraph</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\depgraph\DependencyGraphOutput.cpp">
+      <Filter>src\compiler\translator\depgraph</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\depgraph\DependencyGraphTraverse.cpp">
+      <Filter>src\compiler\translator\depgraph</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\timing\RestrictFragmentShaderTiming.cpp">
+      <Filter>src\compiler\translator\timing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\timing\RestrictVertexShaderTiming.cpp">
+      <Filter>src\compiler\translator\timing</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\BlockLayoutEncoder.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\BuiltInFunctionEmulator.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\CodeGen.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\Compiler.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\compilerdebug.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\DetectCallDepth.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\DetectDiscontinuity.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\Diagnostics.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\DirectiveHandler.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\FlagStd140Structs.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ForLoopUnroll.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\glslang_lex.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\glslang_tab.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\HLSLLayoutEncoder.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\InfoSink.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\Initialize.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\InitializeDll.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\InitializeParseContext.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\InitializeVariables.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\Intermediate.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\intermOut.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\IntermTraverse.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\LoopInfo.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ossource_win.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\OutputESSL.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\OutputGLSL.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\OutputGLSLBase.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\OutputHLSL.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\parseConst.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ParseContext.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\PoolAlloc.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\QualifierAlive.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\RemoveTree.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\RewriteElseBlocks.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\SearchSymbol.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ShaderLang.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ShaderVariable.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\SymbolTable.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\TranslatorESSL.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\TranslatorGLSL.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\TranslatorHLSL.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\UnfoldShortCircuit.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\UnfoldShortCircuitAST.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\util.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ValidateLimitations.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\ValidateOutputs.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\VariableInfo.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\VariablePacker.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\VersionGLSL.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\compiler\ArrayBoundsClamper.cpp">
+      <Filter>src\third_party\compiler</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\generate_parser.sh">
+      <Filter>src\compiler\translator</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\glslang.l">
+      <Filter>src\compiler\translator</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\translator\glslang.y">
+      <Filter>src\compiler\translator</Filter>
+    </None>
+  </ItemGroup>
+</Project>
