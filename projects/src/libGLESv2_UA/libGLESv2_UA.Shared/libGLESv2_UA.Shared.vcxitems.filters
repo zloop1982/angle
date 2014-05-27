@@ -1,0 +1,554 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="include">
+      <UniqueIdentifier>{082711e9-211c-4119-b758-5adf6839e4f3}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{ef1eb9a7-fe12-49aa-9ee4-480486d1a2be}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\EGL">
+      <UniqueIdentifier>{e0309043-88a9-44fc-9fc7-ba696da1250a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GLSLANG">
+      <UniqueIdentifier>{3f4c34eb-5c67-49ce-9361-4f2a87675cc8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\KHR">
+      <UniqueIdentifier>{1dd4c7ca-f4d7-4697-a4a4-b2c9cb4f0880}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GLES3">
+      <UniqueIdentifier>{128d30c1-3c53-4a37-8a88-7ccf20e199fb}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="include\GLES2">
+      <UniqueIdentifier>{9ceb07c7-9484-41be-8e27-88d6fd6914f9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\libGLESv2">
+      <UniqueIdentifier>{d6e84771-7ab9-4e7f-9b93-8a86fe71b13d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\third_party">
+      <UniqueIdentifier>{344d067a-79c0-4a2b-994a-79e61a7442c6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\common">
+      <UniqueIdentifier>{40286c21-697e-4232-a7d9-cbca4357b03d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\libGLESv2\renderer">
+      <UniqueIdentifier>{3968648c-c341-4c28-8c55-d5a1bc6ac805}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\libGLESv2\renderer\d3d11">
+      <UniqueIdentifier>{9f28ec04-6e56-438e-8a69-ba06624f8f4a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\third_party\murmurhash">
+      <UniqueIdentifier>{6681e9cc-c46e-4f67-9114-80867cd5902d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\third_party\winrt">
+      <UniqueIdentifier>{d86221f3-a56c-49a7-8987-ed2e5f3a199d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\third_party\winrt\ThreadEmulation">
+      <UniqueIdentifier>{e1720d1e-1f60-42d3-8684-d592068b256c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\libGLESv2\renderer\d3d">
+      <UniqueIdentifier>{dcf3d99a-8d62-4940-910f-5355e83f8ba1}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\egl.h">
+      <Filter>include\EGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglext.h">
+      <Filter>include\EGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglplatform.h">
+      <Filter>include\EGL</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3.h">
+      <Filter>include\GLES3</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3ext.h">
+      <Filter>include\GLES3</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3platform.h">
+      <Filter>include\GLES3</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLSLANG\ShaderLang.h">
+      <Filter>include\GLSLANG</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\KHR\khrplatform.h">
+      <Filter>include\KHR</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2.h">
+      <Filter>include\GLES2</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2ext.h">
+      <Filter>include\GLES2</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2platform.h">
+      <Filter>include\GLES2</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\angleutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\version.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtplatform.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\BufferStorage.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\FenceImpl.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\generatemip.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\Image.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\IndexBuffer.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\IndexDataManager.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\IndexRangeCache.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\QueryImpl.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\Renderer.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\RenderTarget.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\ShaderExecutable.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\SwapChain.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\TextureStorage.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\VertexBuffer.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\VertexDataManager.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\angletypes.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\BinaryStream.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Buffer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Constants.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Context.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Fence.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Framebuffer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\HandleAllocator.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\main.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\precompiled.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Program.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\ProgramBinary.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Query.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Renderbuffer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\resource.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\ResourceManager.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Shader.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Texture.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\TLSWinrt.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Uniform.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\murmurhash\MurmurHash3.h">
+      <Filter>src\third_party\murmurhash</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\winrt\ThreadEmulation\ThreadEmulation.h">
+      <Filter>src\third_party\winrt\ThreadEmulation</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\DynamicHLSL.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\formatutils.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\mathutil.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\queryconversions.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\RenderbufferProxySet.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Sampler.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\TransformFeedback.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\validationES.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\validationES2.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\validationES3.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\VertexArray.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\VertexAttribute.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Blit11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\BufferStorage11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Clear11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Fence11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\formatutils11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Image11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\IndexBuffer11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\InputLayoutCache.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\PixelTransfer11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Query11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Renderer11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\renderer11_utils.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\RenderStateCache.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\RenderTarget11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\TextureStorage11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\VertexBuffer11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\utilities.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\ShaderExecutable11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\SwapChain11.h">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\loadimage.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\copyimage.h">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\HLSLCompiler.h">
+      <Filter>src\libGLESv2\renderer\d3d</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\BufferStorage.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\Image.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\IndexBuffer.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\IndexDataManager.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\IndexRangeCache.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\Renderer.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\TextureStorage.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\VertexBuffer.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\VertexDataManager.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\angletypes.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Buffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Context.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Fence.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Float16ToFloat32.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Framebuffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\HandleAllocator.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\precompiled.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Program.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\ProgramBinary.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Query.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Renderbuffer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\ResourceManager.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Shader.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Texture.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\TLSWinrt.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Uniform.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\murmurhash\MurmurHash3.cpp">
+      <Filter>src\third_party\murmurhash</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\winrt\ThreadEmulation\ThreadEmulation.cpp">
+      <Filter>src\third_party\winrt\ThreadEmulation</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\DynamicHLSL.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\formatutils.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\libGLESv2.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\queryconversions.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\RenderbufferProxySet.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Sampler.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\TransformFeedback.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\validationES.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\validationES2.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\validationES3.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\VertexArray.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Blit11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\BufferStorage11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Clear11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Fence11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\formatutils11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Image11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\IndexBuffer11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\InputLayoutCache.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\PixelTransfer11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Query11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\Renderer11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\renderer11_utils.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\RenderStateCache.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\RenderTarget11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\TextureStorage11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\VertexBuffer11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\utilities.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\ShaderExecutable11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d11\SwapChain11.cpp">
+      <Filter>src\libGLESv2\renderer\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\loadimage.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\copyimage.cpp">
+      <Filter>src\libGLESv2\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\HLSLCompiler.cpp">
+      <Filter>src\libGLESv2\renderer\d3d</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Float16ToFloat32.py">
+      <Filter>src</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\libGLESv2_phone.vcxproj.filters">
+      <Filter>src</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\libGLESv2_winrt.vcxproj.filters">
+      <Filter>src</Filter>
+    </None>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\libGLESv2_winrt_2013.vcxproj.filters">
+      <Filter>src</Filter>
+    </None>
+  </ItemGroup>
+</Project>
