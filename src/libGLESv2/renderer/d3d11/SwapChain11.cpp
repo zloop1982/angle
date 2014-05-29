@@ -539,6 +539,9 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
             else
             {
                 result = factory->CreateSwapChainForCoreWindow(device, iWindow, &swapChainDesc, nullptr, &mSwapChain);
+
+                // TODO: fix this!!!
+                mSwapChain->SetRotation(DXGI_MODE_ROTATION_ROTATE270);
             }
         }
 #endif // #if !defined(ANGLE_PLATFORM_WINRT)
