@@ -33,7 +33,6 @@ bool HLSLCompiler::initialize()
 #endif //#if defined(ANGLE_PLATFORM_WP8)
 
 #if defined(ANGLE_PLATFORM_WINRT) && (_MSC_VER >= 1800) && !defined(ANGLE_PLATFORM_WP8)
-    ERR("No D3D compiler module available - must use precompiled shaders\n");
     mD3DCompilerModule = NULL;
     mD3DCompileFunc = reinterpret_cast<CompileFuncPtr>(D3DCompile);
     mHasCompiler = true;
