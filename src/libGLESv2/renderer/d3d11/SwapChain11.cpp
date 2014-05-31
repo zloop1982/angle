@@ -525,7 +525,6 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
             if (isPanel)
             {
                 ComPtr<ISwapChainBackgroundPanelNative> panelNative;
-
                 result = iWinRTWindow->GetWindowInterface().As(&panelNative);
                 if SUCCEEDED(result)
                 {
@@ -534,6 +533,20 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
                     {
                         panelNative->SetSwapChain(mSwapChain);
                     }
+                }
+                else
+                {
+                    ComPtr<ISwapChainPanelNative> panelNative;
+                    result = iWinRTWindow->GetWindowInterface().As(&panelNative);
+                    if SUCCEEDED(result)
+                    {
+                        result = factory->CreateSwapChainForComposition(device, &swapChainDesc, nullptr, &mSwapChain);
+                        if SUCCEEDED(result)
+                        {
+                            panelNative->SetSwapChain(mSwapChain);
+                        }
+                    }
+
                 }
             }
             else

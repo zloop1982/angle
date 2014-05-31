@@ -76,8 +76,15 @@ bool isSwapChainBackgroundPanel(ComPtr<IUnknown> window)
 #if defined(ANGLE_PLATFORM_WP8)
     return FALSE;
 #else
+
     ComPtr<ISwapChainBackgroundPanelNative> panelNative;
-    return S_OK == (window.As(&panelNative));
+    HRESULT result = window.As(&panelNative);
+    if (S_OK != result)
+    {
+        ComPtr<ISwapChainPanelNative> panelNative;
+        result = window.As(&panelNative);
+    }
+    return S_OK == result;
 #endif // #if defined(ANGLE_PLATFORM_WP8)
 }
 
