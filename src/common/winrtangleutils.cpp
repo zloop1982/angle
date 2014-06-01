@@ -25,7 +25,7 @@ HRESULT getIPhoneXamlWindow(ComPtr<IUnknown> iWindow, ComPtr<IWinPhone8XamlD3DWi
     if (SUCCEEDED(result))
 	{
 		ComPtr<IUnknown> iWindowInterface = iWinRTWindow.Get()->GetWindowInterface();
-		result = iWindowInterface.Get() == nullptr? S_FALSE : iWindowInterface.As(iPhoneXamlWindow);
+        result = iWindowInterface.Get() == nullptr ? E_FAIL : iWindowInterface.As(iPhoneXamlWindow);
 	}
 	return result;
 }
@@ -78,8 +78,20 @@ HRESULT getWindowSize(ComPtr<IUnknown> iWindow, int& width, int& height)
 			height = backBufferDesc.Height;
 		}
     }
-	else
-	{
+
+    if (!SUCCEEDED(result))
+    {
+        ComPtr<IWinrtEglWindowDimensions> dimensions;
+        result = iWindow.As(&dimensions);
+        if (SUCCEEDED(result))
+        {
+            dimensions->GetWindowDimensions(width, height);
+        }
+    }
+
+
+    if (!SUCCEEDED(result))
+    {
         ComPtr<IWinrtEglWindow> iWinRTWindow;
         HRESULT result = getIWinRTWindow(iWindow, &iWinRTWindow);
         if (SUCCEEDED(result))
