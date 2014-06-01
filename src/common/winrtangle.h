@@ -22,6 +22,15 @@ typedef enum {
     ANGLE_D3D_FEATURE_LEVEL_11_0
 } ANGLE_D3D_FEATURE_LEVEL;
 
+
+
+struct __declspec(uuid("B7A8D6F6-1D84-43DA-85B3-31701786B5A0")) IWinrtEglWindowDimensions : IUnknown
+{
+    virtual void __stdcall SetWindowDimensions(int width, int height) = 0;
+    virtual void __stdcall GetWindowDimensions(int& width, int& height) = 0;
+};
+
+
 struct __declspec(uuid("736E7573-FD24-433F-811E-893B36B7A078")) IWinrtEglWindow : IUnknown
 {
     virtual ANGLE_D3D_FEATURE_LEVEL __stdcall GetAngleD3DFeatureLevel() = 0;

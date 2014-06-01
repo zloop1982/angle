@@ -73,13 +73,25 @@ HRESULT __stdcall CreateWinPhone8XamlWindow(IWinPhone8XamlD3DWindow ** result)
     return S_OK;
 }
 
-class WinrtEglWindow : public RuntimeClass<RuntimeClassFlags<ClassicCom>, IWinrtEglWindow>
+class WinrtEglWindow : public RuntimeClass<RuntimeClassFlags<ClassicCom>, IWinrtEglWindow, IWinrtEglWindowDimensions>
 {
 public:
     WinrtEglWindow(ComPtr<IUnknown> windowInterface, ANGLE_D3D_FEATURE_LEVEL featureLevel) 
         : m_windowInterface(windowInterface)
         , m_featureLevel(featureLevel)
-		, m_angleD3DDevice(nullptr)
+        , m_angleD3DDevice(nullptr)
+        , m_width(1)
+        , m_height(1)
+    {
+        TRACE((LPCWSTR)"WinrtEglWindow()\n");
+    }
+
+    WinrtEglWindow(ComPtr<IUnknown> windowInterface, ANGLE_D3D_FEATURE_LEVEL featureLevel, unsigned int width, unsigned int height)
+        : m_windowInterface(windowInterface)
+        , m_featureLevel(featureLevel)
+        , m_angleD3DDevice(nullptr)
+        , m_width(width)
+        , m_height(height)
     {
         TRACE((LPCWSTR)"WinrtEglWindow()\n");
     }
@@ -113,10 +125,24 @@ public:
 		m_angleD3DDevice = device;
     }
 
+    virtual void __stdcall SetWindowDimensions(int width, int height)
+    {
+        m_width = width;
+        m_height = height;
+    }
+
+    virtual void __stdcall GetWindowDimensions(int& width, int& height)
+    {
+        width = m_width;
+        height = m_height;
+    }
+
 private:
     ANGLE_D3D_FEATURE_LEVEL m_featureLevel;
     ComPtr<IUnknown> m_windowInterface;
     ComPtr<IUnknown> m_angleD3DDevice;
+    int m_width;
+    int m_height;
 };
 
 HRESULT __stdcall CreateWinrtEglWindow(ComPtr<IUnknown> windowInterface, ANGLE_D3D_FEATURE_LEVEL featureLevel, IWinrtEglWindow ** result)
@@ -134,5 +160,25 @@ HRESULT __stdcall CreateWinrtEglWindow(ComPtr<IUnknown> windowInterface, ANGLE_D
     *result = iWindow.Detach();
     return S_OK;
 }
+
+HRESULT __stdcall CreateWinrtEglWindowWithDimensions(ComPtr<IUnknown> windowInterface, ANGLE_D3D_FEATURE_LEVEL featureLevel, unsigned int width, unsigned int height, IWinrtEglWindow ** result)
+{
+    ASSERT(result);
+    *result = nullptr;
+
+    ComPtr<IWinrtEglWindow> iWindow = Make<WinrtEglWindow>(windowInterface, featureLevel, width, height);
+
+    if (!iWindow)
+    {
+        return E_OUTOFMEMORY;
+    }
+
+    *result = iWindow.Detach();
+    return S_OK;
+}
+
+
+
+
 
 
