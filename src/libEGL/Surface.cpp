@@ -110,7 +110,8 @@ bool Surface::resetSwapChain()
 #if defined(ANGLE_PLATFORM_WINRT)
 
 		winrtangleutils::getWindowSize(mWindow, width, height);
-
+        mWidth = width;
+        mHeight = height;
 #else
         RECT windowRect;
         if (!GetClientRect(getWindowHandle(), &windowRect))
@@ -325,8 +326,8 @@ bool Surface::checkForOutOfDateSwapChain()
 {
     bool sizeDirty = false;
 #if defined(ANGLE_PLATFORM_WINRT)
-    int clientWidth = 0;
-    int clientHeight = 0;
+    int clientWidth = getWidth();
+    int clientHeight = getHeight();
 	winrtangleutils::getWindowSize(mWindow, clientWidth, clientHeight);
 	sizeDirty = clientWidth != getWidth() || clientHeight != getHeight();
 #else

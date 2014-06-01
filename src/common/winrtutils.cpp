@@ -22,6 +22,8 @@
 #include <windows.ui.xaml.media.dxinterop.h>
 #endif // !defined(ANGLE_PLATFORM_WP8)
 
+#include <Windows.UI.Xaml.h>
+
 using namespace ABI::Windows::Foundation;
 using namespace ABI::Windows::Storage;
 using namespace Microsoft::WRL;
@@ -29,6 +31,8 @@ using namespace Microsoft::WRL::Wrappers;
 using namespace ABI::Windows::ApplicationModel;
 using namespace ABI::Windows::Graphics::Display;
 using namespace ABI::Windows::UI::Core;
+using namespace ABI::Windows::UI::Xaml::Controls;
+using namespace ABI::Windows::UI::Xaml;
 
 namespace winrt 
 {
@@ -89,6 +93,8 @@ bool isSwapChainBackgroundPanel(ComPtr<IUnknown> window)
 }
 
 
+
+
 ComPtr<ICoreWindow> getCurrentWindowForThread()
 {
     HRESULT result = S_OK;
@@ -106,35 +112,78 @@ ComPtr<ICoreWindow> getCurrentWindowForThread()
     return nullptr;
 }
 
-HRESULT getWindowDimensions(ComPtr<ICoreWindow> window, int& width, int& height)
+HRESULT getWindowDimensions(ComPtr<IUnknown>& window, int& width, int& height)
 {
-    width = 0;
-    height = 0;
-    Rect bounds;
-    HRESULT result = window->get_Bounds(&bounds);
+    HRESULT result = S_OK;
 
-    if(SUCCEEDED(result))
+    ComPtr<ISwapChainPanel> panel;
+    result = window.As(&panel);
+    if (SUCCEEDED(result))
     {
-        width = static_cast<int>(convertDipsToPixels(bounds.Width));    
-        height = static_cast<int>(convertDipsToPixels(bounds.Height));   
+        ComPtr<IFrameworkElement> f;
+        result = window.As(&f);
+        if (SUCCEEDED(result))
+        {
+            DOUBLE w, h;
+            result = f.Get()->get_ActualWidth(&w);
+            if (SUCCEEDED(result))
+            {
+                result = f.Get()->get_ActualHeight(&h);
+            }
+            if (SUCCEEDED(result))
+            {
+                width = static_cast<int>(w);
+                height = static_cast<int>(h);
+            }
+         }
     }
-    return result;
+    
+    if (result != S_OK)
+    {
+        ComPtr<ISwapChainBackgroundPanel> panel;
+        result = window.As(&panel);
+        if (SUCCEEDED(result))
+        {
+            ComPtr<IFrameworkElement> f;
+            result = window.As(&f);
+            if (SUCCEEDED(result))
+            {
+                DOUBLE w, h;
+                result = f.Get()->get_ActualWidth(&w);
+                if (SUCCEEDED(result))
+                {
+                    result = f.Get()->get_ActualHeight(&h);
+                }
+                if (SUCCEEDED(result))
+                {
+                    width = static_cast<int>(w);
+                    height = static_cast<int>(h);
+                }
+            }
+        }
+    }
+
+    if (result != S_OK)
+    {
+        ComPtr<ICoreWindow> w;
+        result = window.As(&w);
+        if (SUCCEEDED(result))
+        {
+            Rect bounds;
+            HRESULT result = w->get_Bounds(&bounds);
+
+            if (SUCCEEDED(result))
+            {
+                width = static_cast<int>(convertDipsToPixels(bounds.Width));
+                height = static_cast<int>(convertDipsToPixels(bounds.Height));
+            }
+        }
+    }
+
+    return S_OK == result;
 }
 
-HRESULT getCurrentWindowDimensions(int& width, int& height)
-{
-    width = 0;
-    height = 0;
-    HRESULT result = -1;
 
-    ComPtr<ICoreWindow> window = getCurrentWindowForThread();
-    if(window.Get() != nullptr)
-    {
-        result = getWindowDimensions(window,width, height);
-    }
-
-    return result;
-}
 
 std::string getTemporaryFilePath()
 {

@@ -60,9 +60,6 @@ HRESULT getBackBuffer(ComPtr<IWinPhone8XamlD3DWindow> iWindow, ComPtr<ID3D11Text
 	return result;
 }
 
-
-
-
 HRESULT getWindowSize(ComPtr<IUnknown> iWindow, int& width, int& height)
 {
 	ComPtr<IWinPhone8XamlD3DWindow> iPhoneWindow;
@@ -83,7 +80,12 @@ HRESULT getWindowSize(ComPtr<IUnknown> iWindow, int& width, int& height)
     }
 	else
 	{
-		 winrt::getCurrentWindowDimensions(width, height);
+        ComPtr<IWinrtEglWindow> iWinRTWindow;
+        HRESULT result = getIWinRTWindow(iWindow, &iWinRTWindow);
+        if (SUCCEEDED(result))
+        {
+            winrt::getWindowDimensions(iWinRTWindow.Get()->GetWindowInterface(), width, height);
+        }
 	}
 
 	return result;
