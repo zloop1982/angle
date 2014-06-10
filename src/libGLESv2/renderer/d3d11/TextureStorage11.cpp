@@ -362,7 +362,10 @@ TextureStorage11_2D::TextureStorage11_2D(Renderer *renderer, int baseLevel, int 
         D3D11_TEXTURE2D_DESC desc;
         desc.Width = width;      // Compressed texture size constraints?
         desc.Height = height;
-        desc.MipLevels = ((levelCount() > 0) ? (levelCount() + mLodOffset) : 0);
+	    if (mRenderer->getMajorShaderModel() < 4)// && (!gl::isPow2(width) || !gl::isPow2(height)))
+            desc.MipLevels = 1;
+        else
+            desc.MipLevels = ((levelCount() > 0) ? (levelCount() + mLodOffset) : 0);
         desc.ArraySize = 1;
         desc.Format = mTextureFormat;
         desc.SampleDesc.Count = 1;
