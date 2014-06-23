@@ -20,9 +20,10 @@
 
 #if !defined(ANGLE_PLATFORM_WP8)
 #include <windows.ui.xaml.media.dxinterop.h>
-#endif // !defined(ANGLE_PLATFORM_WP8)
-
 #include <Windows.UI.Xaml.h>
+using namespace ABI::Windows::UI::Xaml::Controls;
+using namespace ABI::Windows::UI::Xaml;
+#endif // !defined(ANGLE_PLATFORM_WP8)
 
 using namespace ABI::Windows::Foundation;
 using namespace ABI::Windows::Storage;
@@ -31,8 +32,6 @@ using namespace Microsoft::WRL::Wrappers;
 using namespace ABI::Windows::ApplicationModel;
 using namespace ABI::Windows::Graphics::Display;
 using namespace ABI::Windows::UI::Core;
-using namespace ABI::Windows::UI::Xaml::Controls;
-using namespace ABI::Windows::UI::Xaml;
 
 namespace winrt 
 {
@@ -83,11 +82,13 @@ bool isSwapChainBackgroundPanel(ComPtr<IUnknown> window)
 
     ComPtr<ISwapChainBackgroundPanelNative> panelNative;
     HRESULT result = window.As(&panelNative);
+#if (NTDDI_VERSION >= NTDDI_WINBLUE)
     if (S_OK != result)
     {
         ComPtr<ISwapChainPanelNative> panelNative;
         result = window.As(&panelNative);
     }
+#endif
     return S_OK == result;
 #endif // #if defined(ANGLE_PLATFORM_WP8)
 }
@@ -114,8 +115,8 @@ ComPtr<ICoreWindow> getCurrentWindowForThread()
 
 HRESULT getWindowDimensions(ComPtr<IUnknown>& window, int& width, int& height)
 {
-    HRESULT result = S_OK;
-
+    HRESULT result = E_FAIL;
+#if (NTDDI_VERSION >= NTDDI_WINBLUE)
     ComPtr<ISwapChainPanel> panel;
     result = window.As(&panel);
     if (SUCCEEDED(result))
@@ -162,7 +163,7 @@ HRESULT getWindowDimensions(ComPtr<IUnknown>& window, int& width, int& height)
             }
         }
     }
-
+#endif
     if (result != S_OK)
     {
         ComPtr<ICoreWindow> w;
