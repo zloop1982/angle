@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{AB42A170-E370-4707-8CC6-1C51349C146F}</ProjectGuid>
+    <ProjectGuid>{57EAE839-8A09-4250-986A-3E21F98AFBB0}</ProjectGuid>
     <RootNamespace>libEGL_phone</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
