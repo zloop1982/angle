@@ -3860,6 +3860,8 @@ void Context::initExtensionString()
         {
             mExtensionStringList.push_back("GL_NV_fence");
         }
+
+        mExtensionStringList.push_back("vertex_array_object");
     }
 
     if (mClientVersion == 3)
