@@ -537,6 +537,7 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
                         panelNative->SetSwapChain(mSwapChain);
                     }
                 }
+#if (NTDDI_VERSION >= NTDDI_WINBLUE)
                 else
                 {
                     ComPtr<ISwapChainPanelNative> panelNative;
@@ -551,7 +552,7 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
                     }
 
                 }
-
+#endif
                 if SUCCEEDED(result)
                 {
                     //mSwapChain->SetRotation(DXGI_MODE_ROTATION_ROTATE90);
@@ -583,8 +584,11 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
             }
         }
 
-        result = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBufferTexture);
-        ASSERT(SUCCEEDED(result));
+        if (mSwapChain)
+        {
+            result = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*) &mBackBufferTexture);
+            ASSERT(SUCCEEDED(result));
+        }
         d3d11::SetDebugName(mBackBufferTexture, "Back buffer texture");
 
         result = device->CreateRenderTargetView(mBackBufferTexture, NULL, &mBackBufferRTView);
@@ -780,11 +784,14 @@ EGLint SwapChain11::swapRect(EGLint x, EGLint y, EGLint width, EGLint height)
     // Draw
     deviceContext->Draw(4, 0);
 
-#if ANGLE_FORCE_VSYNC_OFF
-    result = mSwapChain->Present(0, 0);
-#else
-    result = mSwapChain->Present(mSwapInterval, 0);
-#endif
+    if(mSwapChain)
+    {
+    #if ANGLE_FORCE_VSYNC_OFF
+        result = mSwapChain->Present(0, 0);
+    #else
+        result = mSwapChain->Present(mSwapInterval, 0);
+    #endif
+    }
 
     if (result == DXGI_ERROR_DEVICE_REMOVED)
     {
