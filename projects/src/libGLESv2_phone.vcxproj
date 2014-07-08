@@ -81,7 +81,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>ANGLE_ENABLE_D3D11;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;UNICODE;_UNICODE;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;ANGLE_ENABLE_D3D11;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;UNICODE;_UNICODE;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -104,7 +104,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>ANGLE_ENABLE_D3D11;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;UNICODE;_UNICODE;_USRDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;ANGLE_ENABLE_D3D11;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;UNICODE;_UNICODE;_USRDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -127,7 +127,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>ANGLE_ENABLE_D3D11;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;UNICODE;_UNICODE;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;ANGLE_ENABLE_D3D11;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;UNICODE;_UNICODE;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
@@ -150,7 +150,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>ANGLE_ENABLE_D3D11;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;UNICODE;_UNICODE;_USRDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;ANGLE_ENABLE_D3D11;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;UNICODE;_UNICODE;_USRDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <CompileAsWinRT>false</CompileAsWinRT>
