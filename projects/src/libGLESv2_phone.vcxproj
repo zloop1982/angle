@@ -97,7 +97,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)libGLESv2$(TargetExt)</OutputFile>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2_winrt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2_phone.def</ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -120,7 +120,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)libGLESv2$(TargetExt)</OutputFile>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2_winrt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2_phone.def</ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -143,7 +143,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)libGLESv2$(TargetExt)</OutputFile>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2_winrt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2_phone.def</ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -166,7 +166,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)libGLESv2$(TargetExt)</OutputFile>
       <AdditionalDependencies>d3d11.lib;dxgi.lib;dxguid.lib;WindowsPhoneCore.lib;RuntimeObject.lib;PhoneAppModelHost.lib;%(AdditionalDependencies)</AdditionalDependencies>
-      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2_winrt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\src\libGLESv2\libGLESv2_phone.def</ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -182,7 +182,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\angle.gyp" />
-    <None Include="..\..\src\libGLESv2\libGLESv2.def" />
+    <None Include="..\..\src\libGLESv2\libGLESv2_phone.def" />
     <None Include="..\..\src\libGLESv2\renderer\d3d11\shaders\BufferToTexture11.hlsl" />
     <None Include="..\..\src\libGLESv2\renderer\d3d11\shaders\generate_shaders.bat" />
     <None Include="..\..\src\libGLESv2\renderer\d3d11\shaders\Passthrough2D11.hlsl" />

@@ -96,7 +96,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)libEGL$(TargetExt)</OutputFile>
-      <ModuleDefinitionFile>..\..\src\libEGL\libEGL_winrt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\src\libEGL\libEGL_phone.def</ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -118,7 +118,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)libEGL$(TargetExt)</OutputFile>
-      <ModuleDefinitionFile>..\..\src\libEGL\libEGL_winrt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\src\libEGL\libEGL_phone.def</ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -140,7 +140,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)libEGL$(TargetExt)</OutputFile>
-      <ModuleDefinitionFile>..\..\src\libEGL\libEGL_winrt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\src\libEGL\libEGL_phone.def</ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -162,7 +162,7 @@
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <OutputFile>$(OutDir)libEGL$(TargetExt)</OutputFile>
-      <ModuleDefinitionFile>..\..\src\libEGL\libEGL_winrt.def</ModuleDefinitionFile>
+      <ModuleDefinitionFile>..\..\src\libEGL\libEGL_phone.def</ModuleDefinitionFile>
       <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
@@ -178,7 +178,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="..\..\src\angle.gyp" />
-    <None Include="..\..\src\libEGL\libEGL.def" />
+    <None Include="..\..\src\libEGL\libEGL_phone.def" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\common\winrtangle.h" />

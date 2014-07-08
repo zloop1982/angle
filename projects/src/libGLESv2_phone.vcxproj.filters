@@ -489,11 +489,13 @@
     <ClInclude Include="..\..\include\EGL\eglplatform.h">
       <Filter>include\EGL</Filter>
     </ClInclude>
-    <None Include="..\..\src\libGLESv2\libGLESv2.def" />
     <None Include="..\..\src\libGLESv2\renderer\d3d11\shaders\BufferToTexture11.hlsl" />
     <None Include="..\..\src\libGLESv2\renderer\d3d11\shaders\Passthrough2D11.hlsl" />
     <None Include="..\..\src\libGLESv2\renderer\d3d11\shaders\Swizzle11.hlsl" />
     <None Include="..\..\src\libGLESv2\renderer\d3d11\shaders\Passthrough3D11.hlsl" />
+    <None Include="..\..\src\libGLESv2\libGLESv2_phone.def">
+      <Filter>src\libGLESv2</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\..\src\common\winrtangle.cpp">
