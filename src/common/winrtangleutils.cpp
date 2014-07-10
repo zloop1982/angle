@@ -79,15 +79,15 @@ HRESULT getWindowSize(ComPtr<IUnknown> iWindow, int& width, int& height)
 		}
     }
 
-    if (!SUCCEEDED(result))
-    {
-        ComPtr<IWinrtEglWindowDimensions> dimensions;
-        result = iWindow.As(&dimensions);
-        if (SUCCEEDED(result))
-        {
-            dimensions->GetWindowDimensions(width, height);
-        }
-    }
+    //if (!SUCCEEDED(result))
+    //{
+    //    ComPtr<IWinrtEglWindowDimensions> dimensions;
+    //    result = iWindow.As(&dimensions);
+    //    if (SUCCEEDED(result))
+    //    {
+    //        dimensions->GetWindowDimensions(width, height);
+    //    }
+    //}
 
 
     if (!SUCCEEDED(result))
