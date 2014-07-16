@@ -116,7 +116,7 @@ ComPtr<ICoreWindow> getCurrentWindowForThread()
 HRESULT getWindowDimensions(ComPtr<IUnknown>& window, int& width, int& height)
 {
     HRESULT result = E_FAIL;
-#if (NTDDI_VERSION >= NTDDI_WINBLUE && !defined(ANGLE_PLATFORM_WP8))
+#if (NTDDI_VERSION >= NTDDI_WINBLUE)
     ComPtr<ISwapChainPanel> panel;
     result = window.As(&panel);
     if (SUCCEEDED(result))
