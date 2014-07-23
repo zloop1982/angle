@@ -791,7 +791,7 @@ void Renderer9::setSamplerState(gl::SamplerType type, int index, const gl::Sampl
         gl_d3d9::ConvertMinFilter(samplerState.minFilter, &d3dMinFilter, &d3dMipFilter, samplerState.maxAnisotropy);
         mDevice->SetSamplerState(d3dSampler, D3DSAMP_MINFILTER, d3dMinFilter);
         mDevice->SetSamplerState(d3dSampler, D3DSAMP_MIPFILTER, d3dMipFilter);
-        mDevice->SetSamplerState(d3dSampler, D3DSAMP_MAXMIPLEVEL, samplerState.lodOffset);
+        mDevice->SetSamplerState(d3dSampler, D3DSAMP_MAXMIPLEVEL, samplerState.baseLevel);
         if (mSupportsTextureFilterAnisotropy)
         {
             mDevice->SetSamplerState(d3dSampler, D3DSAMP_MAXANISOTROPY, (DWORD)samplerState.maxAnisotropy);
@@ -1452,8 +1452,10 @@ void Renderer9::applyTransformFeedbackBuffers(gl::Buffer *transformFeedbackBuffe
     UNREACHABLE();
 }
 
-void Renderer9::drawArrays(GLenum mode, GLsizei count, GLsizei instances)
+void Renderer9::drawArrays(GLenum mode, GLsizei count, GLsizei instances, bool transformFeedbackActive)
 {
+    ASSERT(!transformFeedbackActive);
+
     startScene();
 
     if (mode == GL_LINE_LOOP)
@@ -1490,7 +1492,8 @@ void Renderer9::drawArrays(GLenum mode, GLsizei count, GLsizei instances)
     }
 }
 
-void Renderer9::drawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, gl::Buffer *elementArrayBuffer, const TranslatedIndexData &indexInfo, GLsizei /*instances*/)
+void Renderer9::drawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices,
+                             gl::Buffer *elementArrayBuffer, const TranslatedIndexData &indexInfo, GLsizei /*instances*/)
 {
     startScene();
 
@@ -1730,8 +1733,9 @@ void Renderer9::drawIndexedPoints(GLsizei count, GLenum type, const GLvoid *indi
     }
 }
 
-void Renderer9::applyShaders(gl::ProgramBinary *programBinary, bool rasterizerDiscard, const gl::VertexFormat inputLayout[])
+void Renderer9::applyShaders(gl::ProgramBinary *programBinary, bool rasterizerDiscard, bool transformFeedbackActive, const gl::VertexFormat inputLayout[])
 {
+    ASSERT(!transformFeedbackActive);
     ASSERT(!rasterizerDiscard);
 
     ShaderExecutable *vertexExe = programBinary->getVertexExecutableForInputLayout(inputLayout);
@@ -1764,11 +1768,11 @@ void Renderer9::applyShaders(gl::ProgramBinary *programBinary, bool rasterizerDi
 
 void Renderer9::applyUniforms(const gl::ProgramBinary &programBinary)
 {
-    const gl::UniformArray &uniformArray = programBinary.getUniforms();
+    const std::vector<gl::LinkedUniform*> &uniformArray = programBinary.getUniforms();
 
     for (size_t uniformIndex = 0; uniformIndex < uniformArray.size(); uniformIndex++)
     {
-        gl::Uniform *targetUniform = uniformArray[uniformIndex];
+        gl::LinkedUniform *targetUniform = uniformArray[uniformIndex];
 
         if (targetUniform->dirty)
         {
@@ -1816,7 +1820,7 @@ void Renderer9::applyUniforms(const gl::ProgramBinary &programBinary)
     }
 }
 
-void Renderer9::applyUniformnfv(gl::Uniform *targetUniform, const GLfloat *v)
+void Renderer9::applyUniformnfv(gl::LinkedUniform *targetUniform, const GLfloat *v)
 {
     if (targetUniform->isReferencedByFragmentShader())
     {
@@ -1829,7 +1833,7 @@ void Renderer9::applyUniformnfv(gl::Uniform *targetUniform, const GLfloat *v)
     }
 }
 
-void Renderer9::applyUniformniv(gl::Uniform *targetUniform, const GLint *v)
+void Renderer9::applyUniformniv(gl::LinkedUniform *targetUniform, const GLint *v)
 {
     ASSERT(targetUniform->registerCount <= MAX_VERTEX_CONSTANT_VECTORS_D3D9);
     GLfloat vector[MAX_VERTEX_CONSTANT_VECTORS_D3D9][4];
@@ -1845,7 +1849,7 @@ void Renderer9::applyUniformniv(gl::Uniform *targetUniform, const GLint *v)
     applyUniformnfv(targetUniform, (GLfloat*)vector);
 }
 
-void Renderer9::applyUniformnbv(gl::Uniform *targetUniform, const GLint *v)
+void Renderer9::applyUniformnbv(gl::LinkedUniform *targetUniform, const GLint *v)
 {
     ASSERT(targetUniform->registerCount <= MAX_VERTEX_CONSTANT_VECTORS_D3D9);
     GLfloat vector[MAX_VERTEX_CONSTANT_VECTORS_D3D9][4];
@@ -1891,9 +1895,6 @@ void Renderer9::clear(const gl::ClearParameters &clearParams, gl::Framebuffer *f
                                                       getCurrentClientVersion());
         stencilUnmasked = (0x1 << stencilSize) - 1;
     }
-
-    bool alphaUnmasked = gl::GetAlphaBits(mRenderTargetDesc.format, getCurrentClientVersion()) == 0 ||
-                         clearParams.colorMaskAlpha;
 
     const bool needMaskedStencilClear = clearParams.clearStencil &&
                                         (clearParams.stencilWriteMask & stencilUnmasked) != stencilUnmasked;
@@ -2458,6 +2459,12 @@ bool Renderer9::getTextureFilterAnisotropySupport() const
     return mSupportsTextureFilterAnisotropy;
 }
 
+bool Renderer9::getPBOSupport() const
+{
+    // D3D9 cannot support PBOs
+    return false;
+}
+
 float Renderer9::getTextureMaxAnisotropy() const
 {
     if (mSupportsTextureFilterAnisotropy)
@@ -2531,6 +2538,16 @@ unsigned int Renderer9::getReservedFragmentUniformBuffers() const
 }
 
 unsigned int Renderer9::getMaxTransformFeedbackBuffers() const
+{
+    return 0;
+}
+
+unsigned int Renderer9::getMaxTransformFeedbackSeparateComponents() const
+{
+    return 0;
+}
+
+unsigned int Renderer9::getMaxTransformFeedbackInterleavedComponents() const
 {
     return 0;
 }
@@ -2785,7 +2802,7 @@ bool Renderer9::copyToRenderTarget(TextureStorageInterface2D *dest, TextureStora
         TextureStorage9_2D *source9 = TextureStorage9_2D::makeTextureStorage9_2D(source->getStorageInstance());
         TextureStorage9_2D *dest9 = TextureStorage9_2D::makeTextureStorage9_2D(dest->getStorageInstance());
 
-        int levels = source9->getMaxLevel() - source9->getBaseLevel();
+        int levels = source9->getLevelCount();
         for (int i = 0; i < levels; ++i)
         {
             IDirect3DSurface9 *srcSurf = source9->getSurfaceLevel(i, false);
@@ -2814,7 +2831,7 @@ bool Renderer9::copyToRenderTarget(TextureStorageInterfaceCube *dest, TextureSto
     {
         TextureStorage9_Cube *source9 = TextureStorage9_Cube::makeTextureStorage9_Cube(source->getStorageInstance());
         TextureStorage9_Cube *dest9 = TextureStorage9_Cube::makeTextureStorage9_Cube(dest->getStorageInstance());
-        int levels = source9->getMaxLevel() - source9->getBaseLevel();
+        int levels = source9->getLevelCount();
         for (int f = 0; f < 6; f++)
         {
             for (int i = 0; i < levels; i++)
@@ -3093,9 +3110,11 @@ bool Renderer9::blitRect(gl::Framebuffer *readFramebuffer, const gl::Rectangle &
     return true;
 }
 
-void Renderer9::readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
-                           GLsizei outputPitch, bool packReverseRowOrder, GLint packAlignment, void* pixels)
+void Renderer9::readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
+                           GLenum type, GLuint outputPitch, const gl::PixelPackState &pack, void* pixels)
 {
+    ASSERT(pack.pixelBuffer.get() == NULL);
+
     RenderTarget9 *renderTarget = NULL;
     IDirect3DSurface9 *surface = NULL;
     gl::Renderbuffer *colorbuffer = framebuffer->getColorbuffer(0);
@@ -3128,7 +3147,7 @@ void Renderer9::readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsiz
 
     HRESULT result;
     IDirect3DSurface9 *systemSurface = NULL;
-    bool directToPixels = !packReverseRowOrder && packAlignment <= 4 && getShareHandleSupport() &&
+    bool directToPixels = !pack.reverseRowOrder && pack.alignment <= 4 && getShareHandleSupport() &&
                           x == 0 && y == 0 && UINT(width) == desc.Width && UINT(height) == desc.Height &&
                           desc.Format == D3DFMT_A8R8G8B8 && format == GL_BGRA_EXT && type == GL_UNSIGNED_BYTE;
     if (directToPixels)
@@ -3202,7 +3221,7 @@ void Renderer9::readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsiz
 
     unsigned char *source;
     int inputPitch;
-    if (packReverseRowOrder)
+    if (pack.reverseRowOrder)
     {
         source = ((unsigned char*)lock.pBits) + lock.Pitch * (rect.bottom - rect.top - 1);
         inputPitch = -lock.Pitch;
@@ -3302,8 +3321,13 @@ RenderTarget *Renderer9::createRenderTarget(int width, int height, GLenum format
     return renderTarget;
 }
 
-ShaderExecutable *Renderer9::loadExecutable(const void *function, size_t length, rx::ShaderType type)
+ShaderExecutable *Renderer9::loadExecutable(const void *function, size_t length, rx::ShaderType type,
+                                            const std::vector<gl::LinkedVarying> &transformFeedbackVaryings,
+                                            bool separatedOutputBuffers)
 {
+    // Transform feedback is not supported in ES2 or D3D9
+    ASSERT(transformFeedbackVaryings.size() == 0);
+
     ShaderExecutable9 *executable = NULL;
 
     switch (type)
@@ -3334,8 +3358,13 @@ ShaderExecutable *Renderer9::loadExecutable(const void *function, size_t length,
     return executable;
 }
 
-ShaderExecutable *Renderer9::compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type, D3DWorkaroundType workaround)
+ShaderExecutable *Renderer9::compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type,
+                                                 const std::vector<gl::LinkedVarying> &transformFeedbackVaryings,
+                                                 bool separatedOutputBuffers, D3DWorkaroundType workaround)
 {
+    // Transform feedback is not supported in ES2 or D3D9
+    ASSERT(transformFeedbackVaryings.size() == 0);
+
     const char *profile = NULL;
 
     switch (type)
@@ -3351,9 +3380,17 @@ ShaderExecutable *Renderer9::compileToExecutable(gl::InfoLog &infoLog, const cha
         return NULL;
     }
 
-    // ANGLE issue 486:
-    // Work-around a D3D9 compiler bug that presents itself when using conditional discard, by disabling optimization
-    UINT optimizationFlags = (workaround == ANGLE_D3D_WORKAROUND_SM3_OPTIMIZER ? D3DCOMPILE_SKIP_OPTIMIZATION : ANGLE_COMPILE_OPTIMIZATION_LEVEL);
+    UINT optimizationFlags = ANGLE_COMPILE_OPTIMIZATION_LEVEL;
+
+    if (workaround == ANGLE_D3D_WORKAROUND_SKIP_OPTIMIZATION)
+    {
+        optimizationFlags = D3DCOMPILE_SKIP_OPTIMIZATION;
+    }
+    else if (workaround == ANGLE_D3D_WORKAROUND_MAX_OPTIMIZATION)
+    {
+        optimizationFlags = D3DCOMPILE_OPTIMIZATION_LEVEL3;
+    }
+    else ASSERT(workaround == ANGLE_D3D_WORKAROUND_NONE);
 
     ID3DBlob *binary = (ID3DBlob*)mCompiler.compileToBinary(infoLog, shaderHLSL, profile, optimizationFlags, true);
     if (!binary)
@@ -3361,7 +3398,8 @@ ShaderExecutable *Renderer9::compileToExecutable(gl::InfoLog &infoLog, const cha
         return NULL;
     }
 
-    ShaderExecutable *executable = loadExecutable(binary->GetBufferPointer(), binary->GetBufferSize(), type);
+    ShaderExecutable *executable = loadExecutable(binary->GetBufferPointer(), binary->GetBufferSize(), type,
+                                                  transformFeedbackVaryings, separatedOutputBuffers);
     SafeRelease(binary);
 
     return executable;
@@ -3449,17 +3487,17 @@ TextureStorage *Renderer9::createTextureStorage2D(SwapChain *swapChain)
     return new TextureStorage9_2D(this, swapChain9);
 }
 
-TextureStorage *Renderer9::createTextureStorage2D(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height)
+TextureStorage *Renderer9::createTextureStorage2D(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, int levels)
 {
-    return new TextureStorage9_2D(this, baseLevel, maxLevel, internalformat, renderTarget, width, height);
+    return new TextureStorage9_2D(this, internalformat, renderTarget, width, height, levels);
 }
 
-TextureStorage *Renderer9::createTextureStorageCube(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, int size)
+TextureStorage *Renderer9::createTextureStorageCube(GLenum internalformat, bool renderTarget, int size, int levels)
 {
-    return new TextureStorage9_Cube(this, baseLevel, maxLevel, internalformat, renderTarget, size);
+    return new TextureStorage9_Cube(this, internalformat, renderTarget, size, levels);
 }
 
-TextureStorage *Renderer9::createTextureStorage3D(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth)
+TextureStorage *Renderer9::createTextureStorage3D(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth, int levels)
 {
     // 3D textures are not supported by the D3D9 backend.
     UNREACHABLE();
@@ -3467,7 +3505,7 @@ TextureStorage *Renderer9::createTextureStorage3D(int baseLevel, int maxLevel, G
     return NULL;
 }
 
-TextureStorage *Renderer9::createTextureStorage2DArray(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth)
+TextureStorage *Renderer9::createTextureStorage2DArray(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth, int levels)
 {
     // 2D array textures are not supported by the D3D9 backend.
     UNREACHABLE();

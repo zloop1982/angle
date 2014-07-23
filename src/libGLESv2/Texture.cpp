@@ -59,7 +59,10 @@ Texture::Texture(rx::Renderer *renderer, GLuint id, GLenum target) : RefCountObj
     mSamplerState.wrapT = GL_REPEAT;
     mSamplerState.wrapR = GL_REPEAT;
     mSamplerState.maxAnisotropy = 1.0f;
-    mSamplerState.lodOffset = 0;
+    mSamplerState.baseLevel = 0;
+    mSamplerState.maxLevel = 1000;
+    mSamplerState.minLod = -1000.0f;
+    mSamplerState.maxLod = 1000.0f;
     mSamplerState.compareMode = GL_NONE;
     mSamplerState.compareFunc = GL_LEQUAL;
     mSamplerState.swizzleRed = GL_RED;
@@ -154,6 +157,26 @@ void Texture::setSwizzleAlpha(GLenum swizzle)
     mSamplerState.swizzleAlpha = swizzle;
 }
 
+void Texture::setBaseLevel(GLint baseLevel)
+{
+    mSamplerState.baseLevel = baseLevel;
+}
+
+void Texture::setMaxLevel(GLint maxLevel)
+{
+    mSamplerState.maxLevel = maxLevel;
+}
+
+void Texture::setMinLod(GLfloat minLod)
+{
+    mSamplerState.minLod = minLod;
+}
+
+void Texture::setMaxLod(GLfloat maxLod)
+{
+    mSamplerState.maxLod = maxLod;
+}
+
 void Texture::setUsage(GLenum usage)
 {
     mUsage = usage;
@@ -209,6 +232,26 @@ GLenum Texture::getSwizzleAlpha() const
     return mSamplerState.swizzleAlpha;
 }
 
+GLint Texture::getBaseLevel() const
+{
+    return mSamplerState.baseLevel;
+}
+
+GLint Texture::getMaxLevel() const
+{
+    return mSamplerState.maxLevel;
+}
+
+GLfloat Texture::getMinLod() const
+{
+    return mSamplerState.minLod;
+}
+
+GLfloat Texture::getMaxLod() const
+{
+    return mSamplerState.maxLod;
+}
+
 bool Texture::isSwizzled() const
 {
     return mSamplerState.swizzleRed   != GL_RED   ||
@@ -217,16 +260,14 @@ bool Texture::isSwizzled() const
            mSamplerState.swizzleAlpha != GL_ALPHA;
 }
 
-int Texture::getLodOffset()
-{
-    rx::TextureStorageInterface *texture = getNativeTexture();
-    return texture ? texture->getLodOffset() : 0;
-}
-
 void Texture::getSamplerState(SamplerState *sampler)
 {
     *sampler = mSamplerState;
-    sampler->lodOffset = getLodOffset();
+
+    // Offset the effective base level by the texture storage's top level
+    rx::TextureStorageInterface *texture = getNativeTexture();
+    int topLevel = texture ? texture->getTopLevel() : 0;
+    sampler->baseLevel = topLevel + mSamplerState.baseLevel;
 }
 
 GLenum Texture::getUsage() const
@@ -392,7 +433,7 @@ bool Texture::isImmutable() const
 
 int Texture::immutableLevelCount()
 {
-    return (mImmutable ? getNativeTexture()->getStorageInstance()->getMaxLevel() : 0);
+    return (mImmutable ? getNativeTexture()->getStorageInstance()->getLevelCount() : 0);
 }
 
 GLint Texture::creationLevels(GLsizei width, GLsizei height, GLsizei depth) const
@@ -400,7 +441,7 @@ GLint Texture::creationLevels(GLsizei width, GLsizei height, GLsizei depth) cons
     if ((isPow2(width) && isPow2(height) && isPow2(depth)) || mRenderer->getNonPower2TextureSupport())
     {
         // Maximum number of levels
-        return static_cast<GLint>(log2(std::max(std::max(width, height), depth)));
+        return log2(std::max(std::max(width, height), depth)) + 1;
     }
     else
     {
@@ -411,7 +452,7 @@ GLint Texture::creationLevels(GLsizei width, GLsizei height, GLsizei depth) cons
 
 int Texture::mipLevels() const
 {
-    return static_cast<int>(log2(std::max(std::max(getBaseLevelWidth(), getBaseLevelHeight()), getBaseLevelDepth())));
+    return log2(std::max(std::max(getBaseLevelWidth(), getBaseLevelHeight()), getBaseLevelDepth())) + 1;
 }
 
 Texture2D::Texture2D(rx::Renderer *renderer, GLuint id) : Texture(renderer, id, GL_TEXTURE_2D)
@@ -487,8 +528,8 @@ void Texture2D::redefineImage(GLint level, GLenum internalformat, GLsizei width,
 
     if (mTexStorage)
     {
-        const int storageLevels = mTexStorage->getMaxLevel();
-        
+        const int storageLevels = mTexStorage->getLevelCount();
+
         if ((level >= storageLevels && storageLevels != 0) ||
             width != storageWidth ||
             height != storageHeight ||
@@ -710,7 +751,7 @@ void Texture2D::storage(GLsizei levels, GLenum internalformat, GLsizei width, GL
 
     mImmutable = true;
 
-    setCompleteTexStorage(new rx::TextureStorageInterface2D(mRenderer, 0, levels, internalformat, IsRenderTargetUsage(mUsage), width, height));
+    setCompleteTexStorage(new rx::TextureStorageInterface2D(mRenderer, internalformat, IsRenderTargetUsage(mUsage), width, height, levels));
 }
 
 void Texture2D::setCompleteTexStorage(rx::TextureStorageInterface2D *newCompleteTexStorage)
@@ -720,7 +761,7 @@ void Texture2D::setCompleteTexStorage(rx::TextureStorageInterface2D *newComplete
 
     if (mTexStorage && mTexStorage->isManaged())
     {
-        for (int level = 0; level < mTexStorage->getMaxLevel(); level++)
+        for (int level = 0; level < mTexStorage->getLevelCount(); level++)
         {
             mImageArray[level]->setManagedSurface(mTexStorage, level);
         }
@@ -800,9 +841,9 @@ bool Texture2D::isSamplerComplete(const SamplerState &samplerState) const
 // Tests for 2D texture (mipmap) completeness. [OpenGL ES 2.0.24] section 3.7.10 page 81.
 bool Texture2D::isMipmapComplete() const
 {
-    int q = mipLevels();
+    int levelCount = mipLevels();
 
-    for (int level = 0; level <= q; level++)
+    for (int level = 0; level < levelCount; level++)
     {
         if (!isLevelComplete(level))
         {
@@ -899,9 +940,9 @@ rx::TextureStorageInterface2D *Texture2D::createCompleteStorage(bool renderTarge
     ASSERT(width > 0 && height > 0);
 
     // use existing storage level count, when previously specified by TexStorage*D
-    GLint levels = (mTexStorage ? mTexStorage->getMaxLevel() : creationLevels(width, height, 1));
+    GLint levels = (mTexStorage ? mTexStorage->getLevelCount() : creationLevels(width, height, 1));
 
-    return new rx::TextureStorageInterface2D(mRenderer, 0, levels, getBaseLevelInternalFormat(), renderTarget, width, height);
+    return new rx::TextureStorageInterface2D(mRenderer, getBaseLevelInternalFormat(), renderTarget, width, height, levels);
 }
 
 void Texture2D::updateStorage()
@@ -953,8 +994,8 @@ bool Texture2D::ensureRenderTarget()
 void Texture2D::generateMipmaps()
 {
     // Purge array levels 1 through q and reset them to represent the generated mipmap levels.
-    int q = mipLevels();
-    for (int level = 1; level <= q; level++)
+    int levelCount = mipLevels();
+    for (int level = 1; level < levelCount; level++)
     {
         redefineImage(level, getBaseLevelInternalFormat(),
                       std::max(getBaseLevelWidth() >> level, 1),
@@ -963,7 +1004,7 @@ void Texture2D::generateMipmaps()
 
     if (mTexStorage && mTexStorage->isRenderTarget())
     {
-        for (int level = 1; level <= q; level++)
+        for (int level = 1; level < levelCount; level++)
         {
             mTexStorage->generateMipmap(level);
 
@@ -972,7 +1013,7 @@ void Texture2D::generateMipmaps()
     }
     else
     {
-        for (int level = 1; level <= q; level++)
+        for (int level = 1; level < levelCount; level++)
         {
             mRenderer->generateMipmap(mImageArray[level], mImageArray[level - 1]);
         }
@@ -1046,7 +1087,7 @@ rx::RenderTarget *Texture2D::getDepthSencil(GLint level)
 
 bool Texture2D::isValidLevel(int level) const
 {
-    return (mTexStorage ? (level >= mTexStorage->getBaseLevel() && level < mTexStorage->getMaxLevel()) : false);
+    return (mTexStorage ? (level >= 0 && level < mTexStorage->getLevelCount()) : false);
 }
 
 TextureCubeMap::TextureCubeMap(rx::Renderer *renderer, GLuint id) : Texture(renderer, id, GL_TEXTURE_CUBE_MAP)
@@ -1255,11 +1296,11 @@ bool TextureCubeMap::isMipmapCubeComplete() const
         return false;
     }
 
-    int q = mipLevels();
+    int levelCount = mipLevels();
 
     for (int face = 0; face < 6; face++)
     {
-        for (int level = 1; level <= q; level++)
+        for (int level = 1; level < levelCount; level++)
         {
             if (!isFaceLevelComplete(face, level))
             {
@@ -1351,9 +1392,9 @@ rx::TextureStorageInterfaceCube *TextureCubeMap::createCompleteStorage(bool rend
     ASSERT(size > 0);
 
     // use existing storage level count, when previously specified by TexStorage*D
-    GLint levels = (mTexStorage ? mTexStorage->getMaxLevel() : creationLevels(size, size, 1));
+    GLint levels = (mTexStorage ? mTexStorage->getLevelCount() : creationLevels(size, size, 1));
 
-    return new rx::TextureStorageInterfaceCube(mRenderer, 0, levels, getBaseLevelInternalFormat(), renderTarget, size);
+    return new rx::TextureStorageInterfaceCube(mRenderer, getBaseLevelInternalFormat(), renderTarget, size, levels);
 }
 
 void TextureCubeMap::setCompleteTexStorage(rx::TextureStorageInterfaceCube *newCompleteTexStorage)
@@ -1363,11 +1404,9 @@ void TextureCubeMap::setCompleteTexStorage(rx::TextureStorageInterfaceCube *newC
 
     if (mTexStorage && mTexStorage->isManaged())
     {
-        int levels = mTexStorage->getMaxLevel();
-
         for (int faceIndex = 0; faceIndex < 6; faceIndex++)
         {
-            for (int level = 0; level < mTexStorage->getMaxLevel(); level++)
+            for (int level = 0; level < mTexStorage->getLevelCount(); level++)
             {
                 mImageArray[faceIndex][level]->setManagedSurface(mTexStorage, faceIndex, level);
             }
@@ -1459,8 +1498,8 @@ void TextureCubeMap::redefineImage(int faceIndex, GLint level, GLenum internalfo
 
     if (mTexStorage)
     {
-        const int storageLevels = mTexStorage->getMaxLevel();
-        
+        const int storageLevels = mTexStorage->getLevelCount();
+
         if ((level >= storageLevels && storageLevels != 0) ||
             width != storageWidth ||
             height != storageHeight ||
@@ -1579,16 +1618,16 @@ void TextureCubeMap::storage(GLsizei levels, GLenum internalformat, GLsizei size
 
     mImmutable = true;
 
-    setCompleteTexStorage(new rx::TextureStorageInterfaceCube(mRenderer, 0, levels, internalformat, IsRenderTargetUsage(mUsage), size));
+    setCompleteTexStorage(new rx::TextureStorageInterfaceCube(mRenderer, internalformat, IsRenderTargetUsage(mUsage), size, levels));
 }
 
 void TextureCubeMap::generateMipmaps()
 {
     // Purge array levels 1 through q and reset them to represent the generated mipmap levels.
-    int q = mipLevels();
+    int levelCount = mipLevels();
     for (int faceIndex = 0; faceIndex < 6; faceIndex++)
     {
-        for (int level = 1; level <= q; level++)
+        for (int level = 1; level < levelCount; level++)
         {
             int faceLevelSize = (std::max(mImageArray[faceIndex][0]->getWidth() >> level, 1));
             redefineImage(faceIndex, level, mImageArray[faceIndex][0]->getInternalFormat(), faceLevelSize, faceLevelSize);
@@ -1599,7 +1638,7 @@ void TextureCubeMap::generateMipmaps()
     {
         for (int faceIndex = 0; faceIndex < 6; faceIndex++)
         {
-            for (int level = 1; level <= q; level++)
+            for (int level = 1; level < levelCount; level++)
             {
                 mTexStorage->generateMipmap(faceIndex, level);
 
@@ -1611,7 +1650,7 @@ void TextureCubeMap::generateMipmaps()
     {
         for (int faceIndex = 0; faceIndex < 6; faceIndex++)
         {
-            for (int level = 1; level <= q; level++)
+            for (int level = 1; level < levelCount; level++)
             {
                 mRenderer->generateMipmap(mImageArray[faceIndex][level], mImageArray[faceIndex][level - 1]);
             }
@@ -1699,7 +1738,7 @@ rx::RenderTarget *TextureCubeMap::getDepthStencil(GLenum target, GLint level)
 
 bool TextureCubeMap::isValidFaceLevel(int faceIndex, int level) const
 {
-    return (mTexStorage ? (level >= mTexStorage->getBaseLevel() && level < mTexStorage->getMaxLevel()) : 0);
+    return (mTexStorage ? (level >= 0 && level < mTexStorage->getLevelCount()) : 0);
 }
 
 Texture3D::Texture3D(rx::Renderer *renderer, GLuint id) : Texture(renderer, id, GL_TEXTURE_3D)
@@ -1847,14 +1886,14 @@ void Texture3D::storage(GLsizei levels, GLenum internalformat, GLsizei width, GL
 
     mImmutable = true;
 
-    setCompleteTexStorage(new rx::TextureStorageInterface3D(mRenderer, 0, levels, internalformat, IsRenderTargetUsage(mUsage), width, height, depth));
+    setCompleteTexStorage(new rx::TextureStorageInterface3D(mRenderer, internalformat, IsRenderTargetUsage(mUsage), width, height, depth, levels));
 }
 
 void Texture3D::generateMipmaps()
 {
     // Purge array levels 1 through q and reset them to represent the generated mipmap levels.
-    int q = mipLevels();
-    for (int level = 1; level <= q; level++)
+    int levelCount = mipLevels();
+    for (int level = 1; level < levelCount; level++)
     {
         redefineImage(level, getBaseLevelInternalFormat(),
                       std::max(getBaseLevelWidth() >> level, 1),
@@ -1864,7 +1903,7 @@ void Texture3D::generateMipmaps()
 
     if (mTexStorage && mTexStorage->isRenderTarget())
     {
-        for (int level = 1; level <= q; level++)
+        for (int level = 1; level < levelCount; level++)
         {
             mTexStorage->generateMipmap(level);
 
@@ -1873,7 +1912,7 @@ void Texture3D::generateMipmaps()
     }
     else
     {
-        for (int level = 1; level <= q; level++)
+        for (int level = 1; level < levelCount; level++)
         {
             mRenderer->generateMipmap(mImageArray[level], mImageArray[level - 1]);
         }
@@ -1959,9 +1998,9 @@ bool Texture3D::isSamplerComplete(const SamplerState &samplerState) const
 
 bool Texture3D::isMipmapComplete() const
 {
-    int q = mipLevels();
+    int levelCount = mipLevels();
 
-    for (int level = 0; level <= q; level++)
+    for (int level = 0; level < levelCount; level++)
     {
         if (!isLevelComplete(level))
         {
@@ -2039,7 +2078,7 @@ unsigned int Texture3D::getRenderTargetSerial(GLint level, GLint layer)
 
 bool Texture3D::isValidLevel(int level) const
 {
-    return (mTexStorage ? (level >= mTexStorage->getBaseLevel() && level < mTexStorage->getMaxLevel()) : 0);
+    return (mTexStorage ? (level >= 0 && level < mTexStorage->getLevelCount()) : 0);
 }
 
 void Texture3D::initializeStorage(bool renderTarget)
@@ -2074,9 +2113,9 @@ rx::TextureStorageInterface3D *Texture3D::createCompleteStorage(bool renderTarge
     ASSERT(width > 0 && height > 0 && depth > 0);
 
     // use existing storage level count, when previously specified by TexStorage*D
-    GLint levels = (mTexStorage ? mTexStorage->getMaxLevel() : creationLevels(width, height, depth));
+    GLint levels = (mTexStorage ? mTexStorage->getLevelCount() : creationLevels(width, height, depth));
 
-    return new rx::TextureStorageInterface3D(mRenderer, 0, levels, getBaseLevelInternalFormat(), renderTarget, width, height, depth);
+    return new rx::TextureStorageInterface3D(mRenderer, getBaseLevelInternalFormat(), renderTarget, width, height, depth, levels);
 }
 
 void Texture3D::setCompleteTexStorage(rx::TextureStorageInterface3D *newCompleteTexStorage)
@@ -2204,7 +2243,7 @@ void Texture3D::redefineImage(GLint level, GLenum internalformat, GLsizei width,
 
     if (mTexStorage)
     {
-        const int storageLevels = mTexStorage->getMaxLevel();
+        const int storageLevels = mTexStorage->getLevelCount();
 
         if ((level >= storageLevels && storageLevels != 0) ||
             width != storageWidth ||
@@ -2396,7 +2435,7 @@ void Texture2DArray::storage(GLsizei levels, GLenum internalformat, GLsizei widt
     }
 
     mImmutable = true;
-    setCompleteTexStorage(new rx::TextureStorageInterface2DArray(mRenderer, 0, levels, internalformat, IsRenderTargetUsage(mUsage), width, height, depth));
+    setCompleteTexStorage(new rx::TextureStorageInterface2DArray(mRenderer, internalformat, IsRenderTargetUsage(mUsage), width, height, depth, levels));
 }
 
 void Texture2DArray::generateMipmaps()
@@ -2407,15 +2446,15 @@ void Texture2DArray::generateMipmaps()
     GLenum baseFormat = getBaseLevelInternalFormat();
 
     // Purge array levels 1 through q and reset them to represent the generated mipmap levels.
-    int q = mipLevels();
-    for (int level = 1; level <= q; level++)
+    int levelCount = mipLevels();
+    for (int level = 1; level < levelCount; level++)
     {
         redefineImage(level, baseFormat, std::max(baseWidth >> level, 1), std::max(baseHeight >> level, 1), baseDepth);
     }
 
     if (mTexStorage && mTexStorage->isRenderTarget())
     {
-        for (int level = 1; level <= q; level++)
+        for (int level = 1; level < levelCount; level++)
         {
             mTexStorage->generateMipmap(level);
 
@@ -2427,7 +2466,7 @@ void Texture2DArray::generateMipmaps()
     }
     else
     {
-        for (int level = 1; level <= q; level++)
+        for (int level = 1; level < levelCount; level++)
         {
             for (int layer = 0; layer < mLayerCounts[level]; layer++)
             {
@@ -2515,9 +2554,9 @@ bool Texture2DArray::isSamplerComplete(const SamplerState &samplerState) const
 
 bool Texture2DArray::isMipmapComplete() const
 {
-    int q = mipLevels();
+    int levelCount = mipLevels();
 
-    for (int level = 1; level <= q; level++)
+    for (int level = 1; level < levelCount; level++)
     {
         if (!isLevelComplete(level))
         {
@@ -2593,7 +2632,7 @@ unsigned int Texture2DArray::getRenderTargetSerial(GLint level, GLint layer)
 
 bool Texture2DArray::isValidLevel(int level) const
 {
-    return (mTexStorage ? (level >= mTexStorage->getBaseLevel() && level < mTexStorage->getMaxLevel()) : 0);
+    return (mTexStorage ? (level >= 0 && level < mTexStorage->getLevelCount()) : 0);
 }
 
 void Texture2DArray::initializeStorage(bool renderTarget)
@@ -2628,9 +2667,9 @@ rx::TextureStorageInterface2DArray *Texture2DArray::createCompleteStorage(bool r
     ASSERT(width > 0 && height > 0 && depth > 0);
 
     // use existing storage level count, when previously specified by TexStorage*D
-    GLint levels = (mTexStorage ? mTexStorage->getMaxLevel() : creationLevels(width, height, 1));
+    GLint levels = (mTexStorage ? mTexStorage->getLevelCount() : creationLevels(width, height, 1));
 
-    return new rx::TextureStorageInterface2DArray(mRenderer, 0, levels, getBaseLevelInternalFormat(), renderTarget, width, height, depth);
+    return new rx::TextureStorageInterface2DArray(mRenderer, getBaseLevelInternalFormat(), renderTarget, width, height, depth, levels);
 }
 
 void Texture2DArray::setCompleteTexStorage(rx::TextureStorageInterface2DArray *newCompleteTexStorage)
@@ -2760,7 +2799,7 @@ void Texture2DArray::redefineImage(GLint level, GLenum internalformat, GLsizei w
 
     if (mTexStorage)
     {
-        const int storageLevels = mTexStorage->getMaxLevel();
+        const int storageLevels = mTexStorage->getLevelCount();
 
         if ((level >= storageLevels && storageLevels != 0) ||
             width != storageWidth ||

@@ -237,7 +237,7 @@ variable_identifier
         {
             TType type(EbtFloat, EbpUndefined);
             TVariable *fakeVariable = new TVariable($1.string, type);
-            context->symbolTable.declare(*fakeVariable);
+            context->symbolTable.declare(fakeVariable);
             variable = fakeVariable;
         }
 
@@ -887,6 +887,25 @@ function_prototype
         else
         {
             // Insert the unmangled name to detect potential future redefinition as a variable.
+            TFunction *function = new TFunction(NewPoolTString($1->getName().c_str()), $1->getReturnType());
+            context->symbolTable.getOuterLevel()->insert(function);
+        }
+
+        //
+        // Check for previously declared variables using the same name.
+        //
+        TSymbol *prevSym = context->symbolTable.find($1->getName(), context->shaderVersion);
+        if (prevSym)
+        {
+            if (!prevSym->isFunction())
+            {
+                context->error(@2, "redefinition", $1->getName().c_str(), "function");
+                context->recover();
+            }
+        }
+        else
+        {
+            // Insert the unmangled name to detect potential future redefinition as a variable.
             context->symbolTable.getOuterLevel()->insert($1->getName(), *$1);
         }
 
@@ -899,7 +918,7 @@ function_prototype
 
         // We're at the inner scope level of the function's arguments and body statement.
         // Add the function prototype to the surrounding scope instead.
-        context->symbolTable.getOuterLevel()->insert(*$$.function);
+        context->symbolTable.getOuterLevel()->insert($$.function);
     }
     ;
 
@@ -1176,7 +1195,12 @@ type_qualifier
             $$.setBasic(EbtVoid, EvqInvariantVaryingIn, @1);
     }
     | storage_qualifier {
-        $$.setBasic(EbtVoid, $1.qualifier, @1);
+        if ($1.qualifier != EvqConst && !context->symbolTable.atGlobalLevel()) {
+            context->error(@1, "Local variables can only use the const storage qualifier.", getQualifierString($1.qualifier));
+            context->recover();
+        } else {
+            $$.setBasic(EbtVoid, $1.qualifier, @1);
+        }
     }
     | interpolation_qualifier storage_qualifier {
         $$ = context->joinInterpolationQualifiers(@1, $1.qualifier, @2, $2.qualifier);
@@ -1889,7 +1913,7 @@ function_definition
                 //
                 // Insert the parameters with name in the symbol table.
                 //
-                if (! context->symbolTable.declare(*variable)) {
+                if (! context->symbolTable.declare(variable)) {
                     context->error(@1, "redefinition", variable->getName().c_str());
                     context->recover();
                     delete variable;

@@ -115,17 +115,17 @@ void Shader::getTranslatedSource(GLsizei bufSize, GLsizei *length, char *buffer)
     getSourceImpl(mHlsl, bufSize, length, buffer);
 }
 
-const std::vector<sh::Uniform> &Shader::getUniforms() const
+const std::vector<Uniform> &Shader::getUniforms() const
 {
     return mActiveUniforms;
 }
 
-const sh::ActiveInterfaceBlocks &Shader::getInterfaceBlocks() const
+const std::vector<InterfaceBlock> &Shader::getInterfaceBlocks() const
 {
     return mActiveInterfaceBlocks;
 }
 
-std::vector<sh::Varying> &Shader::getVaryings()
+std::vector<Varying> &Shader::getVaryings()
 {
     return mVaryings;
 }
@@ -198,6 +198,7 @@ void Shader::initializeCompiler()
             resources.MaxDrawBuffers = mRenderer->getMaxRenderTargets();
             resources.OES_standard_derivatives = mRenderer->getDerivativeInstructionSupport();
             resources.EXT_draw_buffers = mRenderer->getMaxRenderTargets() > 1;
+            resources.EXT_shader_texture_lod = 1;
             // resources.OES_EGL_image_external = mRenderer->getShareHandleSupport() ? 1 : 0; // TODO: commented out until the extension is actually supported.
             resources.FragmentPrecisionHigh = 1;   // Shader Model 2+ always supports FP24 (s16e7) which corresponds to highp
             resources.EXT_frag_depth = 1; // Shader Model 2+ always supports explicit depth output
@@ -228,7 +229,7 @@ void Shader::parseVaryings(void *compiler)
 {
     if (!mHlsl.empty())
     {
-        std::vector<sh::Varying> *activeVaryings;
+        std::vector<Varying> *activeVaryings;
         ShGetInfoPointer(compiler, SH_ACTIVE_VARYINGS_ARRAY, reinterpret_cast<void**>(&activeVaryings));
         mVaryings = *activeVaryings;
 
@@ -242,6 +243,7 @@ void Shader::parseVaryings(void *compiler)
         mUsesDepthRange            = mHlsl.find("GL_USES_DEPTH_RANGE")  != std::string::npos;
         mUsesFragDepth             = mHlsl.find("GL_USES_FRAG_DEPTH")   != std::string::npos;
         mUsesDiscardRewriting      = mHlsl.find("ANGLE_USES_DISCARD_REWRITING") != std::string::npos;
+        mUsesNestedBreak           = mHlsl.find("ANGLE_USES_NESTED_BREAK") != std::string::npos;
     }
 }
 
@@ -274,6 +276,7 @@ void Shader::uncompile()
     mUsesFragDepth = false;
     mShaderVersion = 100;
     mUsesDiscardRewriting = false;
+    mUsesNestedBreak = false;
 
     mActiveUniforms.clear();
     mActiveInterfaceBlocks.clear();
@@ -358,11 +361,11 @@ void Shader::compileToHLSL(void *compiler)
 
         void *activeUniforms;
         ShGetInfoPointer(compiler, SH_ACTIVE_UNIFORMS_ARRAY, &activeUniforms);
-        mActiveUniforms = *(std::vector<sh::Uniform>*)activeUniforms;
+        mActiveUniforms = *(std::vector<Uniform>*)activeUniforms;
 
         void *activeInterfaceBlocks;
         ShGetInfoPointer(compiler, SH_ACTIVE_INTERFACE_BLOCKS_ARRAY, &activeInterfaceBlocks);
-        mActiveInterfaceBlocks = *(sh::ActiveInterfaceBlocks*)activeInterfaceBlocks;
+        mActiveInterfaceBlocks = *(std::vector<InterfaceBlock>*)activeInterfaceBlocks;
     }
     else
     {
@@ -381,7 +384,17 @@ rx::D3DWorkaroundType Shader::getD3DWorkarounds() const
 {
     if (mUsesDiscardRewriting)
     {
-        return rx::ANGLE_D3D_WORKAROUND_SM3_OPTIMIZER;
+        // ANGLE issue 486:
+        // Work-around a D3D9 compiler bug that presents itself when using conditional discard, by disabling optimization
+        return rx::ANGLE_D3D_WORKAROUND_SKIP_OPTIMIZATION;
+    }
+
+    if (mUsesNestedBreak)
+    {
+        // ANGLE issue 603:
+        // Work-around a D3D9 compiler bug that presents itself when using break in a nested loop, by maximizing optimization
+        // We want to keep the use of ANGLE_D3D_WORKAROUND_MAX_OPTIMIZATION minimal to prevent hangs, so usesDiscard takes precedence
+        return rx::ANGLE_D3D_WORKAROUND_MAX_OPTIMIZATION;
     }
 
     return rx::ANGLE_D3D_WORKAROUND_NONE;
@@ -431,7 +444,7 @@ static const GLenum varyingPriorityList[] =
 };
 
 // true if varying x has a higher priority in packing than y
-bool Shader::compareVarying(const sh::ShaderVariable &x, const sh::ShaderVariable &y)
+bool Shader::compareVarying(const ShaderVariable &x, const ShaderVariable &y)
 {
     if (x.type == y.type)
     {
@@ -502,7 +515,7 @@ int VertexShader::getSemanticIndex(const std::string &attributeName)
         int semanticIndex = 0;
         for (unsigned int attributeIndex = 0; attributeIndex < mActiveAttributes.size(); attributeIndex++)
         {
-            const sh::ShaderVariable &attribute = mActiveAttributes[attributeIndex];
+            const ShaderVariable &attribute = mActiveAttributes[attributeIndex];
 
             if (attribute.name == attributeName)
             {
@@ -523,7 +536,7 @@ void VertexShader::parseAttributes()
     {
         void *activeAttributes;
         ShGetInfoPointer(mVertexCompiler, SH_ACTIVE_ATTRIBUTES_ARRAY, &activeAttributes);
-        mActiveAttributes = *(std::vector<sh::Attribute>*)activeAttributes;
+        mActiveAttributes = *(std::vector<Attribute>*)activeAttributes;
     }
 }
 
@@ -554,7 +567,7 @@ void FragmentShader::compile()
     {
         void *activeOutputVariables;
         ShGetInfoPointer(mFragmentCompiler, SH_ACTIVE_OUTPUT_VARIABLES_ARRAY, &activeOutputVariables);
-        mActiveOutputVariables = *(std::vector<sh::Attribute>*)activeOutputVariables;
+        mActiveOutputVariables = *(std::vector<Attribute>*)activeOutputVariables;
     }
 }
 
@@ -565,7 +578,7 @@ void FragmentShader::uncompile()
     mActiveOutputVariables.clear();
 }
 
-const std::vector<sh::Attribute> &FragmentShader::getOutputVariables() const
+const std::vector<Attribute> &FragmentShader::getOutputVariables() const
 {
     return mActiveOutputVariables;
 }

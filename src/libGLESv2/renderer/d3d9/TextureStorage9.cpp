@@ -20,9 +20,8 @@
 
 namespace rx
 {
-TextureStorage9::TextureStorage9(Renderer *renderer, int baseLevel, DWORD usage)
-    : mLodOffset(0),
-      mBaseLevel(baseLevel),
+TextureStorage9::TextureStorage9(Renderer *renderer, DWORD usage)
+    : mTopLevel(0),
       mRenderer(Renderer9::makeRenderer9(renderer)),
       mD3DUsage(usage),
       mD3DPool(mRenderer->getTexturePool(usage))
@@ -79,23 +78,18 @@ DWORD TextureStorage9::getUsage() const
     return mD3DUsage;
 }
 
-int TextureStorage9::getLodOffset() const
+int TextureStorage9::getTopLevel() const
 {
-    return mLodOffset;
+    return mTopLevel;
 }
 
-int TextureStorage9::getBaseLevel() const
+int TextureStorage9::getLevelCount() const
 {
-    return mBaseLevel;
-}
-
-int TextureStorage9::getMaxLevel() const
-{
-    return getBaseLevel() + (getBaseTexture() ? getBaseTexture()->GetLevelCount() - getLodOffset() : 0);
+    return getBaseTexture() ? (getBaseTexture()->GetLevelCount() - getTopLevel()) : 0;
 }
 
 TextureStorage9_2D::TextureStorage9_2D(Renderer *renderer, SwapChain9 *swapchain)
-    : TextureStorage9(renderer, 0, D3DUSAGE_RENDERTARGET)
+    : TextureStorage9(renderer, D3DUSAGE_RENDERTARGET)
 {
     IDirect3DTexture9 *surfaceTexture = swapchain->getOffscreenTexture();
     mTexture = surfaceTexture;
@@ -104,8 +98,8 @@ TextureStorage9_2D::TextureStorage9_2D(Renderer *renderer, SwapChain9 *swapchain
     initializeRenderTarget();
 }
 
-TextureStorage9_2D::TextureStorage9_2D(Renderer *renderer, int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height)
-    : TextureStorage9(renderer, baseLevel, GetTextureUsage(internalformat, Renderer9::makeRenderer9(renderer), renderTarget))
+TextureStorage9_2D::TextureStorage9_2D(Renderer *renderer, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, int levels)
+    : TextureStorage9(renderer, GetTextureUsage(internalformat, Renderer9::makeRenderer9(renderer), renderTarget))
 {
     mTexture = NULL;
     mRenderTarget = NULL;
@@ -115,8 +109,8 @@ TextureStorage9_2D::TextureStorage9_2D(Renderer *renderer, int baseLevel, int ma
     {
         IDirect3DDevice9 *device = mRenderer->getDevice();
         D3DFORMAT format = gl_d3d9::GetTextureFormat(internalformat, mRenderer);
-        d3d9::MakeValidSize(false, format, &width, &height, &mLodOffset);
-        UINT creationLevels = (maxLevel ? maxLevel + mLodOffset : 0);
+        d3d9::MakeValidSize(false, format, &width, &height, &mTopLevel);
+        UINT creationLevels = (levels == 0) ? 0 : mTopLevel + levels;
 
         HRESULT result = device->CreateTexture(width, height, creationLevels, getUsage(), format, getPool(), &mTexture, NULL);
 
@@ -150,11 +144,11 @@ IDirect3DSurface9 *TextureStorage9_2D::getSurfaceLevel(int level, bool dirty)
 
     if (mTexture)
     {
-        HRESULT result = mTexture->GetSurfaceLevel(level + mLodOffset, &surface);
+        HRESULT result = mTexture->GetSurfaceLevel(level + mTopLevel, &surface);
         ASSERT(SUCCEEDED(result));
 
         // With managed textures the driver needs to be informed of updates to the lower mipmap levels
-        if (level + mLodOffset != 0 && isManaged() && dirty)
+        if (level + mTopLevel != 0 && isManaged() && dirty)
         {
             mTexture->AddDirtyRect(NULL);
         }
@@ -199,8 +193,8 @@ void TextureStorage9_2D::initializeRenderTarget()
     }
 }
 
-TextureStorage9_Cube::TextureStorage9_Cube(Renderer *renderer, int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, int size)
-    : TextureStorage9(renderer, baseLevel, GetTextureUsage(internalformat, Renderer9::makeRenderer9(renderer), renderTarget))
+TextureStorage9_Cube::TextureStorage9_Cube(Renderer *renderer, GLenum internalformat, bool renderTarget, int size, int levels)
+    : TextureStorage9(renderer, GetTextureUsage(internalformat, Renderer9::makeRenderer9(renderer), renderTarget))
 {
     mTexture = NULL;
     for (int i = 0; i < 6; ++i)
@@ -215,8 +209,8 @@ TextureStorage9_Cube::TextureStorage9_Cube(Renderer *renderer, int baseLevel, in
         IDirect3DDevice9 *device = mRenderer->getDevice();
         int height = size;
         D3DFORMAT format = gl_d3d9::GetTextureFormat(internalformat, mRenderer);
-        d3d9::MakeValidSize(false, format, &size, &height, &mLodOffset);
-        UINT creationLevels = (maxLevel ? maxLevel + mLodOffset : 0);
+        d3d9::MakeValidSize(false, format, &size, &height, &mTopLevel);
+        UINT creationLevels = (levels == 0) ? 0 : mTopLevel + levels;
 
         HRESULT result = device->CreateCubeTexture(size, creationLevels, getUsage(), format, getPool(), &mTexture, NULL);
 
@@ -255,7 +249,7 @@ IDirect3DSurface9 *TextureStorage9_Cube::getCubeMapSurface(GLenum faceTarget, in
     if (mTexture)
     {
         D3DCUBEMAP_FACES face = gl_d3d9::ConvertCubeFace(faceTarget);
-        HRESULT result = mTexture->GetCubeMapSurface(face, level + mLodOffset, &surface);
+        HRESULT result = mTexture->GetCubeMapSurface(face, level + mTopLevel, &surface);
         ASSERT(SUCCEEDED(result));
 
         // With managed textures the driver needs to be informed of updates to the lower mipmap levels

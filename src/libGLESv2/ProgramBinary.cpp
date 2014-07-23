@@ -1,6 +1,6 @@
 #include "precompiled.h"
 //
-// Copyright (c) 2002-2013 The ANGLE Project Authors. All rights reserved.
+// Copyright (c) 2002-2014 The ANGLE Project Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -50,19 +50,28 @@ unsigned int ParseAndStripArrayIndex(std::string* name)
     return subscript;
 }
 
-void GetInputLayoutFromShader(const std::vector<sh::Attribute> &shaderAttributes, VertexFormat inputLayout[MAX_VERTEX_ATTRIBS])
+void GetInputLayoutFromShader(const std::vector<gl::Attribute> &shaderAttributes, VertexFormat inputLayout[MAX_VERTEX_ATTRIBS])
 {
+    size_t layoutIndex = 0;
     for (size_t attributeIndex = 0; attributeIndex < shaderAttributes.size(); attributeIndex++)
     {
-        const sh::Attribute &shaderAttr = shaderAttributes[attributeIndex];
-        VertexFormat *defaultFormat = &inputLayout[attributeIndex];
+        ASSERT(layoutIndex < MAX_VERTEX_ATTRIBS);
+
+        const gl::Attribute &shaderAttr = shaderAttributes[attributeIndex];
 
         if (shaderAttr.type != GL_NONE)
         {
-            defaultFormat->mType        = UniformComponentType(shaderAttr.type);
-            defaultFormat->mNormalized  = false;
-            defaultFormat->mPureInteger = (defaultFormat->mType != GL_FLOAT); // note: inputs can not be bool
-            defaultFormat->mComponents  = UniformComponentCount(shaderAttr.type);
+            GLenum transposedType = TransposeMatrixType(shaderAttr.type);
+
+            for (size_t rowIndex = 0; static_cast<int>(rowIndex) < VariableRowCount(transposedType); rowIndex++, layoutIndex++)
+            {
+                VertexFormat *defaultFormat = &inputLayout[layoutIndex];
+
+                defaultFormat->mType = UniformComponentType(transposedType);
+                defaultFormat->mNormalized = false;
+                defaultFormat->mPureInteger = (defaultFormat->mType != GL_FLOAT); // note: inputs can not be bool
+                defaultFormat->mComponents = VariableColumnCount(transposedType);
+            }
         }
     }
 }
@@ -85,6 +94,11 @@ ProgramBinary::VertexExecutable::VertexExecutable(rx::Renderer *const renderer,
     }
 }
 
+ProgramBinary::VertexExecutable::~VertexExecutable()
+{
+    delete mShaderExecutable;
+}
+
 bool ProgramBinary::VertexExecutable::matchesInputLayout(const VertexFormat attributes[]) const
 {
     for (size_t attributeIndex = 0; attributeIndex < gl::MAX_VERTEX_ATTRIBS; attributeIndex++)
@@ -96,6 +110,16 @@ bool ProgramBinary::VertexExecutable::matchesInputLayout(const VertexFormat attr
     }
 
     return true;
+}
+
+LinkedVarying::LinkedVarying()
+{
+}
+
+LinkedVarying::LinkedVarying(const std::string &name, GLenum type, GLsizei size, const std::string &semanticName,
+                             unsigned int semanticIndex, unsigned int semanticIndexCount)
+    : name(name), type(type), size(size), semanticName(semanticName), semanticIndex(semanticIndex), semanticIndexCount(semanticIndexCount)
+{
 }
 
 unsigned int ProgramBinary::mCurrentSerial = 1;
@@ -191,7 +215,7 @@ rx::ShaderExecutable *ProgramBinary::getVertexExecutableForInputLayout(const Ver
             return mVertexExecutables[executableIndex]->shaderExecutable();
         }
     }
-	
+
 #if defined(ANGLE_PLATFORM_WP8)
 	return NULL;
 #else
@@ -205,7 +229,11 @@ rx::ShaderExecutable *ProgramBinary::getVertexExecutableForInputLayout(const Ver
 
     // Generate new vertex executable
     InfoLog tempInfoLog;
-    rx::ShaderExecutable *vertexExecutable = mRenderer->compileToExecutable(tempInfoLog, vertexHLSL.c_str(), rx::SHADER_VERTEX, mVertexWorkarounds);
+    rx::ShaderExecutable *vertexExecutable = mRenderer->compileToExecutable(tempInfoLog, vertexHLSL.c_str(),
+                                                                            rx::SHADER_VERTEX,
+                                                                            mTransformFeedbackLinkedVaryings,
+                                                                            (mTransformFeedbackBufferMode == GL_SEPARATE_ATTRIBS),
+                                                                            mVertexWorkarounds);
 
     if (!vertexExecutable)
     {
@@ -429,6 +457,21 @@ GLint ProgramBinary::getFragDataLocation(const char *name) const
     return -1;
 }
 
+size_t ProgramBinary::getTransformFeedbackVaryingCount() const
+{
+    return mTransformFeedbackLinkedVaryings.size();
+}
+
+const LinkedVarying &ProgramBinary::getTransformFeedbackVarying(size_t idx) const
+{
+    return mTransformFeedbackLinkedVaryings[idx];
+}
+
+GLenum ProgramBinary::getTransformFeedbackBufferMode() const
+{
+    return mTransformFeedbackBufferMode;
+}
+
 template <typename T>
 bool ProgramBinary::setUniform(GLint location, GLsizei count, const T* v, GLenum targetUniformType)
 {
@@ -440,7 +483,7 @@ bool ProgramBinary::setUniform(GLint location, GLsizei count, const T* v, GLenum
     const int components = UniformComponentCount(targetUniformType);
     const GLenum targetBoolType = UniformBoolVectorType(targetUniformType);
 
-    Uniform *targetUniform = mUniforms[mUniformIndex[location].index];
+    LinkedUniform *targetUniform = mUniforms[mUniformIndex[location].index];
     targetUniform->dirty = true;
 
     int elementCount = targetUniform->elementCount();
@@ -584,7 +627,7 @@ bool ProgramBinary::setUniformMatrixfv(GLint location, GLsizei count, GLboolean 
         return false;
     }
 
-    Uniform *targetUniform = mUniforms[mUniformIndex[location].index];
+    LinkedUniform *targetUniform = mUniforms[mUniformIndex[location].index];
     targetUniform->dirty = true;
 
     if (targetUniform->type != targetUniformType)
@@ -671,7 +714,7 @@ bool ProgramBinary::setUniform1iv(GLint location, GLsizei count, const GLint *v)
         return false;
     }
 
-    Uniform *targetUniform = mUniforms[mUniformIndex[location].index];
+    LinkedUniform *targetUniform = mUniforms[mUniformIndex[location].index];
     targetUniform->dirty = true;
 
     int elementCount = targetUniform->elementCount();
@@ -760,7 +803,7 @@ bool ProgramBinary::getUniformv(GLint location, GLsizei *bufSize, T *params, GLe
         return false;
     }
 
-    Uniform *targetUniform = mUniforms[mUniformIndex[location].index];
+    LinkedUniform *targetUniform = mUniforms[mUniformIndex[location].index];
 
     // sized queries -- ensure the provided buffer is large enough
     if (bufSize)
@@ -870,7 +913,7 @@ void ProgramBinary::applyUniforms()
     // Retrieve sampler uniform values
     for (size_t uniformIndex = 0; uniformIndex < mUniforms.size(); uniformIndex++)
     {
-        Uniform *targetUniform = mUniforms[uniformIndex];
+        LinkedUniform *targetUniform = mUniforms[uniformIndex];
 
         if (targetUniform->dirty)
         {
@@ -969,19 +1012,17 @@ bool ProgramBinary::applyUniformBuffers(const std::vector<gl::Buffer*> boundBuff
 
 bool ProgramBinary::linkVaryings(InfoLog &infoLog, FragmentShader *fragmentShader, VertexShader *vertexShader)
 {
-    vertexShader->resetVaryingsRegisterAssignment();
-
-    std::vector<sh::Varying> &fragmentVaryings = fragmentShader->getVaryings();
-    std::vector<sh::Varying> &vertexVaryings = vertexShader->getVaryings();
+    std::vector<gl::Varying> &fragmentVaryings = fragmentShader->getVaryings();
+    std::vector<gl::Varying> &vertexVaryings = vertexShader->getVaryings();
 
     for (size_t fragVaryingIndex = 0; fragVaryingIndex < fragmentVaryings.size(); fragVaryingIndex++)
     {
-        sh::Varying *input = &fragmentVaryings[fragVaryingIndex];
+        gl::Varying *input = &fragmentVaryings[fragVaryingIndex];
         bool matched = false;
 
         for (size_t vertVaryingIndex = 0; vertVaryingIndex < vertexVaryings.size(); vertVaryingIndex++)
         {
-            sh::Varying *output = &vertexVaryings[vertVaryingIndex];
+            gl::Varying *output = &vertexVaryings[vertVaryingIndex];
             if (output->name == input->name)
             {
                 if (!linkValidateVariables(infoLog, output->name, *input, *output))
@@ -1034,9 +1075,7 @@ bool ProgramBinary::load(InfoLog &infoLog, const void *binary, GLsizei length)
     if (memcmp(commitString, ANGLE_COMMIT_HASH, sizeof(unsigned char) * ANGLE_COMMIT_HASH_SIZE) != 0)
     {
         infoLog.append("Invalid program binary version.");
-#if !defined(ANGLE_PLATFORM_WINRT)
         return false;
- #endif
     }
 
     int compileFlags = 0;
@@ -1044,7 +1083,9 @@ bool ProgramBinary::load(InfoLog &infoLog, const void *binary, GLsizei length)
     if (compileFlags != ANGLE_COMPILE_OPTIMIZATION_LEVEL)
     {
         infoLog.append("Mismatched compilation flags.");
+#if !defined(ANGLE_PLATFORM_WINRT)
         return false;
+#endif
     }
 
     for (int i = 0; i < MAX_VERTEX_ATTRIBS; ++i)
@@ -1118,9 +1159,9 @@ bool ProgramBinary::load(InfoLog &infoLog, const void *binary, GLsizei length)
         stream.read(&matrixStride);
         stream.read(&isRowMajorMatrix);
 
-        const sh::BlockMemberInfo blockInfo(offset, arrayStride, matrixStride, isRowMajorMatrix);
+        const gl::BlockMemberInfo blockInfo(offset, arrayStride, matrixStride, isRowMajorMatrix);
 
-        mUniforms[i] = new Uniform(type, precision, name, arraySize, blockIndex, blockInfo);
+        mUniforms[i] = new LinkedUniform(type, precision, name, arraySize, blockIndex, blockInfo);
         
         stream.read(&mUniforms[i]->psRegisterIndex);
         stream.read(&mUniforms[i]->vsRegisterIndex);
@@ -1176,6 +1217,21 @@ bool ProgramBinary::load(InfoLog &infoLog, const void *binary, GLsizei length)
         stream.read(&mUniformIndex[i].index);
     }
 
+    stream.read(&mTransformFeedbackBufferMode);
+    stream.read(&size);
+    mTransformFeedbackLinkedVaryings.resize(size);
+    for (size_t i = 0; i < mTransformFeedbackLinkedVaryings.size(); i++)
+    {
+        LinkedVarying &varying = mTransformFeedbackLinkedVaryings[i];
+
+        stream.read(&varying.name);
+        stream.read(&varying.type);
+        stream.read(&varying.size);
+        stream.read(&varying.semanticName);
+        stream.read(&varying.semanticIndex);
+        stream.read(&varying.semanticIndexCount);
+    }
+
     stream.read(&mVertexHLSL);
     stream.read(&mVertexWorkarounds);
 
@@ -1201,7 +1257,9 @@ bool ProgramBinary::load(InfoLog &infoLog, const void *binary, GLsizei length)
         const char *vertexShaderFunction = (const char*) binary + stream.offset();
 
         rx::ShaderExecutable *shaderExecutable = mRenderer->loadExecutable(reinterpret_cast<const DWORD*>(vertexShaderFunction),
-                                                                           vertexShaderSize, rx::SHADER_VERTEX);
+                                                                           vertexShaderSize, rx::SHADER_VERTEX,
+                                                                           mTransformFeedbackLinkedVaryings,
+                                                                           (mTransformFeedbackBufferMode == GL_SEPARATE_ATTRIBS));
         if (!shaderExecutable)
         {
             infoLog.append("Could not create vertex shader.");
@@ -1218,7 +1276,8 @@ bool ProgramBinary::load(InfoLog &infoLog, const void *binary, GLsizei length)
 
     const char *pixelShaderFunction = (const char*) binary + stream.offset();
     mPixelExecutable = mRenderer->loadExecutable(reinterpret_cast<const DWORD*>(pixelShaderFunction),
-                                                 pixelShaderSize, rx::SHADER_PIXEL);
+                                                 pixelShaderSize, rx::SHADER_PIXEL, mTransformFeedbackLinkedVaryings,
+                                                 (mTransformFeedbackBufferMode == GL_SEPARATE_ATTRIBS));
     if (!mPixelExecutable)
     {
         infoLog.append("Could not create pixel shader.");
@@ -1233,7 +1292,8 @@ bool ProgramBinary::load(InfoLog &infoLog, const void *binary, GLsizei length)
     {
         const char *geometryShaderFunction = (const char*) binary + stream.offset();
         mGeometryExecutable = mRenderer->loadExecutable(reinterpret_cast<const DWORD*>(geometryShaderFunction),
-                                                        geometryShaderSize, rx::SHADER_GEOMETRY);
+                                                        geometryShaderSize, rx::SHADER_GEOMETRY, mTransformFeedbackLinkedVaryings,
+                                                        (mTransformFeedbackBufferMode == GL_SEPARATE_ATTRIBS));
         if (!mGeometryExecutable)
         {
             infoLog.append("Could not create geometry shader.");
@@ -1307,7 +1367,7 @@ bool ProgramBinary::save(void* binary, GLsizei bufSize, GLsizei *length)
     stream.write(mUniforms.size());
     for (size_t uniformIndex = 0; uniformIndex < mUniforms.size(); ++uniformIndex)
     {
-        const Uniform &uniform = *mUniforms[uniformIndex];
+        const LinkedUniform &uniform = *mUniforms[uniformIndex];
 
         stream.write(uniform.type);
         stream.write(uniform.precision);
@@ -1353,10 +1413,22 @@ bool ProgramBinary::save(void* binary, GLsizei bufSize, GLsizei *length)
         stream.write(mUniformIndex[i].index);
     }
 
+    stream.write(mTransformFeedbackBufferMode);
+    stream.write(mTransformFeedbackLinkedVaryings.size());
+    for (size_t i = 0; i < mTransformFeedbackLinkedVaryings.size(); i++)
+    {
+        const LinkedVarying &varying = mTransformFeedbackLinkedVaryings[i];
+
+        stream.write(varying.name);
+        stream.write(varying.type);
+        stream.write(varying.size);
+        stream.write(varying.semanticName);
+        stream.write(varying.semanticIndex);
+        stream.write(varying.semanticIndexCount);
+    }
+
     stream.write(mVertexHLSL);
     stream.write(mVertexWorkarounds);
-
-    UINT vertexShadersTotalSize = 0;
 
     stream.write(mVertexExecutables.size());
     for (size_t vertexExecutableIndex = 0; vertexExecutableIndex < mVertexExecutables.size(); vertexExecutableIndex++)
@@ -1444,7 +1516,8 @@ GLint ProgramBinary::getLength()
     }
 }
 
-bool ProgramBinary::link(InfoLog &infoLog, const AttributeBindings &attributeBindings, FragmentShader *fragmentShader, VertexShader *vertexShader)
+bool ProgramBinary::link(InfoLog &infoLog, const AttributeBindings &attributeBindings, FragmentShader *fragmentShader, VertexShader *vertexShader,
+                         const std::vector<std::string>& transformFeedbackVaryings, GLenum transformFeedbackBufferMode)
 {
 #if defined(ANGLE_PLATFORM_WP8)
 	ERR("No program linking in WINAPI_PARTITION_PHONE \n");
@@ -1460,6 +1533,9 @@ bool ProgramBinary::link(InfoLog &infoLog, const AttributeBindings &attributeBin
         return false;
     }
 
+    mTransformFeedbackLinkedVaryings.clear();
+    mTransformFeedbackBufferMode = transformFeedbackBufferMode;
+
     mShaderVersion = vertexShader->getShaderVersion();
 
     std::string pixelHLSL = fragmentShader->getHLSL();
@@ -1467,8 +1543,8 @@ bool ProgramBinary::link(InfoLog &infoLog, const AttributeBindings &attributeBin
     mVertexWorkarounds = vertexShader->getD3DWorkarounds();
 
     // Map the varyings to the register file
-    const sh::ShaderVariable *packing[IMPLEMENTATION_MAX_VARYING_VECTORS][4] = {NULL};
-    int registers = mDynamicHLSL->packVaryings(infoLog, packing, fragmentShader);
+    const gl::ShaderVariable *packing[IMPLEMENTATION_MAX_VARYING_VECTORS][4] = {NULL};
+    int registers = mDynamicHLSL->packVaryings(infoLog, packing, fragmentShader, vertexShader, transformFeedbackVaryings);
 
     if (registers < 0)
     {
@@ -1481,8 +1557,10 @@ bool ProgramBinary::link(InfoLog &infoLog, const AttributeBindings &attributeBin
     }
 
     mUsesPointSize = vertexShader->usesPointSize();
+    std::vector<LinkedVarying> linkedVaryings;
     if (!mDynamicHLSL->generateShaderLinkHLSL(infoLog, registers, packing, pixelHLSL, mVertexHLSL,
-                                              fragmentShader, vertexShader, &mOutputVariables))
+                                              fragmentShader, vertexShader, transformFeedbackVaryings,
+                                              &linkedVaryings, &mOutputVariables))
     {
         return false;
     }
@@ -1502,12 +1580,18 @@ bool ProgramBinary::link(InfoLog &infoLog, const AttributeBindings &attributeBin
     // special case for gl_DepthRange, the only built-in uniform (also a struct)
     if (vertexShader->usesDepthRange() || fragmentShader->usesDepthRange())
     {
-        mUniforms.push_back(new Uniform(GL_FLOAT, GL_HIGH_FLOAT, "gl_DepthRange.near", 0, -1, sh::BlockMemberInfo::defaultBlockInfo));
-        mUniforms.push_back(new Uniform(GL_FLOAT, GL_HIGH_FLOAT, "gl_DepthRange.far", 0, -1, sh::BlockMemberInfo::defaultBlockInfo));
-        mUniforms.push_back(new Uniform(GL_FLOAT, GL_HIGH_FLOAT, "gl_DepthRange.diff", 0, -1, sh::BlockMemberInfo::defaultBlockInfo));
+        mUniforms.push_back(new LinkedUniform(GL_FLOAT, GL_HIGH_FLOAT, "gl_DepthRange.near", 0, -1, gl::BlockMemberInfo::defaultBlockInfo));
+        mUniforms.push_back(new LinkedUniform(GL_FLOAT, GL_HIGH_FLOAT, "gl_DepthRange.far", 0, -1, gl::BlockMemberInfo::defaultBlockInfo));
+        mUniforms.push_back(new LinkedUniform(GL_FLOAT, GL_HIGH_FLOAT, "gl_DepthRange.diff", 0, -1, gl::BlockMemberInfo::defaultBlockInfo));
     }
 
     if (!linkUniformBlocks(infoLog, vertexShader->getInterfaceBlocks(), fragmentShader->getInterfaceBlocks()))
+    {
+        success = false;
+    }
+
+    if (!gatherTransformFeedbackLinkedVaryings(infoLog, linkedVaryings, transformFeedbackVaryings,
+                                               transformFeedbackBufferMode, &mTransformFeedbackLinkedVaryings))
     {
         success = false;
     }
@@ -1518,12 +1602,18 @@ bool ProgramBinary::link(InfoLog &infoLog, const AttributeBindings &attributeBin
         GetInputLayoutFromShader(vertexShader->activeAttributes(), defaultInputLayout);
 
         rx::ShaderExecutable *defaultVertexExecutable = getVertexExecutableForInputLayout(defaultInputLayout);
-        mPixelExecutable = mRenderer->compileToExecutable(infoLog, pixelHLSL.c_str(), rx::SHADER_PIXEL, fragmentShader->getD3DWorkarounds());
+        mPixelExecutable = mRenderer->compileToExecutable(infoLog, pixelHLSL.c_str(), rx::SHADER_PIXEL,
+                                                          mTransformFeedbackLinkedVaryings,
+                                                          (mTransformFeedbackBufferMode == GL_SEPARATE_ATTRIBS),
+                                                          fragmentShader->getD3DWorkarounds());
 
         if (usesGeometryShader())
         {
             std::string geometryHLSL = mDynamicHLSL->generateGeometryShaderHLSL(registers, packing, fragmentShader, vertexShader);
-            mGeometryExecutable = mRenderer->compileToExecutable(infoLog, geometryHLSL.c_str(), rx::SHADER_GEOMETRY, rx::ANGLE_D3D_WORKAROUND_NONE);
+            mGeometryExecutable = mRenderer->compileToExecutable(infoLog, geometryHLSL.c_str(), rx::SHADER_GEOMETRY,
+                                                                 mTransformFeedbackLinkedVaryings,
+                                                                 (mTransformFeedbackBufferMode == GL_SEPARATE_ATTRIBS),
+                                                                 rx::ANGLE_D3D_WORKAROUND_NONE);
         }
 
         if (!defaultVertexExecutable || !mPixelExecutable || (usesGeometryShader() && !mGeometryExecutable))
@@ -1539,6 +1629,8 @@ bool ProgramBinary::link(InfoLog &infoLog, const AttributeBindings &attributeBin
 
             SafeDelete(mGeometryExecutable);
             SafeDelete(mPixelExecutable);
+
+            mTransformFeedbackLinkedVaryings.clear();
         }
     }
 
@@ -1550,12 +1642,12 @@ bool ProgramBinary::link(InfoLog &infoLog, const AttributeBindings &attributeBin
 bool ProgramBinary::linkAttributes(InfoLog &infoLog, const AttributeBindings &attributeBindings, FragmentShader *fragmentShader, VertexShader *vertexShader)
 {
     unsigned int usedLocations = 0;
-    const std::vector<sh::Attribute> &activeAttributes = vertexShader->activeAttributes();
+    const std::vector<gl::Attribute> &activeAttributes = vertexShader->activeAttributes();
 
     // Link attributes that have a binding location
     for (unsigned int attributeIndex = 0; attributeIndex < activeAttributes.size(); attributeIndex++)
     {
-        const sh::Attribute &attribute = activeAttributes[attributeIndex];
+        const gl::Attribute &attribute = activeAttributes[attributeIndex];
         const int location = attribute.location == -1 ? attributeBindings.getAttributeBinding(attribute.name) : attribute.location;
 
         mShaderAttributes[attributeIndex] = attribute;
@@ -1574,7 +1666,7 @@ bool ProgramBinary::linkAttributes(InfoLog &infoLog, const AttributeBindings &at
             for (int row = 0; row < rows; row++)
             {
                 const int rowLocation = location + row;
-                sh::ShaderVariable &linkedAttribute = mLinkedAttribute[rowLocation];
+                gl::ShaderVariable &linkedAttribute = mLinkedAttribute[rowLocation];
 
                 // In GLSL 3.00, attribute aliasing produces a link error
                 // In GLSL 1.00, attribute aliasing is allowed
@@ -1596,7 +1688,7 @@ bool ProgramBinary::linkAttributes(InfoLog &infoLog, const AttributeBindings &at
     // Link attributes that don't have a binding location
     for (unsigned int attributeIndex = 0; attributeIndex < activeAttributes.size(); attributeIndex++)
     {
-        const sh::Attribute &attribute = activeAttributes[attributeIndex];
+        const gl::Attribute &attribute = activeAttributes[attributeIndex];
         const int location = attribute.location == -1 ? attributeBindings.getAttributeBinding(attribute.name) : attribute.location;
 
         if (location == -1)   // Not set by glBindAttribLocation or by location layout qualifier
@@ -1631,7 +1723,7 @@ bool ProgramBinary::linkAttributes(InfoLog &infoLog, const AttributeBindings &at
     return true;
 }
 
-bool ProgramBinary::linkValidateVariablesBase(InfoLog &infoLog, const std::string &variableName, const sh::ShaderVariable &vertexVariable, const sh::ShaderVariable &fragmentVariable, bool validatePrecision)
+bool ProgramBinary::linkValidateVariablesBase(InfoLog &infoLog, const std::string &variableName, const gl::ShaderVariable &vertexVariable, const gl::ShaderVariable &fragmentVariable, bool validatePrecision)
 {
     if (vertexVariable.type != fragmentVariable.type)
     {
@@ -1683,14 +1775,14 @@ bool ProgramBinary::linkValidateFields(InfoLog &infoLog, const std::string &varN
     return true;
 }
 
-bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &uniformName, const sh::Uniform &vertexUniform, const sh::Uniform &fragmentUniform)
+bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &uniformName, const gl::Uniform &vertexUniform, const gl::Uniform &fragmentUniform)
 {
     if (!linkValidateVariablesBase(infoLog, uniformName, vertexUniform, fragmentUniform, true))
     {
         return false;
     }
 
-    if (!linkValidateFields<sh::Uniform>(infoLog, uniformName, vertexUniform, fragmentUniform))
+    if (!linkValidateFields<gl::Uniform>(infoLog, uniformName, vertexUniform, fragmentUniform))
     {
         return false;
     }
@@ -1698,7 +1790,7 @@ bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &u
     return true;
 }
 
-bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &varyingName, const sh::Varying &vertexVarying, const sh::Varying &fragmentVarying)
+bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &varyingName, const gl::Varying &vertexVarying, const gl::Varying &fragmentVarying)
 {
     if (!linkValidateVariablesBase(infoLog, varyingName, vertexVarying, fragmentVarying, false))
     {
@@ -1711,7 +1803,7 @@ bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &v
         return false;
     }
 
-    if (!linkValidateFields<sh::Varying>(infoLog, varyingName, vertexVarying, fragmentVarying))
+    if (!linkValidateFields<gl::Varying>(infoLog, varyingName, vertexVarying, fragmentVarying))
     {
         return false;
     }
@@ -1719,7 +1811,7 @@ bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &v
     return true;
 }
 
-bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &uniformName, const sh::InterfaceBlockField &vertexUniform, const sh::InterfaceBlockField &fragmentUniform)
+bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &uniformName, const gl::InterfaceBlockField &vertexUniform, const gl::InterfaceBlockField &fragmentUniform)
 {
     if (!linkValidateVariablesBase(infoLog, uniformName, vertexUniform, fragmentUniform, true))
     {
@@ -1732,7 +1824,7 @@ bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &u
         return false;
     }
 
-    if (!linkValidateFields<sh::InterfaceBlockField>(infoLog, uniformName, vertexUniform, fragmentUniform))
+    if (!linkValidateFields<gl::InterfaceBlockField>(infoLog, uniformName, vertexUniform, fragmentUniform))
     {
         return false;
     }
@@ -1740,25 +1832,25 @@ bool ProgramBinary::linkValidateVariables(InfoLog &infoLog, const std::string &u
     return true;
 }
 
-bool ProgramBinary::linkUniforms(InfoLog &infoLog, const std::vector<sh::Uniform> &vertexUniforms, const std::vector<sh::Uniform> &fragmentUniforms)
+bool ProgramBinary::linkUniforms(InfoLog &infoLog, const std::vector<gl::Uniform> &vertexUniforms, const std::vector<gl::Uniform> &fragmentUniforms)
 {
     // Check that uniforms defined in the vertex and fragment shaders are identical
-    typedef std::map<std::string, const sh::Uniform*> UniformMap;
+    typedef std::map<std::string, const gl::Uniform*> UniformMap;
     UniformMap linkedUniforms;
 
     for (unsigned int vertexUniformIndex = 0; vertexUniformIndex < vertexUniforms.size(); vertexUniformIndex++)
     {
-        const sh::Uniform &vertexUniform = vertexUniforms[vertexUniformIndex];
+        const gl::Uniform &vertexUniform = vertexUniforms[vertexUniformIndex];
         linkedUniforms[vertexUniform.name] = &vertexUniform;
     }
 
     for (unsigned int fragmentUniformIndex = 0; fragmentUniformIndex < fragmentUniforms.size(); fragmentUniformIndex++)
     {
-        const sh::Uniform &fragmentUniform = fragmentUniforms[fragmentUniformIndex];
+        const gl::Uniform &fragmentUniform = fragmentUniforms[fragmentUniformIndex];
         UniformMap::const_iterator entry = linkedUniforms.find(fragmentUniform.name);
         if (entry != linkedUniforms.end())
         {
-            const sh::Uniform &vertexUniform = *entry->second;
+            const gl::Uniform &vertexUniform = *entry->second;
             const std::string &uniformName = "uniform '" + vertexUniform.name + "'";
             if (!linkValidateVariables(infoLog, uniformName, vertexUniform, fragmentUniform))
             {
@@ -1788,7 +1880,7 @@ bool ProgramBinary::linkUniforms(InfoLog &infoLog, const std::vector<sh::Uniform
     return true;
 }
 
-int totalRegisterCount(const sh::Uniform &uniform)
+int totalRegisterCount(const gl::Uniform &uniform)
 {
     int registerCount = 0;
 
@@ -1837,7 +1929,7 @@ TextureType ProgramBinary::getTextureType(GLenum samplerType, InfoLog &infoLog)
     return TEXTURE_2D;
 }
 
-bool ProgramBinary::defineUniform(GLenum shader, const sh::Uniform &constant, InfoLog &infoLog)
+bool ProgramBinary::defineUniform(GLenum shader, const gl::Uniform &constant, InfoLog &infoLog)
 {
     if (constant.isStruct())
     {
@@ -1849,9 +1941,9 @@ bool ProgramBinary::defineUniform(GLenum shader, const sh::Uniform &constant, In
             {
                 for (size_t fieldIndex = 0; fieldIndex < constant.fields.size(); fieldIndex++)
                 {
-                    const sh::Uniform &field = constant.fields[fieldIndex];
+                    const gl::Uniform &field = constant.fields[fieldIndex];
                     const std::string &uniformName = constant.name + ArrayString(elementIndex) + "." + field.name;
-                    sh::Uniform fieldUniform(field.type, field.precision, uniformName.c_str(), field.arraySize,
+                    gl::Uniform fieldUniform(field.type, field.precision, uniformName.c_str(), field.arraySize,
                                              elementRegisterIndex, field.elementIndex);
 
                     fieldUniform.fields = field.fields;
@@ -1867,10 +1959,10 @@ bool ProgramBinary::defineUniform(GLenum shader, const sh::Uniform &constant, In
         {
             for (size_t fieldIndex = 0; fieldIndex < constant.fields.size(); fieldIndex++)
             {
-                const sh::Uniform &field = constant.fields[fieldIndex];
+                const gl::Uniform &field = constant.fields[fieldIndex];
                 const std::string &uniformName = constant.name + "." + field.name;
 
-                sh::Uniform fieldUniform(field.type, field.precision, uniformName.c_str(), field.arraySize,
+                gl::Uniform fieldUniform(field.type, field.precision, uniformName.c_str(), field.arraySize,
                                          field.registerIndex, field.elementIndex);
 
                 fieldUniform.fields = field.fields;
@@ -1928,7 +2020,7 @@ bool ProgramBinary::defineUniform(GLenum shader, const sh::Uniform &constant, In
         while (samplerIndex < constant.registerIndex + constant.arraySize);
     }
 
-    Uniform *uniform = NULL;
+    LinkedUniform *uniform = NULL;
     GLint location = getUniformLocation(constant.name);
 
     if (location >= 0)   // Previously defined, type and precision must match
@@ -1937,7 +2029,7 @@ bool ProgramBinary::defineUniform(GLenum shader, const sh::Uniform &constant, In
     }
     else
     {
-        uniform = new Uniform(constant.type, constant.precision, constant.name, constant.arraySize, -1, sh::BlockMemberInfo::defaultBlockInfo);
+        uniform = new LinkedUniform(constant.type, constant.precision, constant.name, constant.arraySize, -1, gl::BlockMemberInfo::defaultBlockInfo);
         uniform->registerElement = constant.elementIndex;
     }
 
@@ -1990,7 +2082,7 @@ bool ProgramBinary::defineUniform(GLenum shader, const sh::Uniform &constant, In
     return true;
 }
 
-bool ProgramBinary::areMatchingInterfaceBlocks(InfoLog &infoLog, const sh::InterfaceBlock &vertexInterfaceBlock, const sh::InterfaceBlock &fragmentInterfaceBlock)
+bool ProgramBinary::areMatchingInterfaceBlocks(InfoLog &infoLog, const gl::InterfaceBlock &vertexInterfaceBlock, const gl::InterfaceBlock &fragmentInterfaceBlock)
 {
     const char* blockName = vertexInterfaceBlock.name.c_str();
 
@@ -2016,8 +2108,8 @@ bool ProgramBinary::areMatchingInterfaceBlocks(InfoLog &infoLog, const sh::Inter
     const unsigned int numBlockMembers = vertexInterfaceBlock.fields.size();
     for (unsigned int blockMemberIndex = 0; blockMemberIndex < numBlockMembers; blockMemberIndex++)
     {
-        const sh::InterfaceBlockField &vertexMember = vertexInterfaceBlock.fields[blockMemberIndex];
-        const sh::InterfaceBlockField &fragmentMember = fragmentInterfaceBlock.fields[blockMemberIndex];
+        const gl::InterfaceBlockField &vertexMember = vertexInterfaceBlock.fields[blockMemberIndex];
+        const gl::InterfaceBlockField &fragmentMember = fragmentInterfaceBlock.fields[blockMemberIndex];
 
         if (vertexMember.name != fragmentMember.name)
         {
@@ -2036,25 +2128,26 @@ bool ProgramBinary::areMatchingInterfaceBlocks(InfoLog &infoLog, const sh::Inter
     return true;
 }
 
-bool ProgramBinary::linkUniformBlocks(InfoLog &infoLog, const sh::ActiveInterfaceBlocks &vertexInterfaceBlocks, const sh::ActiveInterfaceBlocks &fragmentInterfaceBlocks)
+bool ProgramBinary::linkUniformBlocks(InfoLog &infoLog, const std::vector<gl::InterfaceBlock> &vertexInterfaceBlocks,
+                                      const std::vector<gl::InterfaceBlock> &fragmentInterfaceBlocks)
 {
     // Check that interface blocks defined in the vertex and fragment shaders are identical
-    typedef std::map<std::string, const sh::InterfaceBlock*> UniformBlockMap;
+    typedef std::map<std::string, const gl::InterfaceBlock*> UniformBlockMap;
     UniformBlockMap linkedUniformBlocks;
 
     for (unsigned int blockIndex = 0; blockIndex < vertexInterfaceBlocks.size(); blockIndex++)
     {
-        const sh::InterfaceBlock &vertexInterfaceBlock = vertexInterfaceBlocks[blockIndex];
+        const gl::InterfaceBlock &vertexInterfaceBlock = vertexInterfaceBlocks[blockIndex];
         linkedUniformBlocks[vertexInterfaceBlock.name] = &vertexInterfaceBlock;
     }
 
     for (unsigned int blockIndex = 0; blockIndex < fragmentInterfaceBlocks.size(); blockIndex++)
     {
-        const sh::InterfaceBlock &fragmentInterfaceBlock = fragmentInterfaceBlocks[blockIndex];
+        const gl::InterfaceBlock &fragmentInterfaceBlock = fragmentInterfaceBlocks[blockIndex];
         UniformBlockMap::const_iterator entry = linkedUniformBlocks.find(fragmentInterfaceBlock.name);
         if (entry != linkedUniformBlocks.end())
         {
-            const sh::InterfaceBlock &vertexInterfaceBlock = *entry->second;
+            const gl::InterfaceBlock &vertexInterfaceBlock = *entry->second;
             if (!areMatchingInterfaceBlocks(infoLog, vertexInterfaceBlock, fragmentInterfaceBlock))
             {
                 return false;
@@ -2081,11 +2174,69 @@ bool ProgramBinary::linkUniformBlocks(InfoLog &infoLog, const sh::ActiveInterfac
     return true;
 }
 
-void ProgramBinary::defineUniformBlockMembers(const std::vector<sh::InterfaceBlockField> &fields, const std::string &prefix, int blockIndex, BlockInfoItr *blockInfoItr, std::vector<unsigned int> *blockUniformIndexes)
+bool ProgramBinary::gatherTransformFeedbackLinkedVaryings(InfoLog &infoLog, const std::vector<LinkedVarying> &linkedVaryings,
+                                                          const std::vector<std::string> &transformFeedbackVaryingNames,
+                                                          GLenum transformFeedbackBufferMode,
+                                                          std::vector<LinkedVarying> *outTransformFeedbackLinkedVaryings) const
+{
+    size_t totalComponents = 0;
+    const size_t maxSeparateComponents = mRenderer->getMaxTransformFeedbackSeparateComponents();
+    const size_t maxInterleavedComponents = mRenderer->getMaxTransformFeedbackInterleavedComponents();
+
+    // Gather the linked varyings that are used for transform feedback, they should all exist.
+    outTransformFeedbackLinkedVaryings->clear();
+    for (size_t i = 0; i < transformFeedbackVaryingNames.size(); i++)
+    {
+        bool found = false;
+        for (size_t j = 0; j < linkedVaryings.size(); j++)
+        {
+            if (transformFeedbackVaryingNames[i] == linkedVaryings[j].name)
+            {
+                for (size_t k = 0; k < outTransformFeedbackLinkedVaryings->size(); k++)
+                {
+                    if (outTransformFeedbackLinkedVaryings->at(k).name == linkedVaryings[j].name)
+                    {
+                        infoLog.append("Two transform feedback varyings specify the same output variable (%s).", linkedVaryings[j].name.c_str());
+                        return false;
+                    }
+                }
+
+                size_t componentCount = linkedVaryings[j].semanticIndexCount * 4;
+                if (transformFeedbackBufferMode == GL_SEPARATE_ATTRIBS &&
+                    componentCount > maxSeparateComponents)
+                {
+                    infoLog.append("Transform feedback varying's %s components (%u) exceed the maximum separate components (%u).",
+                                   linkedVaryings[j].name.c_str(), componentCount, maxSeparateComponents);
+                    return false;
+                }
+
+                totalComponents += componentCount;
+
+                outTransformFeedbackLinkedVaryings->push_back(linkedVaryings[j]);
+                found = true;
+                break;
+            }
+        }
+
+        // All transform feedback varyings are expected to exist since packVaryings checks for them.
+        ASSERT(found);
+    }
+
+    if (transformFeedbackBufferMode == GL_INTERLEAVED_ATTRIBS && totalComponents > maxInterleavedComponents)
+    {
+        infoLog.append("Transform feedback varying total components (%u) exceed the maximum interleaved components (%u).",
+                       totalComponents, maxInterleavedComponents);
+        return false;
+    }
+
+    return true;
+}
+
+void ProgramBinary::defineUniformBlockMembers(const std::vector<gl::InterfaceBlockField> &fields, const std::string &prefix, int blockIndex, BlockInfoItr *blockInfoItr, std::vector<unsigned int> *blockUniformIndexes)
 {
     for (unsigned int uniformIndex = 0; uniformIndex < fields.size(); uniformIndex++)
     {
-        const sh::InterfaceBlockField &field = fields[uniformIndex];
+        const gl::InterfaceBlockField &field = fields[uniformIndex];
         const std::string &fieldName = (prefix.empty() ? field.name : prefix + "." + field.name);
 
         if (!field.fields.empty())
@@ -2105,8 +2256,8 @@ void ProgramBinary::defineUniformBlockMembers(const std::vector<sh::InterfaceBlo
         }
         else
         {
-            Uniform *newUniform = new Uniform(field.type, field.precision, fieldName, field.arraySize,
-                                              blockIndex, **blockInfoItr);
+            LinkedUniform *newUniform = new LinkedUniform(field.type, field.precision, fieldName, field.arraySize,
+                                                          blockIndex, **blockInfoItr);
 
             // add to uniform list, but not index, since uniform block uniforms have no location
             blockUniformIndexes->push_back(mUniforms.size());
@@ -2116,7 +2267,7 @@ void ProgramBinary::defineUniformBlockMembers(const std::vector<sh::InterfaceBlo
     }
 }
 
-bool ProgramBinary::defineUniformBlock(InfoLog &infoLog, GLenum shader, const sh::InterfaceBlock &interfaceBlock)
+bool ProgramBinary::defineUniformBlock(InfoLog &infoLog, GLenum shader, const gl::InterfaceBlock &interfaceBlock)
 {
     // create uniform block entries if they do not exist
     if (getUniformBlockIndex(interfaceBlock.name) == GL_INVALID_INDEX)
@@ -2323,7 +2474,7 @@ GLint ProgramBinary::getActiveUniformMaxLength() const
 
 GLint ProgramBinary::getActiveUniformi(GLuint index, GLenum pname) const
 {
-    const gl::Uniform& uniform = *mUniforms[index];
+    const gl::LinkedUniform& uniform = *mUniforms[index];
 
     switch (pname)
     {
@@ -2586,7 +2737,7 @@ void ProgramBinary::initializeUniformStorage()
     unsigned int fragmentRegisters = 0;
     for (size_t uniformIndex = 0; uniformIndex < mUniforms.size(); uniformIndex++)
     {
-        const Uniform &uniform = *mUniforms[uniformIndex];
+        const LinkedUniform &uniform = *mUniforms[uniformIndex];
 
         if (!IsSampler(uniform.type))
         {

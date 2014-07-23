@@ -37,6 +37,7 @@ class StreamingIndexBufferInterface;
 class Blit11;
 class Clear11;
 class PixelTransfer11;
+struct PackPixelsParams;
 
 enum
 {
@@ -80,15 +81,16 @@ class Renderer11 : public Renderer
 
     virtual bool applyPrimitiveType(GLenum mode, GLsizei count);
     virtual bool applyRenderTarget(gl::Framebuffer *frameBuffer);
-    virtual void applyShaders(gl::ProgramBinary *programBinary, bool rasterizerDiscard, const gl::VertexFormat inputLayout[]);
+    virtual void applyShaders(gl::ProgramBinary *programBinary, bool rasterizerDiscard, bool transformFeedbackActive, const gl::VertexFormat inputLayout[]);
     virtual void applyUniforms(const gl::ProgramBinary &programBinary);
     virtual GLenum applyVertexBuffer(gl::ProgramBinary *programBinary, const gl::VertexAttribute vertexAttributes[], gl::VertexAttribCurrentValueData currentValues[],
                                      GLint first, GLsizei count, GLsizei instances);
     virtual GLenum applyIndexBuffer(const GLvoid *indices, gl::Buffer *elementArrayBuffer, GLsizei count, GLenum mode, GLenum type, TranslatedIndexData *indexInfo);
     virtual void applyTransformFeedbackBuffers(gl::Buffer *transformFeedbackBuffers[], GLintptr offsets[]);
 
-    virtual void drawArrays(GLenum mode, GLsizei count, GLsizei instances);
-    virtual void drawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, gl::Buffer *elementArrayBuffer, const TranslatedIndexData &indexInfo, GLsizei instances);
+    virtual void drawArrays(GLenum mode, GLsizei count, GLsizei instances, bool transformFeedbackActive);
+    virtual void drawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices,
+                              gl::Buffer *elementArrayBuffer, const TranslatedIndexData &indexInfo, GLsizei instances);
 
     virtual void clear(const gl::ClearParameters &clearParams, gl::Framebuffer *frameBuffer);
 
@@ -131,13 +133,17 @@ class Renderer11 : public Renderer
     virtual unsigned int getMaxFragmentShaderUniformBuffers() const;
     virtual unsigned int getReservedVertexUniformBuffers() const;
     virtual unsigned int getReservedFragmentUniformBuffers() const;
+    unsigned int getReservedVaryings() const;
     virtual unsigned int getMaxTransformFeedbackBuffers() const;
+    virtual unsigned int getMaxTransformFeedbackSeparateComponents() const;
+    virtual unsigned int getMaxTransformFeedbackInterleavedComponents() const;
     virtual unsigned int getMaxUniformBufferSize() const;
     virtual bool getNonPower2TextureSupport() const;
     virtual bool getDepthTextureSupport() const;
     virtual bool getOcclusionQuerySupport() const;
     virtual bool getInstancingSupport() const;
     virtual bool getTextureFilterAnisotropySupport() const;
+    virtual bool getPBOSupport() const;
     virtual float getTextureMaxAnisotropy() const;
     virtual bool getShareHandleSupport() const;
     virtual bool getDerivativeInstructionSupport() const;
@@ -181,28 +187,32 @@ class Renderer11 : public Renderer
 
     virtual bool blitRect(gl::Framebuffer *readTarget, const gl::Rectangle &readRect, gl::Framebuffer *drawTarget, const gl::Rectangle &drawRect,
                           const gl::Rectangle *scissor, bool blitRenderTarget, bool blitDepth, bool blitStencil, GLenum filter);
-    virtual void readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
-                            GLsizei outputPitch, bool packReverseRowOrder, GLint packAlignment, void* pixels);
+    virtual void readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
+                            GLenum type, GLuint outputPitch, const gl::PixelPackState &pack, void* pixels);
 
     // RenderTarget creation
     virtual RenderTarget *createRenderTarget(SwapChain *swapChain, bool depth);
     virtual RenderTarget *createRenderTarget(int width, int height, GLenum format, GLsizei samples);
 
     // Shader operations
-    virtual ShaderExecutable *loadExecutable(const void *function, size_t length, rx::ShaderType type);
-    virtual UniformStorage *createUniformStorage(size_t storageSize);
+    virtual ShaderExecutable *loadExecutable(const void *function, size_t length, rx::ShaderType type,
+                                             const std::vector<gl::LinkedVarying> &transformFeedbackVaryings,
+                                             bool separatedOutputBuffers);
 #if !defined(ANGLE_PLATFORM_WP8)
-    virtual ShaderExecutable *compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type, D3DWorkaroundType workaround);
+    virtual ShaderExecutable *compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type,
+                                                  const std::vector<gl::LinkedVarying> &transformFeedbackVaryings,
+                                                  bool separatedOutputBuffers, D3DWorkaroundType workaround);
 #endif
+    virtual UniformStorage *createUniformStorage(size_t storageSize);
 
     // Image operations
     virtual Image *createImage();
     virtual void generateMipmap(Image *dest, Image *source);
     virtual TextureStorage *createTextureStorage2D(SwapChain *swapChain);
-    virtual TextureStorage *createTextureStorage2D(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height);
-    virtual TextureStorage *createTextureStorageCube(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, int size);
-    virtual TextureStorage *createTextureStorage3D(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth);
-    virtual TextureStorage *createTextureStorage2DArray(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth);
+    virtual TextureStorage *createTextureStorage2D(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, int levels);
+    virtual TextureStorage *createTextureStorageCube(GLenum internalformat, bool renderTarget, int size, int levels);
+    virtual TextureStorage *createTextureStorage3D(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth, int levels);
+    virtual TextureStorage *createTextureStorage2DArray(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth, int levels);
 
     // Buffer creation
     virtual VertexBuffer *createVertexBuffer();
@@ -233,6 +243,7 @@ class Renderer11 : public Renderer
     bool getRenderTargetResource(gl::Renderbuffer *colorbuffer, unsigned int *subresourceIndex, ID3D11Texture2D **resource);
     void unapplyRenderTargets();
     void setOneTimeRenderTarget(ID3D11RenderTargetView *renderTargetView);
+    void packPixels(ID3D11Texture2D *readTexture, const PackPixelsParams &params, void *pixelsOut);
 
     virtual bool getLUID(LUID *adapterLuid) const;
     virtual GLenum getNativeTextureFormat(GLenum internalFormat) const;
@@ -247,13 +258,11 @@ class Renderer11 : public Renderer
     DISALLOW_COPY_AND_ASSIGN(Renderer11);
 
 	EGLint createDevice();
-
     void drawLineLoop(GLsizei count, GLenum type, const GLvoid *indices, int minIndex, gl::Buffer *elementArrayBuffer);
     void drawTriangleFan(GLsizei count, GLenum type, const GLvoid *indices, int minIndex, gl::Buffer *elementArrayBuffer, int instances);
 
-    void readTextureData(ID3D11Texture2D *texture, unsigned int subResource, const gl::Rectangle &area,
-                         GLenum format, GLenum type, GLsizei outputPitch, bool packReverseRowOrder,
-                         GLint packAlignment, void *pixels);
+    void readTextureData(ID3D11Texture2D *texture, unsigned int subResource, const gl::Rectangle &area, GLenum format,
+                         GLenum type, GLuint outputPitch, const gl::PixelPackState &pack, void *pixels);
 
     rx::Range getViewportBounds() const;
 
@@ -323,10 +332,6 @@ class Renderer11 : public Renderer
     // Currently applied sampler states
     bool mForceSetVertexSamplerStates[gl::IMPLEMENTATION_MAX_VERTEX_TEXTURE_IMAGE_UNITS];
     gl::SamplerState mCurVertexSamplerStates[gl::IMPLEMENTATION_MAX_VERTEX_TEXTURE_IMAGE_UNITS];
-	
-    // Currently applied textures
-    unsigned int mCurVertexTextureSerials[gl::IMPLEMENTATION_MAX_VERTEX_TEXTURE_IMAGE_UNITS];
-    unsigned int mCurPixelTextureSerials[gl::MAX_TEXTURE_IMAGE_UNITS];
 
     bool mForceSetPixelSamplerStates[gl::MAX_TEXTURE_IMAGE_UNITS];
     gl::SamplerState mCurPixelSamplerStates[gl::MAX_TEXTURE_IMAGE_UNITS];
@@ -366,8 +371,8 @@ class Renderer11 : public Renderer
     D3D11_PRIMITIVE_TOPOLOGY mCurrentPrimitiveTopology;
 
     // Currently applied index buffer
-    unsigned int mAppliedIBSerial;
-    unsigned int mAppliedStorageIBSerial;
+    ID3D11Buffer *mAppliedIB;
+    DXGI_FORMAT mAppliedIBFormat;
     unsigned int mAppliedIBOffset;
 
     // Currently applied transform feedback buffers
@@ -377,6 +382,7 @@ class Renderer11 : public Renderer
     // Currently applied shaders
     ID3D11VertexShader *mAppliedVertexShader;
     ID3D11GeometryShader *mAppliedGeometryShader;
+    ID3D11GeometryShader *mCurPointGeometryShader;
     ID3D11PixelShader *mAppliedPixelShader;
 
     dx_VertexConstants mVertexConstants;

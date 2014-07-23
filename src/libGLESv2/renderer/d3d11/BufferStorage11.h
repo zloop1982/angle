@@ -10,12 +10,12 @@
 #define LIBGLESV2_RENDERER_BUFFERSTORAGE11_H_
 
 #include "libGLESv2/renderer/BufferStorage.h"
+#include "libGLESv2/angletypes.h"
 
 namespace rx
 {
 class Renderer;
 class Renderer11;
-class DirectBufferStorage11;
 
 enum BufferUsage
 {
@@ -23,7 +23,23 @@ enum BufferUsage
     BUFFER_USAGE_VERTEX_OR_TRANSFORM_FEEDBACK,
     BUFFER_USAGE_INDEX,
     BUFFER_USAGE_PIXEL_UNPACK,
+    BUFFER_USAGE_PIXEL_PACK,
     BUFFER_USAGE_UNIFORM,
+};
+
+struct PackPixelsParams
+{
+    PackPixelsParams();
+    PackPixelsParams(const gl::Rectangle &area, GLenum format, GLenum type, GLuint outputPitch,
+                     const gl::PixelPackState &pack, ptrdiff_t offset);
+
+    gl::Rectangle area;
+    GLenum format;
+    GLenum type;
+    GLuint outputPitch;
+    gl::Buffer *packBuffer;
+    gl::PixelPackState pack;
+    ptrdiff_t offset;
 };
 
 typedef size_t DataRevision;
@@ -47,16 +63,21 @@ class BufferStorage11 : public BufferStorage
 
     ID3D11Buffer *getBuffer(BufferUsage usage);
     ID3D11ShaderResourceView *getSRV(DXGI_FORMAT srvFormat);
+    void packPixels(ID3D11Texture2D *srcTexure, UINT srcSubresource, const PackPixelsParams &params);
 
     virtual bool isMapped() const;
     virtual void *map(GLbitfield access);
     virtual void unmap();
 
   private:
-    Renderer11 *mRenderer;
-    bool mIsMapped;
+    class TypedBufferStorage11;
+    class NativeBuffer11;
+    class PackStorage11;
 
-    std::map<BufferUsage, DirectBufferStorage11*> mDirectBuffers;
+    Renderer11 *mRenderer;
+    TypedBufferStorage11 *mMappedStorage;
+
+    std::map<BufferUsage, TypedBufferStorage11*> mTypedBuffers;
 
     typedef std::pair<ID3D11Buffer *, ID3D11ShaderResourceView *> BufferSRVPair;
     std::map<DXGI_FORMAT, BufferSRVPair> mBufferResourceViews;
@@ -70,42 +91,11 @@ class BufferStorage11 : public BufferStorage
     size_t mSize;
 
     void markBufferUsage();
-    DirectBufferStorage11 *getStagingBuffer();
+    NativeBuffer11 *getStagingBuffer();
+    PackStorage11 *getPackStorage();
 
-    DirectBufferStorage11 *getStorage(BufferUsage usage);
-    DirectBufferStorage11 *getLatestStorage() const;
-};
-
-// Each instance of BufferStorageD3DBuffer11 is specialized for a class of D3D binding points
-// - vertex/transform feedback buffers
-// - index buffers
-// - pixel unpack buffers
-// - uniform buffers
-class DirectBufferStorage11
-{
-  public:
-    DirectBufferStorage11(Renderer11 *renderer, BufferUsage usage);
-    ~DirectBufferStorage11();
-
-    BufferUsage getUsage() const;
-    ID3D11Buffer *getD3DBuffer() const { return mDirectBuffer; }
-    size_t getSize() const {return mBufferSize; }
-
-    bool copyFromStorage(DirectBufferStorage11 *source, size_t sourceOffset, size_t size, size_t destOffset);
-    void resize(size_t size, bool preserveData);
-
-    DataRevision getDataRevision() const { return mRevision; }
-    void setDataRevision(DataRevision rev) { mRevision = rev; }
-
-  private:
-    Renderer11 *mRenderer;
-    const BufferUsage mUsage;
-    DataRevision mRevision;
-
-    ID3D11Buffer *mDirectBuffer;
-    size_t mBufferSize;
-
-    static void fillBufferDesc(D3D11_BUFFER_DESC* bufferDesc, Renderer *renderer, BufferUsage usage, unsigned int bufferSize);
+    TypedBufferStorage11 *getStorage(BufferUsage usage);
+    TypedBufferStorage11 *getLatestStorage() const;
 };
 
 }

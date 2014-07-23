@@ -18,10 +18,11 @@
 #if defined(ANGLE_PLATFORM_WP8)
 #define D3DCOMPILE_OPTIMIZATION_LEVEL3            (1 << 15)
 #endif // #if defined(ANGLE_PLATFORM_WP8)
-
 #if !defined(ANGLE_COMPILE_OPTIMIZATION_LEVEL)
-#define ANGLE_COMPILE_OPTIMIZATION_LEVEL D3DCOMPILE_OPTIMIZATION_LEVEL3
-#endif // ANGLE_COMPILE_OPTIMIZATION_LEVEL
+// WARNING: D3DCOMPILE_OPTIMIZATION_LEVEL3 may lead to a DX9 shader compiler hang.
+// It should only be used selectively to work around specific bugs.
+#define ANGLE_COMPILE_OPTIMIZATION_LEVEL D3DCOMPILE_OPTIMIZATION_LEVEL1
+#endif
 
 const int versionWindowsVista = MAKEWORD(0x00, 0x06);
 const int versionWindows7 = MAKEWORD(0x01, 0x06);
@@ -47,6 +48,7 @@ namespace gl
 {
 class InfoLog;
 class ProgramBinary;
+struct LinkedVarying;
 class VertexAttribute;
 class Buffer;
 class Texture;
@@ -106,6 +108,7 @@ class Renderer
 {
   public:
     explicit Renderer(egl::Display *display);
+    virtual ~Renderer();
 
     virtual EGLint initialize() = 0;
     virtual bool resetDevice() = 0;
@@ -134,7 +137,7 @@ class Renderer
                              bool ignoreViewport) = 0;
 
     virtual bool applyRenderTarget(gl::Framebuffer *frameBuffer) = 0;
-    virtual void applyShaders(gl::ProgramBinary *programBinary, bool rasterizerDiscard, const gl::VertexFormat inputLayout[]) = 0;
+    virtual void applyShaders(gl::ProgramBinary *programBinary, bool rasterizerDiscard, bool transformFeedbackActive, const gl::VertexFormat inputLayout[]) = 0;
     virtual void applyUniforms(const gl::ProgramBinary &programBinary) = 0;
     virtual bool applyPrimitiveType(GLenum primitiveType, GLsizei elementCount) = 0;
     virtual GLenum applyVertexBuffer(gl::ProgramBinary *programBinary, const gl::VertexAttribute vertexAttributes[], gl::VertexAttribCurrentValueData currentValues[],
@@ -142,8 +145,9 @@ class Renderer
     virtual GLenum applyIndexBuffer(const GLvoid *indices, gl::Buffer *elementArrayBuffer, GLsizei count, GLenum mode, GLenum type, TranslatedIndexData *indexInfo) = 0;
     virtual void applyTransformFeedbackBuffers(gl::Buffer *transformFeedbackBuffers[], GLintptr offsets[]) = 0;
 
-    virtual void drawArrays(GLenum mode, GLsizei count, GLsizei instances) = 0;
-    virtual void drawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, gl::Buffer *elementArrayBuffer, const TranslatedIndexData &indexInfo, GLsizei instances) = 0;
+    virtual void drawArrays(GLenum mode, GLsizei count, GLsizei instances, bool transformFeedbackActive) = 0;
+    virtual void drawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices,
+                              gl::Buffer *elementArrayBuffer, const TranslatedIndexData &indexInfo, GLsizei instances) = 0;
 
     virtual void clear(const gl::ClearParameters &clearParams, gl::Framebuffer *frameBuffer) = 0;
 
@@ -189,12 +193,15 @@ class Renderer
     virtual unsigned int getReservedVertexUniformBuffers() const = 0;
     virtual unsigned int getReservedFragmentUniformBuffers() const = 0;
     virtual unsigned int getMaxTransformFeedbackBuffers() const = 0;
+    virtual unsigned int getMaxTransformFeedbackSeparateComponents() const = 0;
+    virtual unsigned int getMaxTransformFeedbackInterleavedComponents() const = 0;
     virtual unsigned int getMaxUniformBufferSize() const = 0;
     virtual bool getNonPower2TextureSupport() const = 0;
     virtual bool getDepthTextureSupport() const = 0;
     virtual bool getOcclusionQuerySupport() const = 0;
     virtual bool getInstancingSupport() const = 0;
     virtual bool getTextureFilterAnisotropySupport() const = 0;
+    virtual bool getPBOSupport() const = 0;
     virtual float getTextureMaxAnisotropy() const = 0;
     virtual bool getShareHandleSupport() const = 0;
     virtual bool getDerivativeInstructionSupport() const = 0;
@@ -237,28 +244,32 @@ class Renderer
 
     virtual bool blitRect(gl::Framebuffer *readTarget, const gl::Rectangle &readRect, gl::Framebuffer *drawTarget, const gl::Rectangle &drawRect,
                           const gl::Rectangle *scissor, bool blitRenderTarget, bool blitDepth, bool blitStencil, GLenum filter) = 0;
-    virtual void readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
-                            GLsizei outputPitch, bool packReverseRowOrder, GLint packAlignment, void* pixels) = 0;
+    virtual void readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
+                            GLenum type, GLuint outputPitch, const gl::PixelPackState &pack, void* pixels) = 0;
 
     // RenderTarget creation
     virtual RenderTarget *createRenderTarget(SwapChain *swapChain, bool depth) = 0;
     virtual RenderTarget *createRenderTarget(int width, int height, GLenum format, GLsizei samples) = 0;
 
     // Shader operations
-    virtual ShaderExecutable *loadExecutable(const void *function, size_t length, rx::ShaderType type) = 0;
-    virtual UniformStorage *createUniformStorage(size_t storageSize) = 0;
+    virtual ShaderExecutable *loadExecutable(const void *function, size_t length, rx::ShaderType type,
+                                             const std::vector<gl::LinkedVarying> &transformFeedbackVaryings,
+                                             bool separatedOutputBuffers) = 0;
 #if !defined(ANGLE_PLATFORM_WP8)
-    virtual ShaderExecutable *compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type, D3DWorkaroundType workaround) = 0;
-#endif //#if !defined(ANGLE_PLATFORM_WP9
+    virtual ShaderExecutable *compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type,
+                                                  const std::vector<gl::LinkedVarying> &transformFeedbackVaryings,
+                                                  bool separatedOutputBuffers, D3DWorkaroundType workaround) = 0;
+#endif
+    virtual UniformStorage *createUniformStorage(size_t storageSize) = 0;
 
     // Image operations
     virtual Image *createImage() = 0;
     virtual void generateMipmap(Image *dest, Image *source) = 0;
     virtual TextureStorage *createTextureStorage2D(SwapChain *swapChain) = 0;
-    virtual TextureStorage *createTextureStorage2D(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height) = 0;
-    virtual TextureStorage *createTextureStorageCube(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, int size) = 0;
-    virtual TextureStorage *createTextureStorage3D(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth) = 0;
-    virtual TextureStorage *createTextureStorage2DArray(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth) = 0;
+    virtual TextureStorage *createTextureStorage2D(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, int levels) = 0;
+    virtual TextureStorage *createTextureStorageCube(GLenum internalformat, bool renderTarget, int size, int levels) = 0;
+    virtual TextureStorage *createTextureStorage3D(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth, int levels) = 0;
+    virtual TextureStorage *createTextureStorage2DArray(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth, int levels) = 0;
 
     // Buffer creation
     virtual VertexBuffer *createVertexBuffer() = 0;

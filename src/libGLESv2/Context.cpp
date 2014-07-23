@@ -369,6 +369,7 @@ void Context::makeCurrent(egl::Surface *surface)
         mSupportsDepthTextures = mRenderer->getDepthTextureSupport();
         mSupportsTextureFilterAnisotropy = mRenderer->getTextureFilterAnisotropySupport();
         mSupports32bitIndices = mRenderer->get32BitIndexSupport();
+        mSupportsPBOs = mRenderer->getPBOSupport();
 
         mNumCompressedTextureFormats = 0;
         if (supportsDXT1Textures())
@@ -1065,12 +1066,12 @@ Buffer *Context::getBuffer(GLuint handle)
     return mResourceManager->getBuffer(handle);
 }
 
-Shader *Context::getShader(GLuint handle)
+Shader *Context::getShader(GLuint handle) const
 {
     return mResourceManager->getShader(handle);
 }
 
-Program *Context::getProgram(GLuint handle)
+Program *Context::getProgram(GLuint handle) const
 {
     return mResourceManager->getProgram(handle);
 }
@@ -1667,7 +1668,8 @@ bool Context::getBooleanv(GLenum pname, GLboolean *params)
       case GL_BLEND:                     *params = mState.blend.blend;                  break;
       case GL_DITHER:                    *params = mState.blend.dither;                 break;
       case GL_CONTEXT_ROBUST_ACCESS_EXT: *params = mRobustAccess ? GL_TRUE : GL_FALSE;  break;
-      case GL_TRANSFORM_FEEDBACK_ACTIVE: *params = GL_FALSE; UNIMPLEMENTED();           break;
+      case GL_TRANSFORM_FEEDBACK_ACTIVE: *params = getCurrentTransformFeedback()->isStarted(); break;
+      case GL_TRANSFORM_FEEDBACK_PAUSED: *params = getCurrentTransformFeedback()->isPaused();  break;
       default:
         return false;
     }
@@ -1815,7 +1817,9 @@ bool Context::getIntegerv(GLenum pname, GLint *params)
       case GL_MINOR_VERSION:                            *params = 0;                                                    break;
       case GL_MAX_ELEMENTS_INDICES:                     *params = mRenderer->getMaxRecommendedElementsIndices();        break;
       case GL_MAX_ELEMENTS_VERTICES:                    *params = mRenderer->getMaxRecommendedElementsVertices();       break;
-      case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS:  *params = 0; UNIMPLEMENTED();                                   break;
+      case GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS: *params = mRenderer->getMaxTransformFeedbackInterleavedComponents(); break;
+      case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS:       *params = mRenderer->getMaxTransformFeedbackBuffers();               break;
+      case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS:    *params = mRenderer->getMaxTransformFeedbackSeparateComponents();    break;
       case GL_NUM_COMPRESSED_TEXTURE_FORMATS:   
         params[0] = mNumCompressedTextureFormats;
         break;
@@ -2356,7 +2360,9 @@ bool Context::getQueryParameterInfo(GLenum pname, GLenum *type, unsigned int *nu
       case GL_MINOR_VERSION:
       case GL_MAX_ELEMENTS_INDICES:
       case GL_MAX_ELEMENTS_VERTICES:
+      case GL_MAX_TRANSFORM_FEEDBACK_INTERLEAVED_COMPONENTS:
       case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_ATTRIBS:
+      case GL_MAX_TRANSFORM_FEEDBACK_SEPARATE_COMPONENTS:
         {
             *type = GL_INT;
             *numParams = 1;
@@ -2375,6 +2381,7 @@ bool Context::getQueryParameterInfo(GLenum pname, GLenum *type, unsigned int *nu
         return true;
 
       case GL_TRANSFORM_FEEDBACK_ACTIVE:
+      case GL_TRANSFORM_FEEDBACK_PAUSED:
         {
             *type = GL_BOOL;
             *numParams = 1;
@@ -2484,14 +2491,14 @@ void Context::applyState(GLenum drawMode)
 }
 
 // Applies the shaders and shader constants to the Direct3D 9 device
-void Context::applyShaders(ProgramBinary *programBinary)
+void Context::applyShaders(ProgramBinary *programBinary, bool transformFeedbackActive)
 {
     const VertexAttribute *vertexAttributes = getCurrentVertexArray()->getVertexAttributes();
 
     VertexFormat inputLayout[gl::MAX_VERTEX_ATTRIBS];
     VertexFormat::GetInputLayout(inputLayout, programBinary, vertexAttributes, mState.vertexAttribCurrentValues);
 
-    mRenderer->applyShaders(programBinary, mState.rasterizer.rasterizerDiscard, inputLayout);
+    mRenderer->applyShaders(programBinary, mState.rasterizer.rasterizerDiscard, transformFeedbackActive, inputLayout);
 
     programBinary->applyUniforms();
 }
@@ -2540,9 +2547,7 @@ void Context::generateSwizzles(ProgramBinary *programBinary)
 void Context::generateSwizzles(ProgramBinary *programBinary, SamplerType type)
 {
     // Range of Direct3D samplers of given sampler type
-    int samplerCount = (type == SAMPLER_PIXEL) ? MAX_TEXTURE_IMAGE_UNITS : mRenderer->getMaxVertexTextureImageUnits();
     int samplerRange = programBinary->getUsedSamplerRange(type);
-
     for (int samplerIndex = 0; samplerIndex < samplerRange; samplerIndex++)
     {
         Texture *texture = NULL;
@@ -2937,9 +2942,9 @@ void Context::readPixels(GLint x, GLint y, GLsizei width, GLsizei height,
 
     bool isSized = IsSizedInternalFormat(format, mClientVersion);
     GLenum sizedInternalFormat = (isSized ? format : GetSizedInternalFormat(format, type, mClientVersion));
-    GLuint outputPitch = GetRowPitch(sizedInternalFormat, type, mClientVersion, width, getPackAlignment());
+    GLuint outputPitch = GetRowPitch(sizedInternalFormat, type, mClientVersion, width, mState.pack.alignment);
 
-    mRenderer->readPixels(framebuffer, x, y, width, height, format, type, outputPitch, getPackReverseRowOrder(), getPackAlignment(), pixels);
+    mRenderer->readPixels(framebuffer, x, y, width, height, format, type, outputPitch, mState.pack, pixels);
 }
 
 void Context::drawArrays(GLenum mode, GLint first, GLsizei count, GLsizei instances)
@@ -2974,7 +2979,7 @@ void Context::drawArrays(GLenum mode, GLint first, GLsizei count, GLsizei instan
 
     bool transformFeedbackActive = applyTransformFeedbackBuffers();
 
-    applyShaders(programBinary);
+    applyShaders(programBinary, transformFeedbackActive);
     applyTextures(programBinary);
 
     if (!applyUniformBuffers())
@@ -2989,7 +2994,7 @@ void Context::drawArrays(GLenum mode, GLint first, GLsizei count, GLsizei instan
 
     if (!skipDraw(mode))
     {
-        mRenderer->drawArrays(mode, count, instances);
+        mRenderer->drawArrays(mode, count, instances, transformFeedbackActive);
 
         if (transformFeedbackActive)
         {
@@ -3047,7 +3052,7 @@ void Context::drawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid
     // layer.
     ASSERT(!transformFeedbackActive);
 
-    applyShaders(programBinary);
+    applyShaders(programBinary, transformFeedbackActive);
     applyTextures(programBinary);
 
     if (!applyUniformBuffers())
@@ -3373,6 +3378,11 @@ bool Context::supportsInstancing() const
 bool Context::supportsTextureFilterAnisotropy() const
 {
     return mSupportsTextureFilterAnisotropy;
+}
+
+bool Context::supportsPBOs() const
+{
+    return mSupportsPBOs;
 }
 
 float Context::getTextureMaxAnisotropy() const
@@ -3759,6 +3769,13 @@ void Context::initExtensionString()
         mExtensionStringList.push_back("GL_OES_packed_depth_stencil");
         mExtensionStringList.push_back("GL_OES_get_program_binary");
         mExtensionStringList.push_back("GL_OES_rgb8_rgba8");
+
+        if (supportsPBOs())
+        {
+            mExtensionStringList.push_back("GL_OES_mapbuffer");
+            mExtensionStringList.push_back("GL_EXT_map_buffer_range");
+        }
+
         if (mRenderer->getDerivativeInstructionSupport())
         {
             mExtensionStringList.push_back("GL_OES_standard_derivatives");
@@ -3799,6 +3816,7 @@ void Context::initExtensionString()
 
         mExtensionStringList.push_back("GL_EXT_read_format_bgra");
         mExtensionStringList.push_back("GL_EXT_robustness");
+        mExtensionStringList.push_back("GL_EXT_shader_texture_lod");
 
         if (supportsDXT1Textures())
         {
@@ -3860,13 +3878,18 @@ void Context::initExtensionString()
         {
             mExtensionStringList.push_back("GL_NV_fence");
         }
-
-        mExtensionStringList.push_back("vertex_array_object");
     }
 
     if (mClientVersion == 3)
     {
         mExtensionStringList.push_back("GL_EXT_color_buffer_float");
+
+        mExtensionStringList.push_back("GL_EXT_read_format_bgra");
+
+        if (supportsBGRATextures())
+        {
+            mExtensionStringList.push_back("GL_EXT_texture_format_BGRA8888");
+        }
     }
 
     // Join the extension strings to one long string for use with GetString

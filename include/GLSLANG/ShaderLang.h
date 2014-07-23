@@ -37,7 +37,7 @@ extern "C" {
 
 // Version number for shader translation API.
 // It is incremented every time the API changes.
-#define ANGLE_SH_VERSION 122
+#define ANGLE_SH_VERSION 123
 
 //
 // The names of the following enums have been derived by replacing GL prefix
@@ -178,7 +178,7 @@ typedef enum {
   // This is needed only as a workaround for certain OpenGL driver bugs.
   SH_EMULATE_BUILT_IN_FUNCTIONS = 0x0100,
 
-  // This is an experimental flag to enforce restrictions that aim to prevent
+  // This is an experimental flag to enforce restrictions that aim to prevent 
   // timing attacks.
   // It generates compilation errors for shaders that could expose sensitive
   // texture information via the timing channel.
@@ -284,6 +284,7 @@ typedef struct
     int ARB_texture_rectangle;
     int EXT_draw_buffers;
     int EXT_frag_depth;
+    int EXT_shader_texture_lod;
 
     // Set to 1 if highp precision is supported in the fragment language.
     // Default is 0.
@@ -318,7 +319,7 @@ COMPILER_EXPORT void ShInitBuiltInResources(ShBuiltInResources* resources);
 
 //
 // ShHandle held by but opaque to the driver.  It is allocated,
-// managed, and de-allocated by the compiler. It's contents
+// managed, and de-allocated by the compiler. It's contents 
 // are defined by and used by the compiler.
 //
 // If handle creation fails, 0 will be returned.

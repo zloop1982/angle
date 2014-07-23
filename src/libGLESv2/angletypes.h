@@ -153,7 +153,11 @@ struct SamplerState
     GLenum wrapT;
     GLenum wrapR;
     float maxAnisotropy;
-    int lodOffset;
+
+    GLint baseLevel;
+    GLint maxLevel;
+    GLfloat minLod;
+    GLfloat maxLod;
 
     GLenum compareMode;
     GLenum compareFunc;
@@ -162,6 +166,8 @@ struct SamplerState
     GLenum swizzleGreen;
     GLenum swizzleBlue;
     GLenum swizzleAlpha;
+
+    bool swizzleRequired() const;
 };
 
 struct ClearParameters
@@ -256,7 +262,8 @@ enum VertexConversionType
 enum D3DWorkaroundType
 {
     ANGLE_D3D_WORKAROUND_NONE,
-    ANGLE_D3D_WORKAROUND_SM3_OPTIMIZER
+    ANGLE_D3D_WORKAROUND_SKIP_OPTIMIZATION,
+    ANGLE_D3D_WORKAROUND_MAX_OPTIMIZATION
 };
 
 }

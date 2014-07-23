@@ -286,6 +286,11 @@ bool ValidateES3CopyTexImageParameters(gl::Context *context, GLenum target, GLin
                                        bool isSubImage, GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y,
                                        GLsizei width, GLsizei height, GLint border)
 {
+    if (!ValidTexture2DDestinationTarget(context, target))
+    {
+        return gl::error(GL_INVALID_ENUM, false);
+    }
+
     if (level < 0 || xoffset < 0 || yoffset < 0 || zoffset < 0 || width < 0 || height < 0)
     {
         return gl::error(GL_INVALID_VALUE, false);
@@ -435,12 +440,22 @@ bool ValidateES3CopyTexImageParameters(gl::Context *context, GLenum target, GLin
             return gl::error(GL_INVALID_VALUE, false);
         }
 
-        if (!gl::IsValidCopyTexImageCombination(textureInternalFormat, colorbufferInternalFormat,
+        if (!gl::IsValidCopyTexImageCombination(textureInternalFormat, colorbufferInternalFormat, context->getReadFramebufferHandle(),
                                                 context->getClientVersion()))
         {
             return gl::error(GL_INVALID_OPERATION, false);
         }
     }
+    else
+    {
+        if (!gl::IsValidCopyTexImageCombination(internalformat, colorbufferInternalFormat, context->getReadFramebufferHandle(),
+                                                context->getClientVersion()))
+        {
+            return gl::error(GL_INVALID_OPERATION, false);
+        }
+    }
+
+
 
     // If width or height is zero, it is a no-op.  Return false without setting an error.
     return (width > 0 && height > 0);
@@ -714,7 +729,7 @@ bool ValidateES3FramebufferTextureParameters(gl::Context *context, GLenum target
     return true;
 }
 
-bool ValidES3ReadFormatType(GLenum internalFormat, GLenum format, GLenum type)
+bool ValidES3ReadFormatType(gl::Context *context, GLenum internalFormat, GLenum format, GLenum type)
 {
     switch (format)
     {
@@ -766,6 +781,20 @@ bool ValidES3ReadFormatType(GLenum internalFormat, GLenum format, GLenum type)
           case GL_UNSIGNED_SHORT_1_5_5_5_REV_EXT:
             break;
           default:
+            return false;
+        }
+        break;
+      case GL_RG_EXT:
+      case GL_RED_EXT:
+        if (!context->supportsRGTextures())
+        {
+            return false;
+        }
+        switch (type)
+        {
+        case GL_UNSIGNED_BYTE:
+            break;
+        default:
             return false;
         }
         break;

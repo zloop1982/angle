@@ -39,15 +39,17 @@
 
 #include "common/winrtplatform.h"
 
-#if !defined(ANGLE_PLATFORM_WINRT)
+#if defined(ANGLE_ENABLE_D3D9) && !defined(ANGLE_PLATFORM_WINRT)
 #include <d3d9.h>
 #include <D3Dcompiler.h>
 #endif // ANGLE_ENABLE_D3D9
 
+#if defined(ANGLE_ENABLE_D3D11)
+#include <D3D10_1.h>
 #include <D3D11.h>
 #include <dxgi.h>
 #include <dxgi1_2.h>
 #if !defined(ANGLE_PLATFORM_WP8)
 #include <D3Dcompiler.h>
 #endif // #if !defined(ANGLE_PLATFORM_WP8)
-//#endif // ANGLE_ENABLE_D3D11
+#endif // ANGLE_ENABLE_D3D11

@@ -8,12 +8,12 @@
 
 #include "common/angleutils.h"
 #include "common/utilities.h"
+#include "common/blocklayout.h"
 #include "compiler/translator/compilerdebug.h"
 #include "compiler/translator/InfoSink.h"
 #include "compiler/translator/DetectDiscontinuity.h"
 #include "compiler/translator/SearchSymbol.h"
 #include "compiler/translator/UnfoldShortCircuit.h"
-#include "compiler/translator/HLSLLayoutEncoder.h"
 #include "compiler/translator/FlagStd140Structs.h"
 #include "compiler/translator/NodeSearch.h"
 #include "compiler/translator/RewriteElseBlocks.h"
@@ -56,9 +56,10 @@ TString OutputHLSL::TextureFunction::name() const
     switch(method)
     {
       case IMPLICIT:                  break;
-      case BIAS:                      break;
+      case BIAS:                      break;   // Extra parameter makes the signature unique
       case LOD:      name += "Lod";   break;
       case LOD0:     name += "Lod0";  break;
+      case LOD0BIAS: name += "Lod0";  break;   // Extra parameter makes the signature unique
       case SIZE:     name += "Size";  break;
       case FETCH:    name += "Fetch"; break;
       case GRAD:     name += "Grad";  break;
@@ -83,9 +84,19 @@ const char *RegisterPrefix(const TType &type)
 bool OutputHLSL::TextureFunction::operator<(const TextureFunction &rhs) const
 {
     if (sampler < rhs.sampler) return true;
+    if (sampler > rhs.sampler) return false;
+
     if (coords < rhs.coords)   return true;
+    if (coords > rhs.coords)   return false;
+
     if (!proj && rhs.proj)     return true;
+    if (proj && !rhs.proj)     return false;
+
+    if (!offset && rhs.offset) return true;
+    if (offset && !rhs.offset) return false;
+
     if (method < rhs.method)   return true;
+    if (method > rhs.method)   return false;
 
     return false;
 }
@@ -121,6 +132,7 @@ OutputHLSL::OutputHLSL(TParseContext &context, const ShBuiltInResources& resourc
     mUsesAtan2_3 = false;
     mUsesAtan2_4 = false;
     mUsesDiscardRewriting = false;
+    mUsesNestedBreak = false;
 
     mNumRenderTargets = resources.EXT_draw_buffers ? resources.MaxDrawBuffers : 1;
 
@@ -131,6 +143,7 @@ OutputHLSL::OutputHLSL(TParseContext &context, const ShBuiltInResources& resourc
     mContainsLoopDiscontinuity = false;
     mOutputLod0Function = false;
     mInsideDiscontinuousLoop = false;
+    mNestedLoopDepth = 0;
 
     mExcessiveLoopIndex = NULL;
 
@@ -207,27 +220,27 @@ TInfoSinkBase &OutputHLSL::getBodyStream()
     return mBody;
 }
 
-const std::vector<Uniform> &OutputHLSL::getUniforms()
+const std::vector<gl::Uniform> &OutputHLSL::getUniforms()
 {
     return mActiveUniforms;
 }
 
-const ActiveInterfaceBlocks &OutputHLSL::getInterfaceBlocks() const
+const std::vector<gl::InterfaceBlock> &OutputHLSL::getInterfaceBlocks() const
 {
     return mActiveInterfaceBlocks;
 }
 
-const std::vector<Attribute> &OutputHLSL::getOutputVariables() const
+const std::vector<gl::Attribute> &OutputHLSL::getOutputVariables() const
 {
     return mActiveOutputVariables;
 }
 
-const std::vector<Attribute> &OutputHLSL::getAttributes() const
+const std::vector<gl::Attribute> &OutputHLSL::getAttributes() const
 {
     return mActiveAttributes;
 }
 
-const std::vector<Varying> &OutputHLSL::getVaryings() const
+const std::vector<gl::Varying> &OutputHLSL::getVaryings() const
 {
     return mActiveVaryings;
 }
@@ -460,25 +473,25 @@ TString OutputHLSL::std140PostPaddingString(const TType &type, bool useHLSLRowMa
 }
 
 // Use the same layout for packed and shared
-void setBlockLayout(InterfaceBlock *interfaceBlock, BlockLayoutType newLayout)
+void setBlockLayout(gl::InterfaceBlock *interfaceBlock, gl::BlockLayoutType newLayout)
 {
     interfaceBlock->layout = newLayout;
     interfaceBlock->blockInfo.clear();
 
     switch (newLayout)
     {
-      case BLOCKLAYOUT_SHARED:
-      case BLOCKLAYOUT_PACKED:
+      case gl::BLOCKLAYOUT_SHARED:
+      case gl::BLOCKLAYOUT_PACKED:
         {
-            HLSLBlockEncoder hlslEncoder(&interfaceBlock->blockInfo);
+            gl::HLSLBlockEncoder hlslEncoder(&interfaceBlock->blockInfo);
             hlslEncoder.encodeInterfaceBlockFields(interfaceBlock->fields);
             interfaceBlock->dataSize = hlslEncoder.getBlockSize();
         }
         break;
 
-      case BLOCKLAYOUT_STANDARD:
+      case gl::BLOCKLAYOUT_STANDARD:
         {
-            Std140BlockEncoder stdEncoder(&interfaceBlock->blockInfo);
+            gl::Std140BlockEncoder stdEncoder(&interfaceBlock->blockInfo);
             stdEncoder.encodeInterfaceBlockFields(interfaceBlock->fields);
             interfaceBlock->dataSize = stdEncoder.getBlockSize();
         }
@@ -490,14 +503,14 @@ void setBlockLayout(InterfaceBlock *interfaceBlock, BlockLayoutType newLayout)
     }
 }
 
-BlockLayoutType convertBlockLayoutType(TLayoutBlockStorage blockStorage)
+gl::BlockLayoutType convertBlockLayoutType(TLayoutBlockStorage blockStorage)
 {
     switch (blockStorage)
     {
-      case EbsPacked: return BLOCKLAYOUT_PACKED;
-      case EbsShared: return BLOCKLAYOUT_SHARED;
-      case EbsStd140: return BLOCKLAYOUT_STANDARD;
-      default: UNREACHABLE(); return BLOCKLAYOUT_SHARED;
+      case EbsPacked: return gl::BLOCKLAYOUT_PACKED;
+      case EbsShared: return gl::BLOCKLAYOUT_SHARED;
+      case EbsStd140: return gl::BLOCKLAYOUT_STANDARD;
+      default: UNREACHABLE(); return gl::BLOCKLAYOUT_SHARED;
     }
 }
 
@@ -586,7 +599,7 @@ void OutputHLSL::header()
         const TFieldList &fieldList = interfaceBlock.fields();
 
         unsigned int arraySize = static_cast<unsigned int>(interfaceBlock.arraySize());
-        sh::InterfaceBlock activeBlock(interfaceBlock.name().c_str(), arraySize, mInterfaceBlockRegister);
+        gl::InterfaceBlock activeBlock(interfaceBlock.name().c_str(), arraySize, mInterfaceBlockRegister);
         for (unsigned int typeIndex = 0; typeIndex < fieldList.size(); typeIndex++)
         {
             const TField &field = *fieldList[typeIndex];
@@ -596,7 +609,7 @@ void OutputHLSL::header()
 
         mInterfaceBlockRegister += std::max(1u, arraySize);
 
-        BlockLayoutType blockLayoutType = convertBlockLayoutType(interfaceBlock.blockStorage());
+        gl::BlockLayoutType blockLayoutType = convertBlockLayoutType(interfaceBlock.blockStorage());
         setBlockLayout(&activeBlock, blockLayoutType);
 
         if (interfaceBlock.matrixPacking() == EmpRowMajor)
@@ -655,7 +668,7 @@ void OutputHLSL::header()
 
         attributes += "static " + typeString(type) + " " + decorate(name) + arrayString(type) + " = " + initializer(type) + ";\n";
 
-        Attribute attributeVar(glVariableType(type), glVariablePrecision(type), name.c_str(),
+        gl::Attribute attributeVar(glVariableType(type), glVariablePrecision(type), name.c_str(),
                                (unsigned int)type.getArraySize(), type.getLayoutQualifier().location);
         mActiveAttributes.push_back(attributeVar);
     }
@@ -673,6 +686,11 @@ void OutputHLSL::header()
     if (mUsesDiscardRewriting)
     {
         out << "#define ANGLE_USES_DISCARD_REWRITING" << "\n";
+    }
+
+    if (mUsesNestedBreak)
+    {
+        out << "#define ANGLE_USES_NESTED_BREAK" << "\n";
     }
 
     if (mContext.shaderType == SH_FRAGMENT_SHADER)
@@ -695,7 +713,7 @@ void OutputHLSL::header()
                 out << "static " + typeString(variableType) + " out_" + variableName + arrayString(variableType) +
                        " = " + initializer(variableType) + ";\n";
 
-                Attribute outputVar(glVariableType(variableType), glVariablePrecision(variableType), variableName.c_str(),
+                gl::Attribute outputVar(glVariableType(variableType), glVariablePrecision(variableType), variableName.c_str(),
                                     (unsigned int)variableType.getArraySize(), layoutQualifier.location);
                 mActiveOutputVariables.push_back(outputVar);
             }
@@ -975,6 +993,7 @@ void OutputHLSL::header()
               case TextureFunction::BIAS:     hlslCoords = 4; break;
               case TextureFunction::LOD:      hlslCoords = 4; break;
               case TextureFunction::LOD0:     hlslCoords = 4; break;
+              case TextureFunction::LOD0BIAS: hlslCoords = 4; break;
               default: UNREACHABLE();
             }
         }
@@ -1053,9 +1072,10 @@ void OutputHLSL::header()
         switch(textureFunction->method)
         {
           case TextureFunction::IMPLICIT:                        break;
-          case TextureFunction::BIAS:                            break;
+          case TextureFunction::BIAS:                            break;   // Comes after the offset parameter
           case TextureFunction::LOD:      out << ", float lod";  break;
           case TextureFunction::LOD0:                            break;
+          case TextureFunction::LOD0BIAS:                        break;   // Comes after the offset parameter
           case TextureFunction::SIZE:                            break;
           case TextureFunction::FETCH:    out << ", int mip";    break;
           case TextureFunction::GRAD:                            break;
@@ -1081,7 +1101,8 @@ void OutputHLSL::header()
             }
         }
 
-        if (textureFunction->method == TextureFunction::BIAS)
+        if (textureFunction->method == TextureFunction::BIAS ||
+            textureFunction->method == TextureFunction::LOD0BIAS)
         {
             out << ", float bias";
         }
@@ -1169,10 +1190,14 @@ void OutputHLSL::header()
                     if (IsSamplerArray(textureFunction->sampler))
                     {
                         out << "    float width; float height; float layers; float levels;\n";
-                            
+
                         if (textureFunction->method == TextureFunction::LOD0)
                         {
                             out << "    uint mip = 0;\n";
+                        }
+                        else if (textureFunction->method == TextureFunction::LOD0BIAS)
+                        {
+                            out << "    uint mip = bias;\n";
                         }
                         else
                         {
@@ -1204,10 +1229,14 @@ void OutputHLSL::header()
                     else
                     {
                         out << "    float width; float height; float levels;\n";
-                             
+
                         if (textureFunction->method == TextureFunction::LOD0)
                         {
                             out << "    uint mip = 0;\n";
+                        }
+                        else if (textureFunction->method == TextureFunction::LOD0BIAS)
+                        {
+                            out << "    uint mip = bias;\n";
                         }
                         else
                         {
@@ -1244,10 +1273,14 @@ void OutputHLSL::header()
                 else if (IsSampler3D(textureFunction->sampler))
                 {
                     out << "    float width; float height; float depth; float levels;\n";
-                      
+
                     if (textureFunction->method == TextureFunction::LOD0)
                     {
                         out << "    uint mip = 0;\n";
+                    }
+                    else if (textureFunction->method == TextureFunction::LOD0BIAS)
+                    {
+                        out << "    uint mip = bias;\n";
                     }
                     else
                     {
@@ -1297,6 +1330,7 @@ void OutputHLSL::header()
                   case TextureFunction::BIAS:     out << "bias(s, "; break;
                   case TextureFunction::LOD:      out << "lod(s, ";  break;
                   case TextureFunction::LOD0:     out << "lod(s, ";  break;
+                  case TextureFunction::LOD0BIAS: out << "lod(s, ";  break;
                   default: UNREACHABLE();
                 }
             }
@@ -1334,6 +1368,7 @@ void OutputHLSL::header()
                       case TextureFunction::BIAS:     out << "x.SampleBias(s, ";  break;
                       case TextureFunction::LOD:      out << "x.SampleLevel(s, "; break;
                       case TextureFunction::LOD0:     out << "x.SampleLevel(s, "; break;
+                      case TextureFunction::LOD0BIAS: out << "x.SampleLevel(s, "; break;
                       default: UNREACHABLE();
                     }
                 }
@@ -1421,9 +1456,10 @@ void OutputHLSL::header()
                 {
                     switch(textureFunction->method)
                     {
-                      case TextureFunction::BIAS: out << ", bias"; break;
-                      case TextureFunction::LOD:  out << ", lod";  break;
-                      case TextureFunction::LOD0: out << ", 0";    break;
+                      case TextureFunction::BIAS:     out << ", bias"; break;
+                      case TextureFunction::LOD:      out << ", lod";  break;
+                      case TextureFunction::LOD0:     out << ", 0";    break;
+                      case TextureFunction::LOD0BIAS: out << ", bias"; break;
                       default: UNREACHABLE();
                     }
                 }
@@ -1488,6 +1524,7 @@ void OutputHLSL::header()
                       case TextureFunction::BIAS:     out << "), bias"; break;
                       case TextureFunction::LOD:      out << "), lod";  break;
                       case TextureFunction::LOD0:     out << "), 0";    break;
+                      case TextureFunction::LOD0BIAS: out << "), bias"; break;
                       default: UNREACHABLE();
                     }
                 }
@@ -2457,11 +2494,12 @@ bool OutputHLSL::visitAggregate(Visit visit, TIntermAggregate *node)
                     textureFunction.method = TextureFunction::IMPLICIT;
                     textureFunction.proj = true;
                 }
-                else if (name == "texture2DLod" || name == "textureCubeLod" || name == "textureLod")
+                else if (name == "texture2DLod" || name == "textureCubeLod" || name == "textureLod" ||
+                         name == "texture2DLodEXT" || name == "textureCubeLodEXT")
                 {
                     textureFunction.method = TextureFunction::LOD;
                 }
-                else if (name == "texture2DProjLod" || name == "textureProjLod")
+                else if (name == "texture2DProjLod" || name == "textureProjLod" || name == "texture2DProjLodEXT")
                 {
                     textureFunction.method = TextureFunction::LOD;
                     textureFunction.proj = true;
@@ -2486,11 +2524,6 @@ bool OutputHLSL::visitAggregate(Visit visit, TIntermAggregate *node)
                     textureFunction.method = TextureFunction::LOD;
                     textureFunction.offset = true;
                 }
-                else if (name == "textureProjLod")
-                {
-                    textureFunction.method = TextureFunction::LOD;
-                    textureFunction.proj = true;
-                }
                 else if (name == "textureProjLodOffset")
                 {
                     textureFunction.method = TextureFunction::LOD;
@@ -2506,7 +2539,7 @@ bool OutputHLSL::visitAggregate(Visit visit, TIntermAggregate *node)
                     textureFunction.method = TextureFunction::FETCH;
                     textureFunction.offset = true;
                 }
-                else if (name == "textureGrad")
+                else if (name == "textureGrad" || name == "texture2DGradEXT")
                 {
                     textureFunction.method = TextureFunction::GRAD;
                 }
@@ -2515,7 +2548,7 @@ bool OutputHLSL::visitAggregate(Visit visit, TIntermAggregate *node)
                     textureFunction.method = TextureFunction::GRAD;
                     textureFunction.offset = true;
                 }
-                else if (name == "textureProjGrad")
+                else if (name == "textureProjGrad" || name == "texture2DProjGradEXT" || name == "textureCubeGradEXT")
                 {
                     textureFunction.method = TextureFunction::GRAD;
                     textureFunction.proj = true;
@@ -2530,31 +2563,37 @@ bool OutputHLSL::visitAggregate(Visit visit, TIntermAggregate *node)
 
                 if (textureFunction.method == TextureFunction::IMPLICIT)   // Could require lod 0 or have a bias argument
                 {
+                    unsigned int mandatoryArgumentCount = 2;   // All functions have sampler and coordinate arguments
+
+                    if (textureFunction.offset)
+                    {
+                        mandatoryArgumentCount++;
+                    }
+
+                    bool bias = (arguments.size() > mandatoryArgumentCount);   // Bias argument is optional
+
                     if (lod0 || mContext.shaderType == SH_VERTEX_SHADER)
                     {
-                        textureFunction.method = TextureFunction::LOD0;
+                        if (bias)
+                        {
+                            textureFunction.method = TextureFunction::LOD0BIAS;
+                        }
+                        else
+                        {
+                            textureFunction.method = TextureFunction::LOD0;
+                        }
                     }
-                    else
+                    else if (bias)
                     {
-                        unsigned int mandatoryArgumentCount = 2;   // All functions have sampler and coordinate arguments
-
-                        if (textureFunction.offset)
-                        {
-                            mandatoryArgumentCount++;
-                        }
-
-                        if (arguments.size() > mandatoryArgumentCount)   // Bias argument is optional
-                        {
-                            textureFunction.method = TextureFunction::BIAS;
-                        }
+                        textureFunction.method = TextureFunction::BIAS;
                     }
                 }
 
                 mUsesTexture.insert(textureFunction);
-                
+
                 out << textureFunction.name();
             }
-            
+
             for (TIntermSequence::iterator arg = arguments.begin(); arg != arguments.end(); arg++)
             {
                 if (mOutputType == SH_HLSL11_OUTPUT && IsSampler((*arg)->getAsTyped()->getBasicType()))
@@ -2797,6 +2836,8 @@ void OutputHLSL::visitConstantUnion(TIntermConstantUnion *node)
 
 bool OutputHLSL::visitLoop(Visit visit, TIntermLoop *node)
 {
+    mNestedLoopDepth++;
+
     bool wasDiscontinuous = mInsideDiscontinuousLoop;
 
     if (mContainsLoopDiscontinuity && !mInsideDiscontinuousLoop)
@@ -2808,6 +2849,9 @@ bool OutputHLSL::visitLoop(Visit visit, TIntermLoop *node)
     {
         if (handleExcessiveLoop(node))
         {
+            mInsideDiscontinuousLoop = wasDiscontinuous;
+            mNestedLoopDepth--;
+
             return false;
         }
     }
@@ -2871,6 +2915,7 @@ bool OutputHLSL::visitLoop(Visit visit, TIntermLoop *node)
     out << "}\n";
 
     mInsideDiscontinuousLoop = wasDiscontinuous;
+    mNestedLoopDepth--;
 
     return false;
 }
@@ -2887,6 +2932,11 @@ bool OutputHLSL::visitBranch(Visit visit, TIntermBranch *node)
       case EOpBreak:
         if (visit == PreVisit)
         {
+            if (mNestedLoopDepth > 1)
+            {
+                mUsesNestedBreak = true;
+            }
+
             if (mExcessiveLoopIndex)
             {
                 out << "{Break";
@@ -3516,10 +3566,7 @@ void OutputHLSL::addConstructor(const TType &type, const TString &name, const TI
                                      structureString(*structure, true, false) +
                                      "#pragma pack_matrix(column_major)\n";
 
-            const TString &std140Prefix = "std";
             TString std140String = structureString(*structure, false, true);
-
-            const TString &std140RowMajorPrefix = "std_rm";
             TString std140RowMajorString = "#pragma pack_matrix(row_major)\n" +
                                            structureString(*structure, true, true) +
                                            "#pragma pack_matrix(column_major)\n";
@@ -3767,7 +3814,7 @@ TString OutputHLSL::scopeString(unsigned int depthLimit)
 
     for (unsigned int i = 0; i < mScopeBracket.size() && i < depthLimit; i++)
     {
-        string += "_" + str(i);
+        string += "_" + str(mScopeBracket[i]);
     }
 
     return string;
@@ -3833,20 +3880,20 @@ TString OutputHLSL::decorateField(const TString &string, const TStructure &struc
     return string;
 }
 
-void OutputHLSL::declareInterfaceBlockField(const TType &type, const TString &name, std::vector<InterfaceBlockField>& output)
+void OutputHLSL::declareInterfaceBlockField(const TType &type, const TString &name, std::vector<gl::InterfaceBlockField>& output)
 {
     const TStructure *structure = type.getStruct();
 
     if (!structure)
     {
         const bool isRowMajorMatrix = (type.isMatrix() && type.getLayoutQualifier().matrixPacking == EmpRowMajor);
-        InterfaceBlockField field(glVariableType(type), glVariablePrecision(type), name.c_str(),
-                        (unsigned int)type.getArraySize(), isRowMajorMatrix);
+        gl::InterfaceBlockField field(glVariableType(type), glVariablePrecision(type), name.c_str(),
+                                      (unsigned int)type.getArraySize(), isRowMajorMatrix);
         output.push_back(field);
    }
     else
     {
-        InterfaceBlockField structField(GL_STRUCT_ANGLEX, GL_NONE, name.c_str(), (unsigned int)type.getArraySize(), false);
+        gl::InterfaceBlockField structField(GL_STRUCT_ANGLEX, GL_NONE, name.c_str(), (unsigned int)type.getArraySize(), false);
 
         const TFieldList &fields = structure->fields();
 
@@ -3865,23 +3912,22 @@ void OutputHLSL::declareInterfaceBlockField(const TType &type, const TString &na
     }
 }
 
-Uniform OutputHLSL::declareUniformToList(const TType &type, const TString &name, int registerIndex, std::vector<Uniform>& output)
+gl::Uniform OutputHLSL::declareUniformToList(const TType &type, const TString &name, int registerIndex, std::vector<gl::Uniform>& output)
 {
     const TStructure *structure = type.getStruct();
 
     if (!structure)
     {
-        const bool isRowMajorMatrix = (type.isMatrix() && type.getLayoutQualifier().matrixPacking == EmpRowMajor);
-        Uniform uniform(glVariableType(type), glVariablePrecision(type), name.c_str(),
-                        (unsigned int)type.getArraySize(), (unsigned int)registerIndex, 0);
+        gl::Uniform uniform(glVariableType(type), glVariablePrecision(type), name.c_str(),
+                            (unsigned int)type.getArraySize(), (unsigned int)registerIndex, 0);
         output.push_back(uniform);
 
         return uniform;
    }
     else
     {
-        Uniform structUniform(GL_STRUCT_ANGLEX, GL_NONE, name.c_str(), (unsigned int)type.getArraySize(),
-                              (unsigned int)registerIndex, GL_INVALID_INDEX);
+        gl::Uniform structUniform(GL_STRUCT_ANGLEX, GL_NONE, name.c_str(), (unsigned int)type.getArraySize(),
+                                  (unsigned int)registerIndex, GL_INVALID_INDEX);
 
         const TFieldList &fields = structure->fields();
 
@@ -3902,13 +3948,13 @@ Uniform OutputHLSL::declareUniformToList(const TType &type, const TString &name,
     }
 }
 
-InterpolationType getInterpolationType(TQualifier qualifier)
+gl::InterpolationType getInterpolationType(TQualifier qualifier)
 {
     switch (qualifier)
     {
       case EvqFlatIn:
       case EvqFlatOut:
-        return INTERPOLATION_FLAT;
+        return gl::INTERPOLATION_FLAT;
 
       case EvqSmoothIn:
       case EvqSmoothOut:
@@ -3916,30 +3962,30 @@ InterpolationType getInterpolationType(TQualifier qualifier)
       case EvqFragmentIn:
       case EvqVaryingIn:
       case EvqVaryingOut:
-        return INTERPOLATION_SMOOTH;
+        return gl::INTERPOLATION_SMOOTH;
 
       case EvqCentroidIn:
       case EvqCentroidOut:
-        return INTERPOLATION_CENTROID;
+        return gl::INTERPOLATION_CENTROID;
 
       default: UNREACHABLE();
-        return INTERPOLATION_SMOOTH;
+        return gl::INTERPOLATION_SMOOTH;
     }
 }
 
-void OutputHLSL::declareVaryingToList(const TType &type, TQualifier baseTypeQualifier, const TString &name, std::vector<Varying>& fieldsOut)
+void OutputHLSL::declareVaryingToList(const TType &type, TQualifier baseTypeQualifier, const TString &name, std::vector<gl::Varying>& fieldsOut)
 {
     const TStructure *structure = type.getStruct();
 
-    InterpolationType interpolation = getInterpolationType(baseTypeQualifier);
+    gl::InterpolationType interpolation = getInterpolationType(baseTypeQualifier);
     if (!structure)
     {
-        Varying varying(glVariableType(type), glVariablePrecision(type), name.c_str(), (unsigned int)type.getArraySize(), interpolation);
+        gl::Varying varying(glVariableType(type), glVariablePrecision(type), name.c_str(), (unsigned int)type.getArraySize(), interpolation);
         fieldsOut.push_back(varying);
     }
     else
     {
-        Varying structVarying(GL_STRUCT_ANGLEX, GL_NONE, name.c_str(), (unsigned int)type.getArraySize(), interpolation);
+        gl::Varying structVarying(GL_STRUCT_ANGLEX, GL_NONE, name.c_str(), (unsigned int)type.getArraySize(), interpolation);
         const TFieldList &fields = structure->fields();
 
         structVarying.structName = structure->name().c_str();
@@ -3958,15 +4004,15 @@ int OutputHLSL::declareUniformAndAssignRegister(const TType &type, const TString
 {
     int registerIndex = (IsSampler(type.getBasicType()) ? mSamplerRegister : mUniformRegister);
 
-    const Uniform &uniform = declareUniformToList(type, name, registerIndex, mActiveUniforms);
+    const gl::Uniform &uniform = declareUniformToList(type, name, registerIndex, mActiveUniforms);
 
     if (IsSampler(type.getBasicType()))
     {
-        mSamplerRegister += HLSLVariableRegisterCount(uniform);
+        mSamplerRegister += gl::HLSLVariableRegisterCount(uniform);
     }
     else
     {
-        mUniformRegister += HLSLVariableRegisterCount(uniform);
+        mUniformRegister += gl::HLSLVariableRegisterCount(uniform);
     }
 
     return registerIndex;
@@ -4146,6 +4192,8 @@ bool OutputHLSL::isVaryingOut(TQualifier qualifier)
       case EvqCentroidOut:
       case EvqVertexOut:
         return true;
+
+      default: break;
     }
 
     return false;
@@ -4162,6 +4210,8 @@ bool OutputHLSL::isVaryingIn(TQualifier qualifier)
       case EvqCentroidIn:
       case EvqFragmentIn:
         return true;
+
+      default: break;
     }
 
     return false;

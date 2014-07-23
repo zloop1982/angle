@@ -138,7 +138,6 @@ bool Image9::redefine(rx::Renderer *renderer, GLenum target, GLenum internalform
         forceRelease)
     {
         mRenderer = Renderer9::makeRenderer9(renderer);
-        GLuint clientVersion = mRenderer->getCurrentClientVersion();
 
         mWidth = width;
         mHeight = height;
@@ -329,6 +328,8 @@ bool Image9::copyToStorage(TextureStorageInterface2DArray *storage, int level, G
 
 bool Image9::copyToSurface(IDirect3DSurface9 *destSurface, GLint xoffset, GLint yoffset, GLsizei width, GLsizei height)
 {
+    ASSERT(width > 0 && height > 0);
+
     if (!destSurface)
         return false;
 
@@ -416,7 +417,6 @@ void Image9::loadCompressedData(GLint xoffset, GLint yoffset, GLint zoffset, GLs
     GLsizei inputRowPitch = gl::GetRowPitch(mInternalFormat, GL_UNSIGNED_BYTE, clientVersion, width, 1);
     GLsizei inputDepthPitch = gl::GetDepthPitch(mInternalFormat, GL_UNSIGNED_BYTE, clientVersion, width, height, 1);
 
-    GLuint outputPixelSize = d3d9::GetFormatPixelBytes(mD3DFormat);
     GLuint outputBlockWidth = d3d9::GetBlockWidth(mD3DFormat);
     GLuint outputBlockHeight = d3d9::GetBlockHeight(mD3DFormat);
 

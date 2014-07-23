@@ -14,8 +14,6 @@
 // This should not be included by driver code.
 //
 
-#include "GLSLANG/ShaderLang.h"
-
 #include "compiler/translator/BuiltInFunctionEmulator.h"
 #include "compiler/translator/ExtensionBehavior.h"
 #include "compiler/translator/HashNames.h"
@@ -75,10 +73,10 @@ public:
     ShHashFunction64 getHashFunction() const { return hashFunction; }
     NameMap& getNameMap() { return nameMap; }
     TSymbolTable& getSymbolTable() { return symbolTable; }
+    ShShaderSpec getShaderSpec() const { return shaderSpec; }
 
 protected:
     ShShaderType getShaderType() const { return shaderType; }
-    ShShaderSpec getShaderSpec() const { return shaderSpec; }
     // Initialize symbol-table with built-in symbols.
     bool InitBuiltInSymbolTable(const ShBuiltInResources& resources);
     // Clears the results from the previous compilation.

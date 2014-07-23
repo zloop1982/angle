@@ -63,8 +63,11 @@ int ShInitialize()
 //
 int ShFinalize()
 {
-    DetachProcess();
-    isInitialized = false;
+    if (isInitialized)
+    {
+        DetachProcess();
+        isInitialized = false;
+    }
     return 1;
 }
 
@@ -89,6 +92,7 @@ void ShInitBuiltInResources(ShBuiltInResources* resources)
     resources->ARB_texture_rectangle = 0;
     resources->EXT_draw_buffers = 0;
     resources->EXT_frag_depth = 0;
+    resources->EXT_shader_texture_lod = 0;
 
     // Disable highp precision in fragment shader by default.
     resources->FragmentPrecisionHigh = 0;
@@ -186,27 +190,27 @@ void ShGetInfo(const ShHandle handle, ShShaderInfo pname, size_t* params)
         *params = compiler->getUniforms().size();
         break;
     case SH_ACTIVE_UNIFORM_MAX_LENGTH:
-        *params = 1 + GetGlobalMaxTokenSize();
+        *params = 1 + GetGlobalMaxTokenSize(compiler->getShaderSpec());
         break;
     case SH_ACTIVE_ATTRIBUTES:
         *params = compiler->getAttribs().size();
         break;
     case SH_ACTIVE_ATTRIBUTE_MAX_LENGTH:
-        *params = 1 + GetGlobalMaxTokenSize();
+        *params = 1 + GetGlobalMaxTokenSize(compiler->getShaderSpec());
         break;
     case SH_VARYINGS:
         *params = compiler->getVaryings().size();
         break;
     case SH_VARYING_MAX_LENGTH:
-        *params = 1 + GetGlobalMaxTokenSize();
+        *params = 1 + GetGlobalMaxTokenSize(compiler->getShaderSpec());
         break;
     case SH_MAPPED_NAME_MAX_LENGTH:
         // Use longer length than MAX_SHORTENED_IDENTIFIER_SIZE to
         // handle array and struct dereferences.
-        *params = 1 + GetGlobalMaxTokenSize();
+        *params = 1 + GetGlobalMaxTokenSize(compiler->getShaderSpec());
         break;
     case SH_NAME_MAX_LENGTH:
-        *params = 1 + GetGlobalMaxTokenSize();
+        *params = 1 + GetGlobalMaxTokenSize(compiler->getShaderSpec());
         break;
     case SH_HASHED_NAME_MAX_LENGTH:
         if (compiler->getHashFunction() == NULL) {
@@ -215,6 +219,7 @@ void ShGetInfo(const ShHandle handle, ShShaderInfo pname, size_t* params)
             // 64 bits hashing output requires 16 bytes for hex 
             // representation.
             const char HashedNamePrefix[] = HASHED_NAME_PREFIX;
+            (void)HashedNamePrefix;
             *params = 16 + sizeof(HashedNamePrefix);
         }
         break;
@@ -313,14 +318,14 @@ void ShGetVariableInfo(const ShHandle handle,
     // This size must match that queried by
     // SH_ACTIVE_UNIFORM_MAX_LENGTH, SH_ACTIVE_ATTRIBUTE_MAX_LENGTH, SH_VARYING_MAX_LENGTH
     // in ShGetInfo, below.
-    size_t variableLength = 1 + GetGlobalMaxTokenSize();
+    size_t variableLength = 1 + GetGlobalMaxTokenSize(compiler->getShaderSpec());
     ASSERT(checkVariableMaxLengths(handle, variableLength));
     strncpy(name, varInfo.name.c_str(), variableLength);
     name[variableLength - 1] = 0;
     if (mappedName) {
         // This size must match that queried by
         // SH_MAPPED_NAME_MAX_LENGTH in ShGetInfo, below.
-        size_t maxMappedNameLength = 1 + GetGlobalMaxTokenSize();
+        size_t maxMappedNameLength = 1 + GetGlobalMaxTokenSize(compiler->getShaderSpec());
         ASSERT(checkMappedNameMaxLength(handle, maxMappedNameLength));
         strncpy(mappedName, varInfo.mappedName.c_str(), maxMappedNameLength);
         mappedName[maxMappedNameLength - 1] = 0;

@@ -13,6 +13,7 @@
 #include "libGLESv2/renderer/Renderer.h"
 #include "common/utilities.h"
 #include "third_party/trace_event/trace_event.h"
+#include "libGLESv2/Shader.h"
 
 #if defined (ANGLE_ENABLE_D3D9)
 #include "libGLESv2/renderer/d3d9/Renderer9.h"
@@ -35,25 +36,19 @@ Renderer::Renderer(egl::Display *display) : mDisplay(display)
     mCurrentClientVersion = 2;
 }
 
+Renderer::~Renderer()
+{
+    gl::Shader::releaseCompiler();
+}
+
 }
 
 extern "C"
 {
 
-rx::Renderer *glCreateRenderer(egl::Display *display, EGLNativeDisplayType hDc, EGLNativeDisplayType displayId)
+rx::Renderer *glCreateRenderer(egl::Display *display, HDC hDc, EGLNativeDisplayType displayId)
 {
-#if defined(ANGLE_PLATFORM_WINRT)
-    rx::Renderer *renderer = NULL;
-    EGLint status = EGL_BAD_ALLOC;
-
-	renderer = new rx::Renderer11(display, hDc);
-	if(renderer)
-	{
-		status = renderer->initialize();
-	}
-
-	return status == EGL_SUCCESS ? renderer : NULL;
-#elif defined(ANGLE_ENABLE_D3D11)
+#if defined(ANGLE_ENABLE_D3D11)
     if (ANGLE_DEFAULT_D3D11 ||
         displayId == EGL_D3D11_ELSE_D3D9_DISPLAY_ANGLE ||
         displayId == EGL_D3D11_ONLY_DISPLAY_ANGLE)

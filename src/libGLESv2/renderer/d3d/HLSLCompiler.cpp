@@ -50,16 +50,7 @@ bool HLSLCompiler::initialize()
             break;
         }
     }
-    if(!mD3DCompilerModule)
-    {
-        mD3DCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
-    }
-    if (!mD3DCompilerModule)
-    {
-        ERR("No D3D compiler module found - aborting!\n");
-        return false;
-    }
-#else  // ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES
+#endif  // ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES
 
     if (!mD3DCompilerModule)
     {
@@ -81,7 +72,6 @@ bool HLSLCompiler::initialize()
 #else
 	mD3DCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
 #endif // defined(ANGLE_PLATFORM_WINRT)
-#endif // defined(ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES)
 
     mD3DCompileFunc = reinterpret_cast<CompileFuncPtr>(GetProcAddress(mD3DCompilerModule, "D3DCompile"));
     ASSERT(mD3DCompileFunc);

@@ -40,7 +40,7 @@ egl::Display *Display::getDisplay(EGLNativeDisplayType displayId)
     
     // FIXME: Check if displayId is a valid display device context
 
-    egl::Display *display = new egl::Display(displayId, displayId);
+    egl::Display *display = new egl::Display(displayId, (HDC)displayId);
 
     displays[displayId] = display;
     return display;
@@ -214,6 +214,15 @@ EGLSurface Display::createWindowSurface(EGLNativeWindowType window, EGLConfig co
                 break;
               case EGL_POST_SUB_BUFFER_SUPPORTED_NV:
                 postSubBufferSupported = attribList[1];
+                break;
+              case EGL_WIDTH:
+                width = attribList[1];
+                break;
+              case EGL_HEIGHT:
+                height = attribList[1];
+                break;
+              case EGL_FIXED_SIZE_ANGLE:
+                fixedSize = attribList[1];
                 break;
               case EGL_VG_COLORSPACE:
                 return error(EGL_BAD_MATCH, EGL_NO_SURFACE);

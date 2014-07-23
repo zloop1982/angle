@@ -8,30 +8,14 @@
         {
             'target_name': 'preprocessor',
             'type': 'static_library',
-            'include_dirs': [ ],
-            'sources': [ '<!@(python <(angle_build_scripts_path)/enumerate_files.py compiler/preprocessor -types *.cpp *.h *.y *.l )' ],
-            # TODO(jschuh): http://crbug.com/167187 size_t -> int
-            'msvs_disabled_warnings': [ 4267 ],
+            'includes': [ '../build/common_defines.gypi', ],
+            'sources': [ '<!@(python <(angle_path)/enumerate_files.py compiler/preprocessor -types *.cpp *.h *.y *.l )' ],
         },
-
         {
-            'target_name': 'translator',
-
-            # TODO(jmadill): https://code.google.com/p/angleproject/issues/detail?id=569 component build
-            'defines':
-            [
-                'ANGLE_TRANSLATOR_STATIC',
-            ],
-            'direct_dependent_settings':
-            {
-                'defines':
-                [
-                    'ANGLE_TRANSLATOR_STATIC',
-                ],
-            },
-
+            'target_name': 'translator_lib',
             'type': 'static_library',
             'dependencies': [ 'preprocessor' ],
+            'includes': [ '../build/common_defines.gypi', ],
             'include_dirs':
             [
                 '.',
@@ -39,8 +23,9 @@
             ],
             'sources':
             [
-                '<!@(python <(angle_build_scripts_path)/enumerate_files.py \
+                '<!@(python <(angle_path)/enumerate_files.py \
                      -dirs compiler/translator third_party/compiler common ../include \
+                     -excludes compiler/translator/ShaderLang.cpp \
                      -types *.cpp *.h *.y *.l)',
             ],
             'conditions':
@@ -62,6 +47,53 @@
                 'AdditionalOptions': ['/ignore:4221']
               },
             },
+        },
+
+        {
+            'target_name': 'translator',
+            'type': '<(component)',
+            'dependencies': [ 'translator_lib' ],
+            'includes': [ '../build/common_defines.gypi', ],
+            'include_dirs':
+            [
+                '.',
+                '../include',
+            ],
+            'defines':
+            [
+                'ANGLE_TRANSLATOR_IMPLEMENTATION',
+            ],
+            'sources':
+            [
+                'compiler/translator/ShaderLang.cpp'
+            ],
+        },
+
+        {
+            'target_name': 'translator_static',
+            'type': 'static_library',
+            'dependencies': [ 'translator_lib' ],
+            'includes': [ '../build/common_defines.gypi', ],
+            'include_dirs':
+            [
+                '.',
+                '../include',
+            ],
+            'defines':
+            [
+                'ANGLE_TRANSLATOR_STATIC',
+            ],
+            'direct_dependent_settings':
+            {
+                'defines':
+                [
+                    'ANGLE_TRANSLATOR_STATIC',
+                ],
+            },
+            'sources':
+            [
+                'compiler/translator/ShaderLang.cpp'
+            ],
         },
     ],
 }

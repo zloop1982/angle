@@ -62,6 +62,29 @@ bool ValidTextureTarget(const Context *context, GLenum target)
     }
 }
 
+// This function differs from ValidTextureTarget in that the target must be
+// usable as the destination of a 2D operation-- so a cube face is valid, but
+// GL_TEXTURE_CUBE_MAP is not.
+bool ValidTexture2DDestinationTarget(const Context *context, GLenum target)
+{
+    switch (target)
+    {
+      case GL_TEXTURE_2D:
+      case GL_TEXTURE_CUBE_MAP_POSITIVE_X:
+      case GL_TEXTURE_CUBE_MAP_NEGATIVE_X:
+      case GL_TEXTURE_CUBE_MAP_POSITIVE_Y:
+      case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:
+      case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
+      case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
+        return true;
+      case GL_TEXTURE_2D_ARRAY:
+      case GL_TEXTURE_3D:
+        return (context->getClientVersion() >= 3);
+      default:
+        return false;
+    }
+}
+
 bool ValidFramebufferTarget(GLenum target)
 {
     META_ASSERT(GL_DRAW_FRAMEBUFFER_ANGLE == GL_DRAW_FRAMEBUFFER && GL_READ_FRAMEBUFFER_ANGLE == GL_READ_FRAMEBUFFER);
@@ -83,10 +106,10 @@ bool ValidBufferTarget(const Context *context, GLenum target)
       case GL_ELEMENT_ARRAY_BUFFER:
         return true;
 
-      case GL_COPY_READ_BUFFER:
-      case GL_COPY_WRITE_BUFFER:
       case GL_PIXEL_PACK_BUFFER:
       case GL_PIXEL_UNPACK_BUFFER:
+      case GL_COPY_READ_BUFFER:
+      case GL_COPY_WRITE_BUFFER:
       case GL_TRANSFORM_FEEDBACK_BUFFER:
       case GL_UNIFORM_BUFFER:
         return (context->getClientVersion() >= 3);
@@ -191,6 +214,28 @@ bool ValidQueryType(const Context *context, GLenum queryType)
         return (context->getClientVersion() >= 3);
       default:
         return false;
+    }
+}
+
+bool ValidProgram(const Context *context, GLuint id)
+{
+    // ES3 spec (section 2.11.1) -- "Commands that accept shader or program object names will generate the
+    // error INVALID_VALUE if the provided name is not the name of either a shader or program object and
+    // INVALID_OPERATION if the provided name identifies an object that is not the expected type."
+
+    if (context->getProgram(id) != NULL)
+    {
+        return true;
+    }
+    else if (context->getShader(id) != NULL)
+    {
+        // ID is the wrong type
+        return gl::error(GL_INVALID_OPERATION, false);
+    }
+    else
+    {
+        // No shader/program object has this ID
+        return gl::error(GL_INVALID_VALUE, false);
     }
 }
 
@@ -745,7 +790,10 @@ bool ValidateTexParamParameters(gl::Context *context, GLenum pname, GLint param)
 
       case GL_TEXTURE_BASE_LEVEL:
       case GL_TEXTURE_MAX_LEVEL:
-        UNIMPLEMENTED();
+        if (param < 0)
+        {
+            return gl::error(GL_INVALID_VALUE, false);
+        }
         return true;
 
       default:
@@ -799,8 +847,8 @@ bool ValidateReadPixelsParameters(gl::Context *context, GLint x, GLint y, GLsize
     if (!context->getCurrentReadFormatType(&currentInternalFormat, &currentFormat, &currentType))
         return false;
 
-    bool validReadFormat = (clientVersion < 3) ? ValidES2ReadFormatType(format, type) :
-                                                 ValidES3ReadFormatType(currentInternalFormat, format, type);
+    bool validReadFormat = (clientVersion < 3) ? ValidES2ReadFormatType(context, format, type) :
+                                                 ValidES3ReadFormatType(context, currentInternalFormat, format, type);
 
     if (!(currentFormat == format && currentType == type) && !validReadFormat)
     {

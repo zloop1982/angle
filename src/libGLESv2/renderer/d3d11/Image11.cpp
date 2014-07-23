@@ -280,14 +280,21 @@ void Image11::copy(GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y
         // This format requires conversion, so we must copy the texture to staging and manually convert via readPixels
         D3D11_MAPPED_SUBRESOURCE mappedImage;
         HRESULT result = map(D3D11_MAP_WRITE, &mappedImage);
+        if (FAILED(result))
+        {
+            ERR("Failed to map texture for Image11::copy, HRESULT: 0x%X.", result);
+            return;
+        }
 
         // determine the offset coordinate into the destination buffer
         GLuint clientVersion = mRenderer->getCurrentClientVersion();
         GLsizei rowOffset = gl::GetPixelBytes(mActualFormat, clientVersion) * xoffset;
         void *dataOffset = static_cast<unsigned char*>(mappedImage.pData) + mappedImage.RowPitch * yoffset + rowOffset + zoffset * mappedImage.DepthPitch;
 
-        mRenderer->readPixels(source, x, y, width, height, gl::GetFormat(mInternalFormat, clientVersion),
-                              gl::GetType(mInternalFormat, clientVersion), mappedImage.RowPitch, false, 4, dataOffset);
+        GLenum format = gl::GetFormat(mInternalFormat, clientVersion);
+        GLenum type = gl::GetType(mInternalFormat, clientVersion);
+
+        mRenderer->readPixels(source, x, y, width, height, format, type, mappedImage.RowPitch, gl::PixelPackState(), dataOffset);
 
         unmap();
     }

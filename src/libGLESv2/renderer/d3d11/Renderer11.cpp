@@ -129,6 +129,7 @@ Renderer11::Renderer11(egl::Display *display, EGLNativeDisplayType hDc) : Render
 
     mAppliedVertexShader = NULL;
     mAppliedGeometryShader = NULL;
+    mCurPointGeometryShader = NULL;
     mAppliedPixelShader = NULL;
 }
 
@@ -758,8 +759,9 @@ void Renderer11::setTexture(gl::SamplerType type, int index, gl::Texture *textur
         if (texStorage)
         {
             TextureStorage11 *storage11 = TextureStorage11::makeTextureStorage11(texStorage->getStorageInstance());
-            textureSRV = storage11->getSRV(texture->getSwizzleRed(), texture->getSwizzleGreen(), texture->getSwizzleBlue(),
-                                           texture->getSwizzleAlpha());
+            gl::SamplerState samplerState;
+            texture->getSamplerState(&samplerState);
+            textureSRV = storage11->getSRV(samplerState);
         }
 
         // If we get NULL back from getSRV here, something went wrong in the texture class and we're unexpectedly
@@ -804,10 +806,6 @@ void Renderer11::setTexture(gl::SamplerType type, int index, gl::Texture *textur
 
 bool Renderer11::setUniformBuffers(const gl::Buffer *vertexUniformBuffers[], const gl::Buffer *fragmentUniformBuffers[])
 {
-    // convert buffers to ID3D11Buffer*
-    ID3D11Buffer *vertexConstantBuffers[gl::IMPLEMENTATION_MAX_VERTEX_SHADER_UNIFORM_BUFFERS] = { NULL };
-    ID3D11Buffer *pixelConstantBuffers[gl::IMPLEMENTATION_MAX_FRAGMENT_SHADER_UNIFORM_BUFFERS] = { NULL };
-
     for (unsigned int uniformBufferIndex = 0; uniformBufferIndex < gl::IMPLEMENTATION_MAX_VERTEX_SHADER_UNIFORM_BUFFERS; uniformBufferIndex++)
     {
         const gl::Buffer *uniformBuffer = vertexUniformBuffers[uniformBufferIndex];
@@ -849,8 +847,6 @@ bool Renderer11::setUniformBuffers(const gl::Buffer *vertexUniformBuffers[], con
                                                      1, &constantBuffer);
                 mCurrentConstantBufferPS[uniformBufferIndex] = bufferStorage->getSerial();
             }
-
-            pixelConstantBuffers[uniformBufferIndex] = constantBuffer;
         }
     }
 
@@ -1143,24 +1139,8 @@ bool Renderer11::applyRenderTarget(gl::Framebuffer *framebuffer)
                 missingColorRenderTarget = false;
             }
 
-#ifdef _DEBUG
-            // Workaround for Debug SETSHADERRESOURCES_HAZARD D3D11 warnings
-            for (unsigned int vertexSerialIndex = 0; vertexSerialIndex < gl::IMPLEMENTATION_MAX_VERTEX_TEXTURE_IMAGE_UNITS; vertexSerialIndex++)
-            {
-                if (colorbuffer->getTextureSerial() != 0 && mCurVertexTextureSerials[vertexSerialIndex] == colorbuffer->getTextureSerial())
-                {
-                    setTexture(gl::SAMPLER_VERTEX, vertexSerialIndex, NULL);
-                }
-            }
-
-            for (unsigned int pixelSerialIndex = 0; pixelSerialIndex < gl::MAX_TEXTURE_IMAGE_UNITS; pixelSerialIndex++)
-            {
-                if (colorbuffer->getTextureSerial() != 0 && mCurPixelTextureSerials[pixelSerialIndex] == colorbuffer->getTextureSerial())
-                {
-                    setTexture(gl::SAMPLER_PIXEL, pixelSerialIndex, NULL);
-                }
-            }
-#endif
+            // TODO: Detect if this color buffer is already bound as a texture and unbind it first to prevent
+            //       D3D11 warnings.
         }
     }
 
@@ -1285,28 +1265,27 @@ GLenum Renderer11::applyIndexBuffer(const GLvoid *indices, gl::Buffer *elementAr
 
     if (err == GL_NO_ERROR)
     {
+        IndexBuffer11* indexBuffer = IndexBuffer11::makeIndexBuffer11(indexInfo->indexBuffer);
+
+        ID3D11Buffer *buffer = NULL;
+        DXGI_FORMAT bufferFormat = indexBuffer->getIndexFormat();
+
         if (indexInfo->storage)
         {
-            if (indexInfo->serial != mAppliedStorageIBSerial || indexInfo->startOffset != mAppliedIBOffset)
-            {
-                BufferStorage11 *storage = BufferStorage11::makeBufferStorage11(indexInfo->storage);
-                IndexBuffer11* indexBuffer = IndexBuffer11::makeIndexBuffer11(indexInfo->indexBuffer);
-
-                mDeviceContext->IASetIndexBuffer(storage->getBuffer(BUFFER_USAGE_INDEX), indexBuffer->getIndexFormat(), indexInfo->startOffset);
-
-                mAppliedIBSerial = 0;
-                mAppliedStorageIBSerial = storage->getSerial();
-                mAppliedIBOffset = indexInfo->startOffset;
-            }
+            BufferStorage11 *storage = BufferStorage11::makeBufferStorage11(indexInfo->storage);
+            buffer = storage->getBuffer(BUFFER_USAGE_INDEX);
         }
-        else if (indexInfo->serial != mAppliedIBSerial || indexInfo->startOffset != mAppliedIBOffset)
+        else
         {
-            IndexBuffer11* indexBuffer = IndexBuffer11::makeIndexBuffer11(indexInfo->indexBuffer);
+            buffer = indexBuffer->getBuffer();
+        }
 
-            mDeviceContext->IASetIndexBuffer(indexBuffer->getBuffer(), indexBuffer->getIndexFormat(), indexInfo->startOffset);
+        if (buffer != mAppliedIB || bufferFormat != mAppliedIBFormat || indexInfo->startOffset != mAppliedIBOffset)
+        {
+            mDeviceContext->IASetIndexBuffer(buffer, bufferFormat, indexInfo->startOffset);
 
-            mAppliedIBSerial = indexInfo->serial;
-            mAppliedStorageIBSerial = 0;
+            mAppliedIB = buffer;
+            mAppliedIBFormat = bufferFormat;
             mAppliedIBOffset = indexInfo->startOffset;
         }
     }
@@ -1352,9 +1331,41 @@ void Renderer11::applyTransformFeedbackBuffers(gl::Buffer *transformFeedbackBuff
     }
 }
 
-void Renderer11::drawArrays(GLenum mode, GLsizei count, GLsizei instances)
+void Renderer11::drawArrays(GLenum mode, GLsizei count, GLsizei instances, bool transformFeedbackActive)
 {
-    if (mode == GL_LINE_LOOP)
+    if (mode == GL_POINTS && transformFeedbackActive)
+    {
+        // Since point sprites are generated with a geometry shader, too many vertices will
+        // be written if transform feedback is active.  To work around this, draw only the points
+        // with the stream out shader and no pixel shader to feed the stream out buffers and then 
+        // draw again with the point sprite geometry shader to rasterize the point sprites.
+
+        mDeviceContext->PSSetShader(NULL, NULL, 0);
+
+        if (instances > 0)
+        {
+            mDeviceContext->DrawInstanced(count, instances, 0, 0);
+        }
+        else
+        {
+            mDeviceContext->Draw(count, 0);
+        }
+
+        mDeviceContext->GSSetShader(mCurPointGeometryShader, NULL, 0);
+        mDeviceContext->PSSetShader(mAppliedPixelShader, NULL, 0);
+
+        if (instances > 0)
+        {
+            mDeviceContext->DrawInstanced(count, instances, 0, 0);
+        }
+        else
+        {
+            mDeviceContext->Draw(count, 0);
+        }
+
+        mDeviceContext->GSSetShader(mAppliedGeometryShader, NULL, 0);
+    }
+    else if (mode == GL_LINE_LOOP)
     {
         drawLineLoop(count, GL_NONE, NULL, 0, NULL);
     }
@@ -1369,26 +1380,6 @@ void Renderer11::drawArrays(GLenum mode, GLsizei count, GLsizei instances)
     else
     {
         mDeviceContext->Draw(count, 0);
-    }
-}
-
-void Renderer11::drawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, gl::Buffer *elementArrayBuffer, const TranslatedIndexData &indexInfo, GLsizei instances)
-{
-    if (mode == GL_LINE_LOOP)
-    {
-        drawLineLoop(count, type, indices, indexInfo.minIndex, elementArrayBuffer);
-    }
-    else if (mode == GL_TRIANGLE_FAN)
-    {
-        drawTriangleFan(count, type, indices, indexInfo.minIndex, elementArrayBuffer, instances);
-    }
-    else if (instances > 0)
-    {
-        mDeviceContext->DrawIndexedInstanced(count, instances, 0, -static_cast<int>(indexInfo.minIndex), 0);
-    }
-    else
-    {
-        mDeviceContext->DrawIndexed(count, 0, -static_cast<int>(indexInfo.minIndex));
     }
 }
 
@@ -1634,19 +1625,22 @@ void Renderer11::applyShaders(gl::ProgramBinary *programBinary, bool rasterizerD
     ShaderExecutable *geometryExe = programBinary->getGeometryExecutable();
 
     ID3D11VertexShader *vertexShader = (vertexExe ? ShaderExecutable11::makeShaderExecutable11(vertexExe)->getVertexShader() : NULL);
-    ID3D11PixelShader *pixelShader = (pixelExe ? ShaderExecutable11::makeShaderExecutable11(pixelExe)->getPixelShader() : NULL);
-    ID3D11GeometryShader *geometryShader = (geometryExe ? ShaderExecutable11::makeShaderExecutable11(geometryExe)->getGeometryShader() : NULL);
 
-    // Skip GS if we aren't drawing points
-    if (!mCurRasterState.pointDrawMode)
+    ID3D11PixelShader *pixelShader = NULL;
+    // Skip pixel shader if we're doing rasterizer discard.
+    if (!rasterizerDiscard)
     {
-        geometryShader = NULL;
+        pixelShader = (pixelExe ? ShaderExecutable11::makeShaderExecutable11(pixelExe)->getPixelShader() : NULL);
     }
 
-    // Skip pixel shader if we're doing rasterizer discard.
-    if (rasterizerDiscard)
+    ID3D11GeometryShader *geometryShader = NULL;
+    if (transformFeedbackActive)
     {
-        pixelShader = NULL;
+        geometryShader = (vertexExe ? ShaderExecutable11::makeShaderExecutable11(vertexExe)->getStreamOutShader() : NULL);
+    }
+    else if (mCurRasterState.pointDrawMode)
+    {
+        geometryShader = (geometryExe ? ShaderExecutable11::makeShaderExecutable11(geometryExe)->getGeometryShader() : NULL);
     }
 
     bool dirtyUniforms = false;
@@ -1665,6 +1659,15 @@ void Renderer11::applyShaders(gl::ProgramBinary *programBinary, bool rasterizerD
         dirtyUniforms = true;
     }
 
+    if (geometryExe && mCurRasterState.pointDrawMode)
+    {
+        mCurPointGeometryShader = ShaderExecutable11::makeShaderExecutable11(geometryExe)->getGeometryShader();
+    }
+    else
+    {
+        mCurPointGeometryShader = NULL;
+    }
+
     if (pixelShader != mAppliedPixelShader)
     {
         mDeviceContext->PSSetShader(pixelShader, NULL, 0);
@@ -1680,7 +1683,7 @@ void Renderer11::applyShaders(gl::ProgramBinary *programBinary, bool rasterizerD
 
 void Renderer11::applyUniforms(const gl::ProgramBinary &programBinary)
 {
-    const gl::UniformArray &uniformArray = programBinary.getUniforms();
+    const std::vector<gl::LinkedUniform*> &uniformArray = programBinary.getUniforms();
 
     unsigned int totalRegisterCountVS = 0;
     unsigned int totalRegisterCountPS = 0;
@@ -1690,7 +1693,7 @@ void Renderer11::applyUniforms(const gl::ProgramBinary &programBinary)
 
     for (size_t uniformIndex = 0; uniformIndex < uniformArray.size(); uniformIndex++)
     {
-        const gl::Uniform &uniform = *uniformArray[uniformIndex];
+        const gl::LinkedUniform &uniform = *uniformArray[uniformIndex];
 
         if (uniform.isReferencedByVertexShader() && !uniform.isSampler())
         {
@@ -1734,7 +1737,7 @@ void Renderer11::applyUniforms(const gl::ProgramBinary &programBinary)
 
     for (size_t uniformIndex = 0; uniformIndex < uniformArray.size(); uniformIndex++)
     {
-        gl::Uniform *uniform = uniformArray[uniformIndex];
+        gl::LinkedUniform *uniform = uniformArray[uniformIndex];
 
         if (!uniform->isSampler())
         {
@@ -1864,12 +1867,13 @@ void Renderer11::markAllStateDirty()
     mForceSetScissor = true;
     mForceSetViewport = true;
 
-    mAppliedIBSerial = 0;
-    mAppliedStorageIBSerial = 0;
+    mAppliedIB = NULL;
+    mAppliedIBFormat = DXGI_FORMAT_UNKNOWN;
     mAppliedIBOffset = 0;
 
     mAppliedVertexShader = NULL;
     mAppliedGeometryShader = NULL;
+    mCurPointGeometryShader = NULL;
     mAppliedPixelShader = NULL;
 
     for (size_t i = 0; i < gl::IMPLEMENTATION_MAX_TRANSFORM_FEEDBACK_BUFFERS; i++)
@@ -2160,6 +2164,11 @@ bool Renderer11::getTextureFilterAnisotropySupport() const
     return true;
 }
 
+bool Renderer11::getPBOSupport() const
+{
+    return true;
+}
+
 float Renderer11::getTextureMaxAnisotropy() const
 {
     switch (mFeatureLevel)
@@ -2258,13 +2267,14 @@ unsigned int Renderer11::getMaxVaryingVectors() const
     switch (mFeatureLevel)
     {
       case D3D_FEATURE_LEVEL_11_0:
-        return D3D11_VS_OUTPUT_REGISTER_COUNT;
+        return D3D11_VS_OUTPUT_REGISTER_COUNT - getReservedVaryings();
       case D3D_FEATURE_LEVEL_10_1:
+        return D3D10_1_VS_OUTPUT_REGISTER_COUNT - getReservedVaryings();
       case D3D_FEATURE_LEVEL_10_0:
       case D3D_FEATURE_LEVEL_9_3:
       case D3D_FEATURE_LEVEL_9_2:
       case D3D_FEATURE_LEVEL_9_1:
-        return D3D10_VS_OUTPUT_REGISTER_COUNT;
+        return D3D10_VS_OUTPUT_REGISTER_COUNT - getReservedVaryings();
       default: UNREACHABLE();
         return 0;
     }
@@ -2316,6 +2326,13 @@ unsigned int Renderer11::getReservedFragmentUniformBuffers() const
     return 2;
 }
 
+unsigned int Renderer11::getReservedVaryings() const
+{
+    // We potentially reserve varyings for gl_Position, _dx_Position, gl_FragCoord and gl_PointSize
+    return 4;
+}
+
+
 unsigned int Renderer11::getMaxTransformFeedbackBuffers() const
 {
     META_ASSERT(gl::IMPLEMENTATION_MAX_TRANSFORM_FEEDBACK_BUFFERS >= D3D11_SO_BUFFER_SLOT_COUNT &&
@@ -2326,11 +2343,37 @@ unsigned int Renderer11::getMaxTransformFeedbackBuffers() const
       case D3D_FEATURE_LEVEL_11_0:
         return D3D11_SO_BUFFER_SLOT_COUNT;
       case D3D_FEATURE_LEVEL_10_1:
+        return D3D10_1_SO_BUFFER_SLOT_COUNT;
       case D3D_FEATURE_LEVEL_10_0:
         return D3D10_SO_BUFFER_SLOT_COUNT;
       default: UNREACHABLE();
         return 0;
     }
+}
+
+unsigned int Renderer11::getMaxTransformFeedbackSeparateComponents() const
+{
+    switch (mFeatureLevel)
+    {
+      case D3D_FEATURE_LEVEL_11_0:
+        return getMaxTransformFeedbackInterleavedComponents() / getMaxTransformFeedbackBuffers();
+      case D3D_FEATURE_LEVEL_10_1:
+      case D3D_FEATURE_LEVEL_10_0:
+        // D3D 10 and 10.1 only allow one output per output slot if an output slot other than zero
+        // is used.
+        return 4;
+      case D3D_FEATURE_LEVEL_9_3:
+      case D3D_FEATURE_LEVEL_9_2:
+      case D3D_FEATURE_LEVEL_9_1:
+        return 0;
+      default: UNREACHABLE();
+        return 0;
+    }
+}
+
+unsigned int Renderer11::getMaxTransformFeedbackInterleavedComponents() const
+{
+    return (getMaxVaryingVectors() * 4);
 }
 
 unsigned int Renderer11::getMaxUniformBufferSize() const
@@ -2491,7 +2534,7 @@ int Renderer11::getMaxViewportDimension() const
 
     switch (mFeatureLevel)
     {
-      case D3D_FEATURE_LEVEL_11_0:
+      case D3D_FEATURE_LEVEL_11_0: 
         return D3D11_REQ_TEXTURE2D_U_OR_V_DIMENSION;   // 16384
       case D3D_FEATURE_LEVEL_10_1:
       case D3D_FEATURE_LEVEL_10_0: 
@@ -2694,6 +2737,9 @@ unsigned int Renderer11::getMaxRenderTargets() const
       case D3D_FEATURE_LEVEL_10_1:
       case D3D_FEATURE_LEVEL_10_0:
         // Feature level 10.0 and 10.1 cards perform very poorly when the pixel shader
+        // outputs to multiple RTs that are not bound.
+        // TODO: Remove pixel shader outputs for render targets that are not bound.
+        return 1;
 #if defined(ANGLE_PLATFORM_WINRT)
       case D3D_FEATURE_LEVEL_9_3:
         return D3D_FL9_3_SIMULTANEOUS_RENDER_TARGET_COUNT;
@@ -2714,7 +2760,7 @@ bool Renderer11::copyToRenderTarget(TextureStorageInterface2D *dest, TextureStor
         TextureStorage11_2D *source11 = TextureStorage11_2D::makeTextureStorage11_2D(source->getStorageInstance());
         TextureStorage11_2D *dest11 = TextureStorage11_2D::makeTextureStorage11_2D(dest->getStorageInstance());
 
-        mDeviceContext->CopyResource(dest11->getBaseTexture(), source11->getBaseTexture());
+        mDeviceContext->CopyResource(dest11->getResource(), source11->getResource());
 
         dest11->invalidateSwizzleCache();
 
@@ -2731,7 +2777,7 @@ bool Renderer11::copyToRenderTarget(TextureStorageInterfaceCube *dest, TextureSt
         TextureStorage11_Cube *source11 = TextureStorage11_Cube::makeTextureStorage11_Cube(source->getStorageInstance());
         TextureStorage11_Cube *dest11 = TextureStorage11_Cube::makeTextureStorage11_Cube(dest->getStorageInstance());
 
-        mDeviceContext->CopyResource(dest11->getBaseTexture(), source11->getBaseTexture());
+        mDeviceContext->CopyResource(dest11->getResource(), source11->getResource());
 
         dest11->invalidateSwizzleCache();
 
@@ -2748,7 +2794,7 @@ bool Renderer11::copyToRenderTarget(TextureStorageInterface3D *dest, TextureStor
         TextureStorage11_3D *source11 = TextureStorage11_3D::makeTextureStorage11_3D(source->getStorageInstance());
         TextureStorage11_3D *dest11 = TextureStorage11_3D::makeTextureStorage11_3D(dest->getStorageInstance());
 
-        mDeviceContext->CopyResource(dest11->getBaseTexture(), source11->getBaseTexture());
+        mDeviceContext->CopyResource(dest11->getResource(), source11->getResource());
 
         dest11->invalidateSwizzleCache();
 
@@ -2765,7 +2811,7 @@ bool Renderer11::copyToRenderTarget(TextureStorageInterface2DArray *dest, Textur
         TextureStorage11_2DArray *source11 = TextureStorage11_2DArray::makeTextureStorage11_2DArray(source->getStorageInstance());
         TextureStorage11_2DArray *dest11 = TextureStorage11_2DArray::makeTextureStorage11_2DArray(dest->getStorageInstance());
 
-        mDeviceContext->CopyResource(dest11->getBaseTexture(), source11->getBaseTexture());
+        mDeviceContext->CopyResource(dest11->getResource(), source11->getResource());
 
         dest11->invalidateSwizzleCache();
 
@@ -2832,6 +2878,7 @@ bool Renderer11::copyImage(gl::Framebuffer *framebuffer, const gl::Rectangle &so
                                   destFormat, GL_NEAREST);
 
     storage11->invalidateSwizzleCacheLevel(level);
+
     return ret;
 }
 
@@ -2892,6 +2939,7 @@ bool Renderer11::copyImage(gl::Framebuffer *framebuffer, const gl::Rectangle &so
                                   destFormat, GL_NEAREST);
 
     storage11->invalidateSwizzleCacheLevel(level);
+
     return ret;
 }
 
@@ -3069,33 +3117,63 @@ RenderTarget *Renderer11::createRenderTarget(int width, int height, GLenum forma
     return renderTarget;
 }
 
-ShaderExecutable *Renderer11::loadExecutable(const void *function, size_t length, rx::ShaderType type)
+ShaderExecutable *Renderer11::loadExecutable(const void *function, size_t length, rx::ShaderType type,
+                                             const std::vector<gl::LinkedVarying> &transformFeedbackVaryings,
+                                             bool separatedOutputBuffers)
 {
     ShaderExecutable11 *executable = NULL;
+    HRESULT result;
 
     switch (type)
     {
       case rx::SHADER_VERTEX:
         {
-            ID3D11VertexShader *vshader = NULL;
-            HRESULT result = mDevice->CreateVertexShader(function, length, NULL, &vshader);
+            ID3D11VertexShader *vertexShader = NULL;
+            ID3D11GeometryShader *streamOutShader = NULL;
+
+            result = mDevice->CreateVertexShader(function, length, NULL, &vertexShader);
             ASSERT(SUCCEEDED(result));
 
-            if (vshader)
+            if (transformFeedbackVaryings.size() > 0)
             {
-                executable = new ShaderExecutable11(function, length, vshader);
+                std::vector<D3D11_SO_DECLARATION_ENTRY> soDeclaration;
+                for (size_t i = 0; i < transformFeedbackVaryings.size(); i++)
+                {
+                    const gl::LinkedVarying &varying = transformFeedbackVaryings[i];
+                    for (size_t j = 0; j < varying.semanticIndexCount; j++)
+                    {
+                        D3D11_SO_DECLARATION_ENTRY entry = { 0 };
+                        entry.Stream = 0;
+                        entry.SemanticName = varying.semanticName.c_str();
+                        entry.SemanticIndex = varying.semanticIndex + j;
+                        entry.StartComponent = 0;
+                        entry.ComponentCount = gl::VariableRowCount(type);
+                        entry.OutputSlot = (separatedOutputBuffers ? i : 0);
+                        soDeclaration.push_back(entry);
+                    }
+                }
+
+                result = mDevice->CreateGeometryShaderWithStreamOutput(function, length, soDeclaration.data(), soDeclaration.size(),
+                                                                       NULL, 0, 0, NULL, &streamOutShader);
+                ASSERT(SUCCEEDED(result));
+            }
+
+            if (vertexShader)
+            {
+                executable = new ShaderExecutable11(function, length, vertexShader, streamOutShader);
             }
         }
         break;
       case rx::SHADER_PIXEL:
         {
-            ID3D11PixelShader *pshader = NULL;
-            HRESULT result = mDevice->CreatePixelShader(function, length, NULL, &pshader);
+            ID3D11PixelShader *pixelShader = NULL;
+
+            result = mDevice->CreatePixelShader(function, length, NULL, &pixelShader);
             ASSERT(SUCCEEDED(result));
 
-            if (pshader)
+            if (pixelShader)
             {
-                executable = new ShaderExecutable11(function, length, pshader);
+                executable = new ShaderExecutable11(function, length, pixelShader);
             }
         }
         break;
@@ -3120,63 +3198,53 @@ ShaderExecutable *Renderer11::loadExecutable(const void *function, size_t length
 }
 
 #if !defined(ANGLE_PLATFORM_WP8)
-ShaderExecutable *Renderer11::compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type, D3DWorkaroundType workaround)
+ShaderExecutable *Renderer11::compileToExecutable(gl::InfoLog &infoLog, const char *shaderHLSL, rx::ShaderType type,
+                                                  const std::vector<gl::LinkedVarying> &transformFeedbackVaryings,
+                                                  bool separatedOutputBuffers, D3DWorkaroundType workaround)
 {
-    const char *profile = NULL;
-
+    const char *profileType = NULL;
     switch (type)
     {
       case rx::SHADER_VERTEX:
-        if (mFeatureLevel >= D3D_FEATURE_LEVEL_10_0)
-            profile = "vs_4_0";
-        else
-        {
-            switch(mFeatureLevel)
-            {
-              case D3D_FEATURE_LEVEL_9_3:
-                profile = "vs_4_0_level_9_3";
-                break;
-
-              case D3D_FEATURE_LEVEL_9_2:
-              case D3D_FEATURE_LEVEL_9_1:
-                profile = "vs_4_0_level_9_1";
-                break;
-
-              default:
-                UNREACHABLE();
-                return NULL;
-            }
-        }
+        profileType = "vs";
         break;
       case rx::SHADER_PIXEL:
-        if (mFeatureLevel >= D3D_FEATURE_LEVEL_10_0)
-            profile = "ps_4_0";
-        else
-        {
-            switch(mFeatureLevel)
-            {
-              case D3D_FEATURE_LEVEL_9_3:
-                profile = "ps_4_0_level_9_3";
-                break;
-
-              case D3D_FEATURE_LEVEL_9_2:
-              case D3D_FEATURE_LEVEL_9_1:
-                profile = "ps_4_0_level_9_1";
-                break;
-
-              default:
-                UNREACHABLE();
-                return NULL;
-            }
-        }
+        profileType = "ps";
         break;
       case rx::SHADER_GEOMETRY:
-        profile = "gs_4_0";
+        profileType = "gs";
         break;
       default:
         UNREACHABLE();
         return NULL;
     }
+
+    const char *profileVersion = NULL;
+    switch (mFeatureLevel)
+    {
+      case D3D_FEATURE_LEVEL_11_0:
+        profileVersion = "5_0";
+        break;
+      case D3D_FEATURE_LEVEL_10_1:
+        profileVersion = "4_1";
+        break;
+      case D3D_FEATURE_LEVEL_10_0:
+        profileVersion = "4_0";
+        break;
+      case D3D_FEATURE_LEVEL_9_3:
+        profileVersion = "4_0_level_9_3";
+        break;
+      case D3D_FEATURE_LEVEL_9_2:
+      case D3D_FEATURE_LEVEL_9_1:
+        profileVersion = "4_0_level_9_1";
+      	break;
+      default:
+        UNREACHABLE();
+        return NULL;
+    }
+
+    char profile[32];
+    snprintf(profile, ArraySize(profile), "%s_%s", profileType, profileVersion);
 
     ID3DBlob *binary = (ID3DBlob*)mCompiler.compileToBinary(infoLog, shaderHLSL, profile, D3DCOMPILE_OPTIMIZATION_LEVEL0, false);
     if (!binary)
@@ -3184,7 +3252,8 @@ ShaderExecutable *Renderer11::compileToExecutable(gl::InfoLog &infoLog, const ch
         return NULL;
     }
 
-    ShaderExecutable *executable = loadExecutable((DWORD *)binary->GetBufferPointer(), binary->GetBufferSize(), type);
+    ShaderExecutable *executable = loadExecutable((DWORD *)binary->GetBufferPointer(), binary->GetBufferSize(), type,
+                                                  transformFeedbackVaryings, separatedOutputBuffers);
     SafeRelease(binary);
 
     return executable;
@@ -3371,8 +3440,8 @@ bool Renderer11::blitRect(gl::Framebuffer *readTarget, const gl::Rectangle &read
     return true;
 }
 
-void Renderer11::readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format, GLenum type,
-                            GLsizei outputPitch, bool packReverseRowOrder, GLint packAlignment, void* pixels)
+void Renderer11::readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsizei width, GLsizei height, GLenum format,
+                            GLenum type, GLuint outputPitch, const gl::PixelPackState &pack, void* pixels)
 {
     ID3D11Texture2D *colorBufferTexture = NULL;
     unsigned int subresourceIndex = 0;
@@ -3387,8 +3456,7 @@ void Renderer11::readPixels(gl::Framebuffer *framebuffer, GLint x, GLint y, GLsi
         area.width = width;
         area.height = height;
 
-        readTextureData(colorBufferTexture, subresourceIndex, area, format, type, outputPitch,
-                        packReverseRowOrder, packAlignment, pixels);
+        readTextureData(colorBufferTexture, subresourceIndex, area, format, type, outputPitch, pack, pixels);
 
         SafeRelease(colorBufferTexture);
     }
@@ -3412,36 +3480,58 @@ TextureStorage *Renderer11::createTextureStorage2D(SwapChain *swapChain)
     return new TextureStorage11_2D(this, swapChain11);
 }
 
-TextureStorage *Renderer11::createTextureStorage2D(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height)
+TextureStorage *Renderer11::createTextureStorage2D(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, int levels)
 {
-    return new TextureStorage11_2D(this, baseLevel, maxLevel, internalformat, renderTarget, width, height);
+    return new TextureStorage11_2D(this, internalformat, renderTarget, width, height, levels);
 }
 
-TextureStorage *Renderer11::createTextureStorageCube(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, int size)
+TextureStorage *Renderer11::createTextureStorageCube(GLenum internalformat, bool renderTarget, int size, int levels)
 {
-    return new TextureStorage11_Cube(this, baseLevel, maxLevel, internalformat, renderTarget, size);
+    return new TextureStorage11_Cube(this, internalformat, renderTarget, size, levels);
 }
 
-TextureStorage *Renderer11::createTextureStorage3D(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth)
+TextureStorage *Renderer11::createTextureStorage3D(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth, int levels)
 {
-    return new TextureStorage11_3D(this, baseLevel, maxLevel, internalformat, renderTarget, width, height, depth);
+    return new TextureStorage11_3D(this, internalformat, renderTarget, width, height, depth, levels);
 }
 
-TextureStorage *Renderer11::createTextureStorage2DArray(int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth)
+TextureStorage *Renderer11::createTextureStorage2DArray(GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, GLsizei depth, int levels)
 {
-    return new TextureStorage11_2DArray(this, baseLevel, maxLevel, internalformat, renderTarget, width, height, depth);
+    return new TextureStorage11_2DArray(this, internalformat, renderTarget, width, height, depth, levels);
 }
 
-void Renderer11::readTextureData(ID3D11Texture2D *texture, unsigned int subResource, const gl::Rectangle &area,
-                                 GLenum format, GLenum type, GLsizei outputPitch, bool packReverseRowOrder,
-                                 GLint packAlignment, void *pixels)
+void Renderer11::readTextureData(ID3D11Texture2D *texture, unsigned int subResource, const gl::Rectangle &area, GLenum format,
+                                 GLenum type, GLuint outputPitch, const gl::PixelPackState &pack, void *pixels)
 {
+    ASSERT(area.width >= 0);
+    ASSERT(area.height >= 0);
+
     D3D11_TEXTURE2D_DESC textureDesc;
     texture->GetDesc(&textureDesc);
 
+    // Clamp read region to the defined texture boundaries, preventing out of bounds reads
+    // and reads of uninitialized data.
+    gl::Rectangle safeArea;
+    safeArea.x      = gl::clamp(area.x, 0, static_cast<int>(textureDesc.Width));
+    safeArea.y      = gl::clamp(area.y, 0, static_cast<int>(textureDesc.Height));
+    safeArea.width  = gl::clamp(area.width + std::min(area.x, 0), 0,
+                                static_cast<int>(textureDesc.Width) - safeArea.x);
+    safeArea.height = gl::clamp(area.height + std::min(area.y, 0), 0,
+                                static_cast<int>(textureDesc.Height) - safeArea.y);
+
+    ASSERT(safeArea.x >= 0 && safeArea.y >= 0);
+    ASSERT(safeArea.x + safeArea.width  <= static_cast<int>(textureDesc.Width));
+    ASSERT(safeArea.y + safeArea.height <= static_cast<int>(textureDesc.Height));
+
+    if (safeArea.width == 0 || safeArea.height == 0)
+    {
+        // no work to do
+        return;
+    }
+
     D3D11_TEXTURE2D_DESC stagingDesc;
-    stagingDesc.Width = area.width;
-    stagingDesc.Height = area.height;
+    stagingDesc.Width = safeArea.width;
+    stagingDesc.Height = safeArea.height;
     stagingDesc.MipLevels = 1;
     stagingDesc.ArraySize = 1;
     stagingDesc.Format = textureDesc.Format;
@@ -3494,25 +3584,37 @@ void Renderer11::readTextureData(ID3D11Texture2D *texture, unsigned int subResou
     }
 
     D3D11_BOX srcBox;
-    srcBox.left = area.x;
-    srcBox.right = area.x + area.width;
-    srcBox.top = area.y;
-    srcBox.bottom = area.y + area.height;
-    srcBox.front = 0;
-    srcBox.back = 1;
+    srcBox.left   = static_cast<UINT>(safeArea.x);
+    srcBox.right  = static_cast<UINT>(safeArea.x + safeArea.width);
+    srcBox.top    = static_cast<UINT>(safeArea.y);
+    srcBox.bottom = static_cast<UINT>(safeArea.y + safeArea.height);
+    srcBox.front  = 0;
+    srcBox.back   = 1;
 
     mDeviceContext->CopySubresourceRegion(stagingTex, 0, 0, 0, 0, srcTex, subResource, &srcBox);
 
     SafeRelease(srcTex);
 
+    PackPixelsParams packParams(safeArea, format, type, outputPitch, pack, 0);
+    packPixels(stagingTex, packParams, pixels);
+
+    SafeRelease(stagingTex);
+}
+
+void Renderer11::packPixels(ID3D11Texture2D *readTexture, const PackPixelsParams &params, void *pixelsOut)
+{
+    D3D11_TEXTURE2D_DESC textureDesc;
+    readTexture->GetDesc(&textureDesc);
+
     D3D11_MAPPED_SUBRESOURCE mapping;
-    mDeviceContext->Map(stagingTex, 0, D3D11_MAP_READ, 0, &mapping);
+    HRESULT hr = mDeviceContext->Map(readTexture, 0, D3D11_MAP_READ, 0, &mapping);
+    ASSERT(SUCCEEDED(hr));
 
     unsigned char *source;
     int inputPitch;
-    if (packReverseRowOrder)
+    if (params.pack.reverseRowOrder)
     {
-        source = static_cast<unsigned char*>(mapping.pData) + mapping.RowPitch * (area.height - 1);
+        source = static_cast<unsigned char*>(mapping.pData) + mapping.RowPitch * (params.area.height - 1);
         inputPitch = -static_cast<int>(mapping.RowPitch);
     }
     else
@@ -3529,29 +3631,28 @@ void Renderer11::readTextureData(ID3D11Texture2D *texture, unsigned int subResou
 
     GLuint sourcePixelSize = gl::GetPixelBytes(sourceInternalFormat, clientVersion);
 
-    if (sourceFormat == format && sourceType == type)
+    if (sourceFormat == params.format && sourceType == params.type)
     {
-        // Direct copy possible
-        unsigned char *dest = static_cast<unsigned char*>(pixels);
-        for (int y = 0; y < area.height; y++)
+        unsigned char *dest = static_cast<unsigned char*>(pixelsOut) + params.offset;
+        for (int y = 0; y < params.area.height; y++)
         {
-            memcpy(dest + y * outputPitch, source + y * inputPitch, area.width * sourcePixelSize);
+            memcpy(dest + y * params.outputPitch, source + y * inputPitch, params.area.width * sourcePixelSize);
         }
     }
     else
     {
-        GLenum destInternalFormat = gl::GetSizedInternalFormat(format, type, clientVersion);
+        GLenum destInternalFormat = gl::GetSizedInternalFormat(params.format, params.type, clientVersion);
         GLuint destPixelSize = gl::GetPixelBytes(destInternalFormat, clientVersion);
 
-        ColorCopyFunction fastCopyFunc = d3d11::GetFastCopyFunction(textureDesc.Format, format, type);
+        ColorCopyFunction fastCopyFunc = d3d11::GetFastCopyFunction(textureDesc.Format, params.format, params.type);
         if (fastCopyFunc)
         {
             // Fast copy is possible through some special function
-            for (int y = 0; y < area.height; y++)
+            for (int y = 0; y < params.area.height; y++)
             {
-                for (int x = 0; x < area.width; x++)
+                for (int x = 0; x < params.area.width; x++)
                 {
-                    void *dest = static_cast<unsigned char*>(pixels) + y * outputPitch + x * destPixelSize;
+                    void *dest = static_cast<unsigned char*>(pixelsOut) + params.offset + y * params.outputPitch + x * destPixelSize;
                     void *src = static_cast<unsigned char*>(source) + y * inputPitch + x * sourcePixelSize;
 
                     fastCopyFunc(src, dest);
@@ -3561,18 +3662,18 @@ void Renderer11::readTextureData(ID3D11Texture2D *texture, unsigned int subResou
         else
         {
             ColorReadFunction readFunc = d3d11::GetColorReadFunction(textureDesc.Format);
-            ColorWriteFunction writeFunc = gl::GetColorWriteFunction(format, type, clientVersion);
+            ColorWriteFunction writeFunc = gl::GetColorWriteFunction(params.format, params.type, clientVersion);
 
             unsigned char temp[16]; // Maximum size of any Color<T> type used.
             META_ASSERT(sizeof(temp) >= sizeof(gl::ColorF)  &&
                         sizeof(temp) >= sizeof(gl::ColorUI) &&
                         sizeof(temp) >= sizeof(gl::ColorI));
 
-            for (int y = 0; y < area.height; y++)
+            for (int y = 0; y < params.area.height; y++)
             {
-                for (int x = 0; x < area.width; x++)
+                for (int x = 0; x < params.area.width; x++)
                 {
-                    void *dest = static_cast<unsigned char*>(pixels) + y * outputPitch + x * destPixelSize;
+                    void *dest = static_cast<unsigned char*>(pixelsOut) + params.offset + y * params.outputPitch + x * destPixelSize;
                     void *src = static_cast<unsigned char*>(source) + y * inputPitch + x * sourcePixelSize;
 
                     // readFunc and writeFunc will be using the same type of color, CopyTexImage
@@ -3584,9 +3685,7 @@ void Renderer11::readTextureData(ID3D11Texture2D *texture, unsigned int subResou
         }
     }
 
-    mDeviceContext->Unmap(stagingTex, 0);
-
-    SafeRelease(stagingTex);
+    mDeviceContext->Unmap(readTexture, 0);
 }
 
 bool Renderer11::blitRenderbufferRect(const gl::Rectangle &readRect, const gl::Rectangle &drawRect, RenderTarget *readRenderTarget,

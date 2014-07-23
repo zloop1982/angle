@@ -327,8 +327,8 @@ class Context
     Buffer *getBuffer(GLuint handle);
     FenceNV *getFenceNV(GLuint handle);
     FenceSync *getFenceSync(GLsync handle) const;
-    Shader *getShader(GLuint handle);
-    Program *getProgram(GLuint handle);
+    Shader *getShader(GLuint handle) const;
+    Program *getProgram(GLuint handle) const;
     Texture *getTexture(GLuint handle);
     Framebuffer *getFramebuffer(GLuint handle) const;
     Renderbuffer *getRenderbuffer(GLuint handle);
@@ -443,6 +443,7 @@ class Context
     bool supportsNonPower2Texture() const;
     bool supportsInstancing() const;
     bool supportsTextureFilterAnisotropy() const;
+    bool supportsPBOs() const;
 
     bool getCurrentReadFormatType(GLenum *internalFormat, GLenum *format, GLenum *type);
 
@@ -463,7 +464,7 @@ class Context
 
     bool applyRenderTarget(GLenum drawMode, bool ignoreViewport);
     void applyState(GLenum drawMode);
-    void applyShaders(ProgramBinary *programBinary);
+    void applyShaders(ProgramBinary *programBinary, bool transformFeedbackActive);
     void applyTextures(ProgramBinary *programBinary);
     void applyTextures(ProgramBinary *programBinary, SamplerType type);
     bool applyUniformBuffers();
@@ -581,6 +582,7 @@ class Context
     bool mSupportsDepthTextures;
     bool mSupports32bitIndices;
     bool mSupportsTextureFilterAnisotropy;
+    bool mSupportsPBOs;
     int mNumCompressedTextureFormats;
 
     ResourceManager *mResourceManager;

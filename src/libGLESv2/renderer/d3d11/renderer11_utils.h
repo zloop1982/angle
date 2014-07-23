@@ -29,24 +29,10 @@ D3D11_DEPTH_WRITE_MASK ConvertDepthMask(bool depthWriteEnabled);
 UINT8 ConvertStencilMask(GLuint stencilmask);
 D3D11_STENCIL_OP ConvertStencilOp(GLenum stencilOp);
 
-D3D11_FILTER ConvertFilter(GLenum minFilter, GLenum magFilter, float maxAnisotropy);
+D3D11_FILTER ConvertFilter(GLenum minFilter, GLenum magFilter, float maxAnisotropy, GLenum comparisonMode);
 D3D11_TEXTURE_ADDRESS_MODE ConvertTextureWrap(GLenum wrap);
-FLOAT ConvertMinLOD(GLenum minFilter, unsigned int lodOffset);
-FLOAT ConvertMaxLOD(GLenum minFilter, unsigned int lodOffset);
 
 D3D11_QUERY ConvertQueryType(GLenum queryType);
-
-DXGI_FORMAT ConvertRenderbufferFormat(GLenum format);
-DXGI_FORMAT ConvertTextureFormat(GLenum format);
-}
-
-namespace d3d11_gl
-{
-
-GLenum ConvertBackBufferFormat(DXGI_FORMAT format);
-GLenum ConvertDepthStencilFormat(DXGI_FORMAT format);
-GLenum ConvertRenderbufferFormat(DXGI_FORMAT format);
-GLenum ConvertTextureInternalFormat(DXGI_FORMAT format);
 
 }
 
@@ -93,16 +79,6 @@ void SetPositionDepthColorVertex(PositionDepthColorVertex<T>* vertex, float x, f
     vertex->a = color.alpha;
 }
 
-size_t ComputePixelSizeBits(DXGI_FORMAT format);
-size_t ComputeBlockSizeBits(DXGI_FORMAT format);
-
-bool IsCompressed(DXGI_FORMAT format);
-unsigned int GetTextureFormatDimensionAlignment(DXGI_FORMAT format);
-
-bool IsDepthStencilFormat(DXGI_FORMAT format);
-DXGI_FORMAT GetDepthTextureFormat(DXGI_FORMAT format);
-DXGI_FORMAT GetDepthShaderResourceFormat(DXGI_FORMAT format);
-
 HRESULT SetDebugName(ID3D11DeviceChild *resource, const char *name);
 
 template <typename outType>
@@ -125,13 +101,13 @@ inline bool isDeviceLostError(HRESULT errorCode)
 {
     switch (errorCode)
     {
-        case DXGI_ERROR_DEVICE_HUNG:
-        case DXGI_ERROR_DEVICE_REMOVED:
-        case DXGI_ERROR_DEVICE_RESET:
-        case DXGI_ERROR_DRIVER_INTERNAL_ERROR:
-        case DXGI_ERROR_NOT_CURRENTLY_AVAILABLE:
+      case DXGI_ERROR_DEVICE_HUNG:
+      case DXGI_ERROR_DEVICE_REMOVED:
+      case DXGI_ERROR_DEVICE_RESET:
+      case DXGI_ERROR_DRIVER_INTERNAL_ERROR:
+      case DXGI_ERROR_NOT_CURRENTLY_AVAILABLE:
         return true;
-        default:
+      default:
         return false;
     }
 }

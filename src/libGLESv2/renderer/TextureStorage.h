@@ -25,13 +25,10 @@ class TextureStorage
     TextureStorage() {};
     virtual ~TextureStorage() {};
 
-    virtual int getLodOffset() const = 0;
+    virtual int getTopLevel() const = 0;
     virtual bool isRenderTarget() const = 0;
     virtual bool isManaged() const = 0;
-    virtual int getBaseLevel() const = 0;
-    virtual int getMaxLevel() const = 0;
-
-    int levelCount() const { return getMaxLevel() - getBaseLevel(); }
+    virtual int getLevelCount() const = 0;
 
     virtual RenderTarget *getRenderTarget(int level) = 0;
     virtual RenderTarget *getRenderTargetFace(GLenum faceTarget, int level) = 0;
@@ -54,11 +51,10 @@ class TextureStorageInterface
 
     unsigned int getTextureSerial() const;
 
-    virtual int getLodOffset() const;
+    virtual int getTopLevel() const;
     virtual bool isRenderTarget() const;
     virtual bool isManaged() const;
-    virtual int getBaseLevel() const;
-    virtual int getMaxLevel() const;
+    virtual int getLevelCount() const;
 
   protected:
     TextureStorage *mInstance;
@@ -76,7 +72,7 @@ class TextureStorageInterface2D : public TextureStorageInterface
 {
   public:
     TextureStorageInterface2D(Renderer *renderer, SwapChain *swapchain);
-    TextureStorageInterface2D(Renderer *renderer, int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height);
+    TextureStorageInterface2D(Renderer *renderer, GLenum internalformat, bool renderTarget, GLsizei width, GLsizei height, int levels);
     virtual ~TextureStorageInterface2D();
 
     void generateMipmap(int level);
@@ -93,7 +89,7 @@ class TextureStorageInterface2D : public TextureStorageInterface
 class TextureStorageInterfaceCube : public TextureStorageInterface
 {
   public:
-    TextureStorageInterfaceCube(Renderer *renderer, int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget, int size);
+    TextureStorageInterfaceCube(Renderer *renderer, GLenum internalformat, bool renderTarget, int size, int levels);
     virtual ~TextureStorageInterfaceCube();
 
     void generateMipmap(int faceIndex, int level);
@@ -110,8 +106,8 @@ class TextureStorageInterfaceCube : public TextureStorageInterface
 class TextureStorageInterface3D : public TextureStorageInterface
 {
   public:
-    TextureStorageInterface3D(Renderer *renderer, int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget,
-                              GLsizei width, GLsizei height, GLsizei depth);
+    TextureStorageInterface3D(Renderer *renderer, GLenum internalformat, bool renderTarget,
+                              GLsizei width, GLsizei height, GLsizei depth, int levels);
     virtual ~TextureStorageInterface3D();
 
     void generateMipmap(int level);
@@ -129,8 +125,8 @@ class TextureStorageInterface3D : public TextureStorageInterface
 class TextureStorageInterface2DArray : public TextureStorageInterface
 {
   public:
-    TextureStorageInterface2DArray(Renderer *renderer, int baseLevel, int maxLevel, GLenum internalformat, bool renderTarget,
-                                   GLsizei width, GLsizei height, GLsizei depth);
+    TextureStorageInterface2DArray(Renderer *renderer, GLenum internalformat, bool renderTarget,
+                                   GLsizei width, GLsizei height, GLsizei depth, int levels);
     virtual ~TextureStorageInterface2DArray();
 
     void generateMipmap(int level);

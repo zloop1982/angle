@@ -424,14 +424,14 @@ typedef EGLBoolean (EGLAPIENTRYP PFNEGLQUERYSTREAMTIMEKHRPROC)(EGLDisplay dpy, E
 #define EGL_LOSE_CONTEXT_ON_RESET_EXT		0x31BF
 #endif
 
-#ifndef EGL_ANGLE_window_fixed_size
-#define EGL_ANGLE_window_fixed_size 1
-#define EGL_FIXED_SIZE_ANGLE	0x3201
-#endif
-
 #ifndef EGL_ANGLE_d3d_share_handle_client_buffer
 #define EGL_ANGLE_d3d_share_handle_client_buffer 1
 /* reuse EGL_D3D_TEXTURE_2D_SHARE_HANDLE_ANGLE */
+#endif
+
+#ifndef EGL_ANGLE_window_fixed_size
+#define EGL_ANGLE_window_fixed_size 1
+#define EGL_FIXED_SIZE_ANGLE        0x3201
 #endif
 
 #ifndef EGL_KHR_create_context

@@ -28,12 +28,11 @@ bool IsWebGLBasedSpec(ShShaderSpec spec)
      return spec == SH_WEBGL_SPEC || spec == SH_CSS_SHADERS_SPEC;
 }
 
-size_t GetGlobalMaxTokenSize()
+size_t GetGlobalMaxTokenSize(ShShaderSpec spec)
 {
-    TParseContext *parseContext = GetGlobalParseContext();
     // WebGL defines a max token legnth of 256, while ES2 leaves max token
     // size undefined. ES3 defines a max size of 1024 characters.
-    if (IsWebGLBasedSpec(parseContext->shaderSpec))
+    if (IsWebGLBasedSpec(spec))
     {
         return 256;
     }
@@ -180,6 +179,10 @@ bool TCompiler::compile(const char* const shaderStrings[],
         TIntermNode* root = parseContext.treeRoot;
         success = intermediate.postProcess(root);
 
+        // Disallow expressions deemed too complex.
+        if (success && (compileOptions & SH_LIMIT_EXPRESSION_COMPLEXITY))
+            success = limitExpressionComplexity(root);
+
         if (success)
             success = detectCallDepth(root, infoSink, (compileOptions & SH_LIMIT_CALL_STACK_DEPTH) != 0);
 
@@ -221,10 +224,6 @@ bool TCompiler::compile(const char* const shaderStrings[],
         if (success && (compileOptions & SH_CLAMP_INDIRECT_ARRAY_BOUNDS))
             arrayBoundsClamper.MarkIndirectArrayBoundsForClamping(root);
 
-        // Disallow expressions deemed too complex.
-        if (success && (compileOptions & SH_LIMIT_EXPRESSION_COMPLEXITY))
-            success = limitExpressionComplexity(root);
-
         if (success && shaderType == SH_VERTEX_SHADER && (compileOptions & SH_INIT_GL_POSITION))
             initializeGLPosition(root);
 
@@ -261,7 +260,7 @@ bool TCompiler::compile(const char* const shaderStrings[],
 
     // Cleanup memory.
     intermediate.remove(parseContext.treeRoot);
-
+    SetGlobalParseContext(NULL);
     return success;
 }
 
@@ -413,8 +412,15 @@ bool TCompiler::enforceTimingRestrictions(TIntermNode* root, bool outputGraph)
 
 bool TCompiler::limitExpressionComplexity(TIntermNode* root)
 {
-    TIntermTraverser traverser;
+    TMaxDepthTraverser traverser(maxExpressionComplexity+1);
     root->traverse(&traverser);
+
+    if (traverser.getMaxDepth() > maxExpressionComplexity)
+    {
+        infoSink.info << "Expression too complex.";
+        return false;
+    }
+
     TDependencyGraph graph(root);
 
     for (TFunctionCallVector::const_iterator iter = graph.beginUserDefinedFunctionCalls();
@@ -426,11 +432,6 @@ bool TCompiler::limitExpressionComplexity(TIntermNode* root)
         samplerSymbol->traverse(&graphTraverser);
     }
 
-    if (traverser.getMaxDepth() > maxExpressionComplexity)
-    {
-        infoSink.info << "Expression too complex.";
-        return false;
-    }
     return true;
 }
 
@@ -478,38 +479,36 @@ void TCompiler::initializeVaryingsWithoutStaticUse(TIntermNode* root)
         const TVariableInfo& varying = varyings[ii];
         if (varying.staticUse)
             continue;
-        unsigned char size = 0;
-        bool matrix = false;
+        unsigned char primarySize = 1, secondarySize = 1;
         switch (varying.type)
         {
           case SH_FLOAT:
-            size = 1;
             break;
           case SH_FLOAT_VEC2:
-            size = 2;
+            primarySize = 2;
             break;
           case SH_FLOAT_VEC3:
-            size = 3;
+            primarySize = 3;
             break;
           case SH_FLOAT_VEC4:
-            size = 4;
+            primarySize = 4;
             break;
           case SH_FLOAT_MAT2:
-            size = 2;
-            matrix = true;
+            primarySize = 2;
+            secondarySize = 2;
             break;
           case SH_FLOAT_MAT3:
-            size = 3;
-            matrix = true;
+            primarySize = 3;
+            secondarySize = 3;
             break;
           case SH_FLOAT_MAT4:
-            size = 4;
-            matrix = true;
+            primarySize = 4;
+            secondarySize = 4;
             break;
           default:
             ASSERT(false);
         }
-        TType type(EbtFloat, EbpUndefined, EvqVaryingOut, size, matrix, varying.isArray);
+        TType type(EbtFloat, EbpUndefined, EvqVaryingOut, primarySize, secondarySize, varying.isArray);
         TString name = varying.name.c_str();
         if (varying.isArray)
         {

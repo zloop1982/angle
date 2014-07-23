@@ -27,7 +27,6 @@
 #include "common/winrtangleutils.h"
 using namespace Microsoft::WRL;
 #endif // #if defined(ANGLE_PLATFORM_WINRT)
-
 namespace egl
 {
 
