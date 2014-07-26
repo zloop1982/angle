@@ -27,6 +27,18 @@ Current *AllocateCurrent()
 {
     Current *current = (egl::Current*)LocalAlloc(LPTR, sizeof(egl::Current));
 
+#if defined(ANGLE_PLATFORM_WINRT)
+    if(current)
+    {
+        TlsSetValue(currentTLS, current);
+
+        current->error = EGL_SUCCESS;
+        current->API = EGL_OPENGL_ES_API;
+        current->display = EGL_NO_DISPLAY;
+        current->drawSurface = EGL_NO_SURFACE;
+        current->readSurface = EGL_NO_SURFACE;
+    }
+#else
     if (!current)
     {
         ERR("Could not allocate thread local storage.");
@@ -41,6 +53,7 @@ Current *AllocateCurrent()
     current->display = EGL_NO_DISPLAY;
     current->drawSurface = EGL_NO_SURFACE;
     current->readSurface = EGL_NO_SURFACE;
+#endif
 
     return current;
 }
