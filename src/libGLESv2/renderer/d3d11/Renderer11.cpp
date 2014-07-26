@@ -1383,6 +1383,26 @@ void Renderer11::drawArrays(GLenum mode, GLsizei count, GLsizei instances, bool 
     }
 }
 
+void Renderer11::drawElements(GLenum mode, GLsizei count, GLenum type, const GLvoid *indices, gl::Buffer *elementArrayBuffer, const TranslatedIndexData &indexInfo, GLsizei instances)
+{
+    if (mode == GL_LINE_LOOP)
+    {
+        drawLineLoop(count, type, indices, indexInfo.minIndex, elementArrayBuffer);
+    }
+    else if (mode == GL_TRIANGLE_FAN)
+    {
+        drawTriangleFan(count, type, indices, indexInfo.minIndex, elementArrayBuffer, instances);
+    }
+    else if (instances > 0)
+    {
+        mDeviceContext->DrawIndexedInstanced(count, instances, 0, -static_cast<int>(indexInfo.minIndex), 0);
+    }
+    else
+    {
+        mDeviceContext->DrawIndexed(count, 0, -static_cast<int>(indexInfo.minIndex));
+    }
+}
+
 template <typename T>
 void WriteIndexBufferLineLoop(T *data, GLenum type, const GLvoid *indices, GLsizei count)
 {
@@ -1481,13 +1501,16 @@ void Renderer11::drawLineLoop(GLsizei count, GLenum type, const GLvoid *indices,
         return gl::error(GL_OUT_OF_MEMORY);
     }
 
-    if (mAppliedIBSerial != mLineLoopIB->getSerial() || mAppliedIBOffset != indexBufferOffset)
+    IndexBuffer11 *indexBuffer = IndexBuffer11::makeIndexBuffer11(mLineLoopIB->getIndexBuffer());
+    ID3D11Buffer *d3dIndexBuffer = indexBuffer->getBuffer();
+    DXGI_FORMAT indexFormat = indexBuffer->getIndexFormat();
+    if (mAppliedIB != d3dIndexBuffer || mAppliedIBFormat != indexFormat || mAppliedIBOffset != indexBufferOffset)
     {
         IndexBuffer11 *indexBuffer = IndexBuffer11::makeIndexBuffer11(mLineLoopIB->getIndexBuffer());
 
         mDeviceContext->IASetIndexBuffer(indexBuffer->getBuffer(), indexBuffer->getIndexFormat(), indexBufferOffset);
-        mAppliedIBSerial = mLineLoopIB->getSerial();
-        mAppliedStorageIBSerial = 0;
+        mAppliedIB = d3dIndexBuffer;
+        mAppliedIBFormat = indexFormat;
         mAppliedIBOffset = indexBufferOffset;
     }
 
@@ -1598,13 +1621,15 @@ void Renderer11::drawTriangleFan(GLsizei count, GLenum type, const GLvoid *indic
         return gl::error(GL_OUT_OF_MEMORY);
     }
 
-    if (mAppliedIBSerial != mTriangleFanIB->getSerial() || mAppliedIBOffset != indexBufferOffset)
-    {
-        IndexBuffer11 *indexBuffer = IndexBuffer11::makeIndexBuffer11(mTriangleFanIB->getIndexBuffer());
+    IndexBuffer11 *indexBuffer = IndexBuffer11::makeIndexBuffer11(mTriangleFanIB->getIndexBuffer());
+    ID3D11Buffer *d3dIndexBuffer = indexBuffer->getBuffer();
+    DXGI_FORMAT indexFormat = indexBuffer->getIndexFormat();
 
+    if (mAppliedIB != d3dIndexBuffer || mAppliedIBFormat != indexFormat || mAppliedIBOffset != indexBufferOffset)
+    {
         mDeviceContext->IASetIndexBuffer(indexBuffer->getBuffer(), indexBuffer->getIndexFormat(), indexBufferOffset);
-        mAppliedIBSerial = mTriangleFanIB->getSerial();
-        mAppliedStorageIBSerial = 0;
+        mAppliedIB = d3dIndexBuffer;
+        mAppliedIBFormat = indexFormat;
         mAppliedIBOffset = indexBufferOffset;
     }
 
@@ -1618,7 +1643,7 @@ void Renderer11::drawTriangleFan(GLsizei count, GLenum type, const GLvoid *indic
     }
 }
 
-void Renderer11::applyShaders(gl::ProgramBinary *programBinary, bool rasterizerDiscard, const gl::VertexFormat inputLayout[])
+void Renderer11::applyShaders(gl::ProgramBinary *programBinary, bool rasterizerDiscard, bool transformFeedbackActive, const gl::VertexFormat inputLayout[])
 {
     ShaderExecutable *vertexExe = programBinary->getVertexExecutableForInputLayout(inputLayout);
     ShaderExecutable *pixelExe = programBinary->getPixelExecutable();
