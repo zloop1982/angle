@@ -40,7 +40,7 @@ egl::Display *Display::getDisplay(EGLNativeDisplayType displayId)
     
     // FIXME: Check if displayId is a valid display device context
 
-    egl::Display *display = new egl::Display(displayId, (HDC)displayId);
+    egl::Display *display = new egl::Display(displayId, displayId);
 
     displays[displayId] = display;
     return display;
