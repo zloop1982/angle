@@ -26,7 +26,16 @@ namespace gl
 Current *AllocateCurrent()
 {
     Current *current = (Current*)LocalAlloc(LPTR, sizeof(Current));
+    
+#if defined(ANGLE_PLATFORM_WINRT)
+    if(current)
+    {
+        TlsSetValue(currentTLS, current);
 
+        current->context = NULL;
+        current->display = NULL;
+    }
+#else
     if (!current)
     {
         ERR("Could not allocate thread local storage.");
@@ -38,6 +47,7 @@ Current *AllocateCurrent()
 
     current->context = NULL;
     current->display = NULL;
+#endif
 
     return current;
 }
