@@ -46,9 +46,20 @@ Renderer::~Renderer()
 extern "C"
 {
 
-rx::Renderer *glCreateRenderer(egl::Display *display, HDC hDc, EGLNativeDisplayType displayId)
+rx::Renderer *glCreateRenderer(egl::Display *display, EGLNativeDisplayType hDc, EGLNativeDisplayType displayId)
 {
-#if defined(ANGLE_ENABLE_D3D11)
+#if defined(ANGLE_PLATFORM_WINRT)
+    rx::Renderer11 *renderer = NULL;
+    EGLint status = EGL_BAD_ALLOC;
+
+    renderer = new rx::Renderer11(display, hDc);
+    if(renderer)
+    {
+        status = renderer->initialize();
+    }
+
+    return status == EGL_SUCCESS ? renderer : NULL;
+#elif defined(ANGLE_ENABLE_D3D11)
     if (ANGLE_DEFAULT_D3D11 ||
         displayId == EGL_D3D11_ELSE_D3D9_DISPLAY_ANGLE ||
         displayId == EGL_D3D11_ONLY_DISPLAY_ANGLE)
