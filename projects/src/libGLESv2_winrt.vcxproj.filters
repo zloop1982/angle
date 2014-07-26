@@ -536,6 +536,8 @@
     <ClCompile Include="..\..\src\libGLESv2\renderer\d3d9\Blit9.cpp">
       <Filter>src\libGLESv2\renderer\d3d9</Filter>
     </ClCompile>
+    <ClCompile Include="..\..\src\common\blocklayout.cpp" />
+    <ClCompile Include="..\..\src\common\shadervars.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\src\common\winrtangle.h">
@@ -642,6 +644,8 @@
     <ClInclude Include="..\..\src\libGLESv2\renderer\d3d9\Blit9.h">
       <Filter>src\libGLESv2\renderer\d3d9</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\common\blocklayout.h" />
+    <ClInclude Include="..\..\src\common\shadervars.h" />
   </ItemGroup>
   <ItemGroup>
     <ResourceCompile Include="..\..\src\libGLESv2\libGLESv2.rc">

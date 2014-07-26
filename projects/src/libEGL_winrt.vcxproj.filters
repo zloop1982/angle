@@ -147,5 +147,7 @@
     <ClInclude Include="..\..\include\GLES3\gl3ext.h" />
     <ClInclude Include="..\..\include\GLES3\gl3.h" />
     <ClInclude Include="..\..\include\GLES3\gl3platform.h" />
+    <ClInclude Include="..\..\src\libEGL\main.h" />
+    <ClInclude Include="..\..\src\libEGL\main.h" />
   </ItemGroup>
 </Project>
