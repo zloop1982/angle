@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 2013
-VisualStudioVersion = 12.0.21005.1
+VisualStudioVersion = 12.0.30324.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "RotatingCubeWinRT", "RotatingCubeWinRT\RotatingCubeWinRT.vcxproj", "{B04E1298-7EB2-4672-A766-97050CB3FDB8}"
 EndProject
@@ -10,10 +10,6 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "libGLESv2_winrt", "..\..\..\projects\src\libGLESv2_winrt.vcxproj", "{06FE7422-1550-4C34-B10E-8398D69DFAF0}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "preprocessor_winrt", "..\..\..\projects\src\preprocessor_winrt.vcxproj", "{A6216A11-A5E6-4CD4-84F3-2627E0DDA6BC}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "commit_id", "..\..\..\projects\src\commit_id.vcxproj", "{3B7F5656-177F-52EE-26B3-D6A75368D0A9}"
-EndProject
-Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "copy_compiler_dll", "..\..\..\projects\src\copy_compiler_dll.vcxproj", "{22DC02D5-1598-943C-13E1-82185B469F81}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "translator_static_winrt", "..\..\..\projects\src\translator_static_winrt.vcxproj", "{A2D25A1B-6990-48BD-B213-C217AE52B343}"
 EndProject
@@ -83,22 +79,6 @@ Global
 		{A6216A11-A5E6-4CD4-84F3-2627E0DDA6BC}.Release|Win32.Build.0 = Release|Win32
 		{A6216A11-A5E6-4CD4-84F3-2627E0DDA6BC}.Release|x64.ActiveCfg = Release|x64
 		{A6216A11-A5E6-4CD4-84F3-2627E0DDA6BC}.Release|x64.Build.0 = Release|x64
-		{3B7F5656-177F-52EE-26B3-D6A75368D0A9}.Debug|ARM.ActiveCfg = Debug|Win32
-		{3B7F5656-177F-52EE-26B3-D6A75368D0A9}.Debug|Win32.ActiveCfg = Debug|Win32
-		{3B7F5656-177F-52EE-26B3-D6A75368D0A9}.Debug|Win32.Build.0 = Debug|Win32
-		{3B7F5656-177F-52EE-26B3-D6A75368D0A9}.Debug|x64.ActiveCfg = Debug|Win32
-		{3B7F5656-177F-52EE-26B3-D6A75368D0A9}.Release|ARM.ActiveCfg = Release|Win32
-		{3B7F5656-177F-52EE-26B3-D6A75368D0A9}.Release|Win32.ActiveCfg = Release|Win32
-		{3B7F5656-177F-52EE-26B3-D6A75368D0A9}.Release|Win32.Build.0 = Release|Win32
-		{3B7F5656-177F-52EE-26B3-D6A75368D0A9}.Release|x64.ActiveCfg = Release|Win32
-		{22DC02D5-1598-943C-13E1-82185B469F81}.Debug|ARM.ActiveCfg = Debug|Win32
-		{22DC02D5-1598-943C-13E1-82185B469F81}.Debug|Win32.ActiveCfg = Debug|Win32
-		{22DC02D5-1598-943C-13E1-82185B469F81}.Debug|Win32.Build.0 = Debug|Win32
-		{22DC02D5-1598-943C-13E1-82185B469F81}.Debug|x64.ActiveCfg = Debug|Win32
-		{22DC02D5-1598-943C-13E1-82185B469F81}.Release|ARM.ActiveCfg = Release|Win32
-		{22DC02D5-1598-943C-13E1-82185B469F81}.Release|Win32.ActiveCfg = Release|Win32
-		{22DC02D5-1598-943C-13E1-82185B469F81}.Release|Win32.Build.0 = Release|Win32
-		{22DC02D5-1598-943C-13E1-82185B469F81}.Release|x64.ActiveCfg = Release|Win32
 		{A2D25A1B-6990-48BD-B213-C217AE52B343}.Debug|ARM.ActiveCfg = Debug|ARM
 		{A2D25A1B-6990-48BD-B213-C217AE52B343}.Debug|ARM.Build.0 = Debug|ARM
 		{A2D25A1B-6990-48BD-B213-C217AE52B343}.Debug|Win32.ActiveCfg = Debug|Win32
