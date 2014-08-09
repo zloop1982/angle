@@ -3,8 +3,6 @@
 
 #include "common/angleutils.h"
 
-#include <windows.h>
-
 namespace gl
 {
 class InfoLog;
@@ -26,7 +24,7 @@ class HLSLCompiler
     void release();
 
     ShaderBlob *compileToBinary(gl::InfoLog &infoLog, const char *hlsl, const char *profile,
-                                unsigned int optimizationFlags, bool alternateFlags) const;
+                                const UINT optimizationFlags[], const char *flagNames[], int attempts) const;
 
   private:
     DISALLOW_COPY_AND_ASSIGN(HLSLCompiler);

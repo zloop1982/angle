@@ -10,13 +10,14 @@
 
 #include "common/debug.h"
 #include "common/winrtplatform.h"
+#include "common/tls.h"
 
 
 #if defined(ANGLE_PLATFORM_WINRT)
 #include "TLSWinrt.h"
 extern __declspec( thread ) DWORD currentTLS;
 #else
-static DWORD currentTLS = TLS_OUT_OF_INDEXES;
+static TLSIndex currentTLS = TLS_OUT_OF_INDEXES;
 #endif // #if defined(ANGLE_PLATFORM_WINRT)
 
 
@@ -25,9 +26,9 @@ namespace egl
 
 Current *AllocateCurrent()
 {
+#if defined(ANGLE_PLATFORM_WINRT)
     Current *current = (egl::Current*)LocalAlloc(LPTR, sizeof(egl::Current));
 
-#if defined(ANGLE_PLATFORM_WINRT)
     if(current)
     {
         TlsSetValue(currentTLS, current);
@@ -39,15 +40,8 @@ Current *AllocateCurrent()
         current->readSurface = EGL_NO_SURFACE;
     }
 #else
-    if (!current)
-    {
-        ERR("Could not allocate thread local storage.");
-        return NULL;
-    }
 
-    ASSERT(currentTLS != TLS_OUT_OF_INDEXES);
-    TlsSetValue(currentTLS, current);
-
+    Current *current = new Current();
     current->error = EGL_SUCCESS;
     current->API = EGL_OPENGL_ES_API;
     current->display = EGL_NO_DISPLAY;
@@ -55,17 +49,20 @@ Current *AllocateCurrent()
     current->readSurface = EGL_NO_SURFACE;
 #endif
 
+    if (!SetTLSValue(currentTLS, current))
+    {
+        ERR("Could not set thread local storage.");
+        return NULL;
+    }
+
     return current;
 }
 
 void DeallocateCurrent()
 {
-    void *current = TlsGetValue(currentTLS);
-
-    if (current)
-    {
-        LocalFree((HLOCAL)current);
-    }
+    Current *current = reinterpret_cast<Current*>(GetTLSValue(currentTLS));
+    SafeDelete(current);
+    SetTLSValue(currentTLS, NULL);
 }
 
 }
@@ -91,14 +88,13 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved
             }
 #endif
 
-            currentTLS = TlsAlloc();
-
+            currentTLS = CreateTLSIndex();
             if (currentTLS == TLS_OUT_OF_INDEXES)
             {
                 return FALSE;
             }
         }
-        // Fall throught to initialize index
+        // Fall through to initialize index
       case DLL_THREAD_ATTACH:
         {
             egl::AllocateCurrent();
@@ -112,7 +108,7 @@ extern "C" BOOL WINAPI DllMain(HINSTANCE instance, DWORD reason, LPVOID reserved
       case DLL_PROCESS_DETACH:
         {
             egl::DeallocateCurrent();
-            TlsFree(currentTLS);
+            DestroyTLSIndex(currentTLS);
         }
         break;
       default:
@@ -127,7 +123,7 @@ namespace egl
 
 Current *GetCurrentData()
 {
-    Current *current = (Current*)TlsGetValue(currentTLS);
+    Current *current = reinterpret_cast<Current*>(GetTLSValue(currentTLS));
 
     // ANGLE issue 488: when the dll is loaded after thread initialization,
     // thread local storage (current) might not exist yet.

@@ -19,9 +19,6 @@
     <Filter Include="src\compiler\translator">
       <UniqueIdentifier>{502101C2-1680-5126-1D2E-39419A1AE009}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\compiler\translator\_excluded_files">
-      <UniqueIdentifier>{158E591E-B6EA-0C85-8F5A-18EAFA09B4CE}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\compiler\translator\timing">
       <UniqueIdentifier>{E1BE6BE7-5019-57F8-5C7D-26FC8CE74904}</UniqueIdentifier>
     </Filter>
@@ -57,10 +54,10 @@
     <ClInclude Include="..\..\src\third_party\compiler\ArrayBoundsClamper.h">
       <Filter>src\third_party\compiler</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\common\shadervars.h">
+    <ClInclude Include="..\..\src\common\RefCountObject.h">
       <Filter>src\common</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\common\RefCountObject.h">
+    <ClInclude Include="..\..\src\common\tls.h">
       <Filter>src\common</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\common\mathutil.h">
@@ -70,6 +67,9 @@
       <Filter>src\common</Filter>
     </ClInclude>
     <ClCompile Include="..\..\src\common\event_tracer.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\common\tls.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\common\utilities.cpp">
@@ -93,12 +93,12 @@
     <ClInclude Include="..\..\src\common\blocklayout.h">
       <Filter>src\common</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\common\platform.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\common\utilities.h">
       <Filter>src\common</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\src\common\shadervars.cpp">
-      <Filter>src\common</Filter>
-    </ClCompile>
     <ClCompile Include="..\..\src\common\blocklayout.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
@@ -156,6 +156,9 @@
     <ClInclude Include="..\..\src\compiler\translator\PoolAlloc.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\compiler\translator\OutputHLSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\compiler\translator\BuiltInFunctionEmulator.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
@@ -165,9 +168,9 @@
     <ClCompile Include="..\..\src\compiler\translator\ParseContext.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\src\compiler\translator\ValidateOutputs.h">
+    <ClCompile Include="..\..\src\compiler\translator\Types.cpp">
       <Filter>src\compiler\translator</Filter>
-    </ClInclude>
+    </ClCompile>
     <ClCompile Include="..\..\src\compiler\translator\RemoveTree.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
@@ -192,15 +195,9 @@
     <ClInclude Include="..\..\src\compiler\translator\InitializeGlobals.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\compiler\translator\osinclude.h">
-      <Filter>src\compiler\translator</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\src\compiler\translator\Initialize.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
-    <ClCompile Include="..\..\src\compiler\translator\ossource_win.cpp">
-      <Filter>src\compiler\translator</Filter>
-    </ClCompile>
     <ClInclude Include="..\..\src\compiler\translator\QualifierAlive.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
@@ -249,13 +246,16 @@
     <ClInclude Include="..\..\src\compiler\translator\InitializeDll.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\compiler\translator\ValidateOutputs.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\compiler\translator\InitializeVariables.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\compiler\translator\localintermediate.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\compiler\translator\ShHandle.h">
+    <ClInclude Include="..\..\src\compiler\translator\StructureHLSL.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
     <ClInclude Include="..\..\src\compiler\translator\OutputGLSLBase.h">
@@ -267,10 +267,13 @@
     <ClInclude Include="..\..\src\compiler\translator\Pragma.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\src\compiler\translator\intermediate.h">
+    <ClInclude Include="..\..\src\compiler\translator\Compiler.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
     <ClCompile Include="..\..\src\compiler\translator\VariablePacker.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\compiler\translator\ScalarizeVecAndMatConstructorArgs.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
     <ClInclude Include="..\..\src\compiler\translator\TranslatorHLSL.h">
@@ -339,6 +342,9 @@
     <None Include="..\..\src\compiler\translator\glslang.l">
       <Filter>src\compiler\translator</Filter>
     </None>
+    <ClInclude Include="..\..\src\compiler\translator\UtilsHLSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\src\compiler\translator\intermOut.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
@@ -354,15 +360,21 @@
     <ClCompile Include="..\..\src\compiler\translator\UnfoldShortCircuitAST.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
-    <ClInclude Include="..\..\src\compiler\translator\OutputHLSL.h">
+    <ClCompile Include="..\..\src\compiler\translator\UtilsHLSL.cpp">
       <Filter>src\compiler\translator</Filter>
-    </ClInclude>
+    </ClCompile>
     <ClCompile Include="..\..\src\compiler\translator\TranslatorGLSL.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\compiler\translator\SymbolTable.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
+    <ClInclude Include="..\..\src\compiler\translator\ScalarizeVecAndMatConstructorArgs.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\src\compiler\translator\intermediate.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\src\compiler\translator\InitializeParseContext.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
@@ -381,7 +393,13 @@
     <ClInclude Include="..\..\src\compiler\translator\LoopInfo.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\src\compiler\translator\UniformHLSL.h">
+      <Filter>src\compiler\translator</Filter>
+    </ClInclude>
     <ClCompile Include="..\..\src\compiler\translator\DetectDiscontinuity.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\src\compiler\translator\StructureHLSL.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
     <ClInclude Include="..\..\src\compiler\translator\glslang_tab.h">
@@ -393,6 +411,9 @@
     <ClInclude Include="..\..\src\compiler\translator\RewriteElseBlocks.h">
       <Filter>src\compiler\translator</Filter>
     </ClInclude>
+    <ClCompile Include="..\..\src\compiler\translator\UniformHLSL.cpp">
+      <Filter>src\compiler\translator</Filter>
+    </ClCompile>
     <ClCompile Include="..\..\src\compiler\translator\compilerdebug.cpp">
       <Filter>src\compiler\translator</Filter>
     </ClCompile>
@@ -407,9 +428,6 @@
     </ClCompile>
     <ClCompile Include="..\..\src\compiler\translator\Initialize.cpp">
       <Filter>src\compiler\translator</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\compiler\translator\ossource_posix.cpp">
-      <Filter>src\compiler\translator\_excluded_files</Filter>
     </ClCompile>
     <ClCompile Include="..\..\src\compiler\translator\timing\RestrictVertexShaderTiming.cpp">
       <Filter>src\compiler\translator\timing</Filter>
@@ -444,10 +462,16 @@
     <ClCompile Include="..\..\src\compiler\translator\depgraph\DependencyGraphBuilder.cpp">
       <Filter>src\compiler\translator\depgraph</Filter>
     </ClCompile>
+    <ClInclude Include="..\..\include\angle_gl.h">
+      <Filter>include</Filter>
+    </ClInclude>
     <ClInclude Include="..\..\include\KHR\khrplatform.h">
       <Filter>include\KHR</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\GLSLANG\ShaderLang.h">
+      <Filter>include\GLSLANG</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\include\GLSLANG\ShaderVars.h">
       <Filter>include\GLSLANG</Filter>
     </ClInclude>
     <ClInclude Include="..\..\include\GLES2\gl2platform.h">

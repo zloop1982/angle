@@ -10,9 +10,7 @@
 #include "common/angleutils.h"
 #include "common/RefCountObject.h"
 
-#define GL_APICALL
-#include <GLES3/gl3.h>
-#include <GLES2/gl2.h>
+#include "angle_gl.h"
 
 namespace gl
 {

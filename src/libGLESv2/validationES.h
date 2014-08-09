@@ -26,6 +26,7 @@ bool ValidCompressedImageSize(const gl::Context *context, GLenum internalFormat,
 bool ValidQueryType(const gl::Context *context, GLenum queryType);
 bool ValidProgram(const gl::Context *context, GLuint id);
 
+bool ValidateAttachmentTarget(const gl::Context *context, GLenum attachment);
 bool ValidateRenderbufferStorageParameters(const gl::Context *context, GLenum target, GLsizei samples,
                                            GLenum internalformat, GLsizei width, GLsizei height,
                                            bool angleExtension);
@@ -44,6 +45,30 @@ bool ValidateSamplerObjectParameter(GLenum pname);
 
 bool ValidateReadPixelsParameters(gl::Context *context, GLint x, GLint y, GLsizei width, GLsizei height,
                                   GLenum format, GLenum type, GLsizei *bufSize, GLvoid *pixels);
+
+bool ValidateBeginQuery(gl::Context *context, GLenum target, GLuint id);
+bool ValidateEndQuery(gl::Context *context, GLenum target);
+
+bool ValidateUniform(gl::Context *context, GLenum uniformType, GLint location, GLsizei count);
+bool ValidateUniformMatrix(gl::Context *context, GLenum matrixType, GLint location, GLsizei count,
+                           GLboolean transpose);
+
+bool ValidateStateQuery(gl::Context *context, GLenum pname, GLenum *nativeType, unsigned int *numParams);
+
+bool ValidateCopyTexImageParametersBase(gl::Context* context, GLenum target, GLint level, GLenum internalformat, bool isSubImage,
+                                        GLint xoffset, GLint yoffset, GLint zoffset, GLint x, GLint y, GLsizei width, GLsizei height,
+                                        GLint border, GLenum *textureInternalFormatOut);
+
+bool ValidateDrawArrays(const gl::Context *context, GLenum mode, GLint first, GLsizei count);
+bool ValidateDrawArraysInstanced(const gl::Context *context, GLenum mode, GLint first, GLsizei count, GLsizei primcount);
+bool ValidateDrawElements(const gl::Context *context, GLenum mode, GLsizei count, GLenum type, const GLvoid* indices);
+bool ValidateDrawElementsInstanced(const gl::Context *context, GLenum mode, GLsizei count, GLenum type,
+                                   const GLvoid *indices, GLsizei primcount);
+
+bool ValidateFramebufferTextureBase(const gl::Context *context, GLenum target, GLenum attachment,
+                                    GLuint texture, GLint level);
+bool ValidateFramebufferTexture2D(const gl::Context *context, GLenum target, GLenum attachment,
+                                  GLenum textarget, GLuint texture, GLint level);
 
 }
 

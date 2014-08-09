@@ -1,6 +1,6 @@
 #include "precompiled.h"
 //
-// Copyright (c) 2013 The ANGLE Project Authors. All rights reserved.
+// Copyright (c) 2013-2014 The ANGLE Project Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -15,6 +15,7 @@
 #include "libGLESv2/Renderbuffer.h"
 #include "libGLESv2/formatutils.h"
 #include "libGLESv2/main.h"
+#include "libGLESv2/FramebufferAttachment.h"
 
 #include "common/mathutil.h"
 #include "common/utilities.h"
@@ -38,8 +39,7 @@ static bool validateSubImageParams2D(bool compressed, GLsizei width, GLsizei hei
 
     if (format != GL_NONE)
     {
-        GLenum internalformat = gl::GetSizedInternalFormat(format, type, 2);
-        if (internalformat != texture->getInternalFormat(level))
+        if (gl::GetFormatTypeInfo(format, type).internalFormat != texture->getInternalFormat(level))
         {
             return gl::error(GL_INVALID_OPERATION, false);
         }
@@ -79,8 +79,7 @@ static bool validateSubImageParamsCube(bool compressed, GLsizei width, GLsizei h
 
     if (format != GL_NONE)
     {
-        GLenum internalformat = gl::GetSizedInternalFormat(format, type, 2);
-        if (internalformat != texture->getInternalFormat(target, level))
+        if (gl::GetFormatTypeInfo(format, type).internalFormat != texture->getInternalFormat(target, level))
         {
             return gl::error(GL_INVALID_OPERATION, false);
         }
@@ -108,6 +107,11 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
                                    GLint xoffset, GLint yoffset, GLsizei width, GLsizei height,
                                    GLint border, GLenum format, GLenum type, const GLvoid *pixels)
 {
+    if (!ValidTexture2DDestinationTarget(context, target))
+    {
+        return gl::error(GL_INVALID_ENUM, false);
+    }
+
     if (!ValidImageSize(context, target, level, width, height, 1))
     {
         return gl::error(GL_INVALID_VALUE, false);
@@ -125,6 +129,8 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
         return gl::error(GL_INVALID_OPERATION, false);
     }
 
+    const gl::Caps &caps = context->getCaps();
+
     gl::Texture *texture = NULL;
     bool textureCompressed = false;
     GLenum textureInternalFormat = GL_NONE;
@@ -134,8 +140,8 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
     {
       case GL_TEXTURE_2D:
         {
-            if (width > (context->getMaximum2DTextureDimension() >> level) ||
-                height > (context->getMaximum2DTextureDimension() >> level))
+            if (static_cast<GLuint>(width) > (caps.max2DTextureSize >> level) ||
+                static_cast<GLuint>(height) > (caps.max2DTextureSize >> level))
             {
                 return gl::error(GL_INVALID_VALUE, false);
             }
@@ -172,8 +178,8 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
                 return gl::error(GL_INVALID_VALUE, false);
             }
 
-            if (width > (context->getMaximumCubeTextureDimension() >> level) ||
-                height > (context->getMaximumCubeTextureDimension() >> level))
+            if (static_cast<GLuint>(width) > (caps.maxCubeMapTextureSize >> level) ||
+                static_cast<GLuint>(height) > (caps.maxCubeMapTextureSize >> level))
             {
                 return gl::error(GL_INVALID_VALUE, false);
             }
@@ -228,19 +234,19 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
         {
           case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
           case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-            if (!context->supportsDXT1Textures())
+            if (!context->getExtensions().textureCompressionDXT1)
             {
                 return gl::error(GL_INVALID_ENUM, false);
             }
             break;
           case GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE:
-            if (!context->supportsDXT3Textures())
+            if (!context->getExtensions().textureCompressionDXT1)
             {
                 return gl::error(GL_INVALID_ENUM, false);
             }
             break;
           case GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE:
-            if (!context->supportsDXT5Textures())
+              if (!context->getExtensions().textureCompressionDXT5)
             {
                 return gl::error(GL_INVALID_ENUM, false);
             }
@@ -287,7 +293,8 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
             }
             break;
           case GL_RED:
-              if (!context->supportsRGTextures())
+          case GL_RG:
+              if (!context->getExtensions().textureRG)
               {
                   return gl::error(GL_INVALID_ENUM, false);
               }
@@ -298,21 +305,6 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
                 case GL_HALF_FLOAT_OES:
                   break;
                 default:
-                  return gl::error(GL_INVALID_OPERATION, false);
-              }
-              break;
-          case GL_RG:
-              if (!context->supportsRGTextures())
-              {
-                  return gl::error(GL_INVALID_ENUM, false);
-              }
-              switch (type)
-              {
-              case GL_UNSIGNED_BYTE:
-              case GL_FLOAT:
-              case GL_HALF_FLOAT_OES:
-                  break;
-              default:
                   return gl::error(GL_INVALID_OPERATION, false);
               }
               break;
@@ -342,6 +334,20 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
             }
             break;
           case GL_BGRA_EXT:
+            switch (type)
+            {
+              case GL_UNSIGNED_BYTE:
+                break;
+              default:
+                return gl::error(GL_INVALID_OPERATION, false);
+            }
+            break;
+          case GL_SRGB_EXT:
+          case GL_SRGB_ALPHA_EXT:
+            if (!context->getExtensions().sRGB)
+            {
+                return gl::error(GL_INVALID_ENUM, false);
+            }
             switch (type)
             {
               case GL_UNSIGNED_BYTE:
@@ -382,7 +388,7 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
         {
           case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
           case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-            if (context->supportsDXT1Textures())
+            if (context->getExtensions().textureCompressionDXT1)
             {
                 return gl::error(GL_INVALID_OPERATION, false);
             }
@@ -392,7 +398,7 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
             }
             break;
           case GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE:
-            if (context->supportsDXT3Textures())
+            if (context->getExtensions().textureCompressionDXT3)
             {
                 return gl::error(GL_INVALID_OPERATION, false);
             }
@@ -402,7 +408,7 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
             }
             break;
           case GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE:
-            if (context->supportsDXT5Textures())
+            if (context->getExtensions().textureCompressionDXT5)
             {
                 return gl::error(GL_INVALID_OPERATION, false);
             }
@@ -413,7 +419,7 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
             break;
           case GL_DEPTH_COMPONENT:
           case GL_DEPTH_STENCIL_OES:
-            if (!context->supportsDepthTextures())
+            if (!context->getExtensions().depthTextures)
             {
                 return gl::error(GL_INVALID_VALUE, false);
             }
@@ -434,14 +440,14 @@ bool ValidateES2TexImageParameters(gl::Context *context, GLenum target, GLint le
 
         if (type == GL_FLOAT)
         {
-            if (!context->supportsFloat32Textures())
+            if (!context->getExtensions().textureFloat)
             {
                 return gl::error(GL_INVALID_ENUM, false);
             }
         }
         else if (type == GL_HALF_FLOAT_OES)
         {
-            if (!context->supportsFloat16Textures())
+            if (!context->getExtensions().textureHalfFloat)
             {
                 return gl::error(GL_INVALID_ENUM, false);
             }
@@ -457,122 +463,17 @@ bool ValidateES2CopyTexImageParameters(gl::Context* context, GLenum target, GLin
                                        GLint xoffset, GLint yoffset, GLint x, GLint y, GLsizei width, GLsizei height,
                                        GLint border)
 {
-    if (!ValidTexture2DDestinationTarget(context, target))
+    GLenum textureInternalFormat = GL_NONE;
+
+    if (!ValidateCopyTexImageParametersBase(context, target, level, internalformat, isSubImage,
+                                            xoffset, yoffset, 0, x, y, width, height, border, &textureInternalFormat))
     {
-        return gl::error(GL_INVALID_ENUM, false);
+        return false;
     }
 
-    if (!gl::IsInternalTextureTarget(target, context->getClientVersion()))
-    {
-        return gl::error(GL_INVALID_ENUM, false);
-    }
-
-    if (level < 0 || xoffset < 0 || yoffset < 0 || width < 0 || height < 0)
-    {
-        return gl::error(GL_INVALID_VALUE, false);
-    }
-
-    if (std::numeric_limits<GLsizei>::max() - xoffset < width || std::numeric_limits<GLsizei>::max() - yoffset < height)
-    {
-        return gl::error(GL_INVALID_VALUE, false);
-    }
-
-    // Verify zero border
-    if (border != 0)
-    {
-        return gl::error(GL_INVALID_VALUE, false);
-    }
-
-    // Validate dimensions based on Context limits and validate the texture
-    if (!ValidMipLevel(context, target, level))
-    {
-        return gl::error(GL_INVALID_VALUE, false);
-    }
-
-    gl::Framebuffer *framebuffer = context->getReadFramebuffer();
-
-    if (framebuffer->completeness() != GL_FRAMEBUFFER_COMPLETE)
-    {
-        return gl::error(GL_INVALID_FRAMEBUFFER_OPERATION, false);
-    }
-
-    if (context->getReadFramebufferHandle() != 0 && framebuffer->getSamples() != 0)
-    {
-        return gl::error(GL_INVALID_OPERATION, false);
-    }
-
+    gl::Framebuffer *framebuffer = context->getState().getReadFramebuffer();
     GLenum colorbufferFormat = framebuffer->getReadColorbuffer()->getInternalFormat();
-    gl::Texture *texture = NULL;
-    GLenum textureFormat = GL_RGBA;
-
-    switch (target)
-    {
-      case GL_TEXTURE_2D:
-        {
-            if (width > (context->getMaximum2DTextureDimension() >> level) ||
-                height > (context->getMaximum2DTextureDimension() >> level))
-            {
-                return gl::error(GL_INVALID_VALUE, false);
-            }
-
-            gl::Texture2D *tex2d = context->getTexture2D();
-            if (tex2d)
-            {
-                if (isSubImage && !validateSubImageParams2D(false, width, height, xoffset, yoffset, level, GL_NONE, GL_NONE, tex2d))
-                {
-                    return false; // error already registered by validateSubImageParams
-                }
-                texture = tex2d;
-                textureFormat = gl::GetFormat(tex2d->getInternalFormat(level), context->getClientVersion());
-            }
-        }
-        break;
-
-      case GL_TEXTURE_CUBE_MAP_POSITIVE_X:
-      case GL_TEXTURE_CUBE_MAP_NEGATIVE_X:
-      case GL_TEXTURE_CUBE_MAP_POSITIVE_Y:
-      case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:
-      case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
-      case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
-        {
-            if (!isSubImage && width != height)
-            {
-                return gl::error(GL_INVALID_VALUE, false);
-            }
-
-            if (width > (context->getMaximumCubeTextureDimension() >> level) ||
-                height > (context->getMaximumCubeTextureDimension() >> level))
-            {
-                return gl::error(GL_INVALID_VALUE, false);
-            }
-
-            gl::TextureCubeMap *texcube = context->getTextureCubeMap();
-            if (texcube)
-            {
-                if (isSubImage && !validateSubImageParamsCube(false, width, height, xoffset, yoffset, target, level, GL_NONE, GL_NONE, texcube))
-                {
-                    return false; // error already registered by validateSubImageParams
-                }
-                texture = texcube;
-                textureFormat = gl::GetFormat(texcube->getInternalFormat(target, level), context->getClientVersion());
-            }
-        }
-        break;
-
-      default:
-        return gl::error(GL_INVALID_ENUM, false);
-    }
-
-    if (!texture)
-    {
-        return gl::error(GL_INVALID_OPERATION, false);
-    }
-
-    if (texture->isImmutable() && !isSubImage)
-    {
-        return gl::error(GL_INVALID_OPERATION, false);
-    }
-
+    GLenum textureFormat = gl::GetInternalFormatInfo(textureInternalFormat).format;
 
     // [OpenGL ES 2.0.24] table 3.9
     if (isSubImage)
@@ -729,7 +630,7 @@ bool ValidateES2CopyTexImageParameters(gl::Context* context, GLenum target, GLin
             break;
           case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
           case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-            if (context->supportsDXT1Textures())
+            if (context->getExtensions().textureCompressionDXT1)
             {
                 return gl::error(GL_INVALID_OPERATION, false);
             }
@@ -739,7 +640,7 @@ bool ValidateES2CopyTexImageParameters(gl::Context* context, GLenum target, GLin
             }
             break;
           case GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE:
-            if (context->supportsDXT3Textures())
+            if (context->getExtensions().textureCompressionDXT3)
             {
                 return gl::error(GL_INVALID_OPERATION, false);
             }
@@ -749,7 +650,7 @@ bool ValidateES2CopyTexImageParameters(gl::Context* context, GLenum target, GLin
             }
             break;
           case GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE:
-            if (context->supportsDXT5Textures())
+            if (context->getExtensions().textureCompressionDXT5)
             {
                 return gl::error(GL_INVALID_OPERATION, false);
             }
@@ -763,7 +664,7 @@ bool ValidateES2CopyTexImageParameters(gl::Context* context, GLenum target, GLin
           case GL_DEPTH_COMPONENT32_OES:
           case GL_DEPTH_STENCIL_OES:
           case GL_DEPTH24_STENCIL8_OES:
-            if (context->supportsDepthTextures())
+            if (context->getExtensions().depthTextures)
             {
                 return gl::error(GL_INVALID_OPERATION, false);
             }
@@ -803,26 +704,26 @@ bool ValidateES2TexStorageParameters(gl::Context *context, GLenum target, GLsize
         return gl::error(GL_INVALID_OPERATION, false);
     }
 
-    GLenum format = gl::GetFormat(internalformat, context->getClientVersion());
-    GLenum type = gl::GetType(internalformat, context->getClientVersion());
-
-    if (format == GL_NONE || type == GL_NONE)
+    const gl::InternalFormat &formatInfo = gl::GetInternalFormatInfo(internalformat);
+    if (formatInfo.format == GL_NONE || formatInfo.type == GL_NONE)
     {
         return gl::error(GL_INVALID_ENUM, false);
     }
 
+    const gl::Caps &caps = context->getCaps();
+
     switch (target)
     {
       case GL_TEXTURE_2D:
-        if (width > context->getMaximum2DTextureDimension() ||
-            height > context->getMaximum2DTextureDimension())
+        if (static_cast<GLuint>(width) > caps.max2DTextureSize ||
+            static_cast<GLuint>(height) > caps.max2DTextureSize)
         {
             return gl::error(GL_INVALID_VALUE, false);
         }
         break;
       case GL_TEXTURE_CUBE_MAP:
-        if (width > context->getMaximumCubeTextureDimension() ||
-            height > context->getMaximumCubeTextureDimension())
+        if (static_cast<GLuint>(width) > caps.maxCubeMapTextureSize ||
+            static_cast<GLuint>(height) > caps.maxCubeMapTextureSize)
         {
             return gl::error(GL_INVALID_VALUE, false);
         }
@@ -831,7 +732,7 @@ bool ValidateES2TexStorageParameters(gl::Context *context, GLenum target, GLsize
         return gl::error(GL_INVALID_ENUM, false);
     }
 
-    if (levels != 1 && !context->supportsNonPower2Texture())
+    if (levels != 1 && !context->getExtensions().textureNPOT)
     {
         if (!gl::isPow2(width) || !gl::isPow2(height))
         {
@@ -843,19 +744,19 @@ bool ValidateES2TexStorageParameters(gl::Context *context, GLenum target, GLsize
     {
       case GL_COMPRESSED_RGB_S3TC_DXT1_EXT:
       case GL_COMPRESSED_RGBA_S3TC_DXT1_EXT:
-        if (!context->supportsDXT1Textures())
+        if (!context->getExtensions().textureCompressionDXT1)
         {
             return gl::error(GL_INVALID_ENUM, false);
         }
         break;
       case GL_COMPRESSED_RGBA_S3TC_DXT3_ANGLE:
-        if (!context->supportsDXT3Textures())
+        if (!context->getExtensions().textureCompressionDXT3)
         {
             return gl::error(GL_INVALID_ENUM, false);
         }
         break;
       case GL_COMPRESSED_RGBA_S3TC_DXT5_ANGLE:
-        if (!context->supportsDXT5Textures())
+        if (!context->getExtensions().textureCompressionDXT5)
         {
             return gl::error(GL_INVALID_ENUM, false);
         }
@@ -865,7 +766,7 @@ bool ValidateES2TexStorageParameters(gl::Context *context, GLenum target, GLsize
       case GL_ALPHA32F_EXT:
       case GL_LUMINANCE32F_EXT:
       case GL_LUMINANCE_ALPHA32F_EXT:
-        if (!context->supportsFloat32Textures())
+        if (!context->getExtensions().textureFloat)
         {
             return gl::error(GL_INVALID_ENUM, false);
         }
@@ -875,7 +776,7 @@ bool ValidateES2TexStorageParameters(gl::Context *context, GLenum target, GLsize
       case GL_ALPHA16F_EXT:
       case GL_LUMINANCE16F_EXT:
       case GL_LUMINANCE_ALPHA16F_EXT:
-        if (!context->supportsFloat16Textures())
+        if (!context->getExtensions().textureHalfFloat)
         {
             return gl::error(GL_INVALID_ENUM, false);
         }
@@ -886,7 +787,7 @@ bool ValidateES2TexStorageParameters(gl::Context *context, GLenum target, GLsize
       case GL_RG16F_EXT:
       case GL_R32F_EXT:
       case GL_RG32F_EXT:
-        if (!context->supportsRGTextures())
+        if (!context->getExtensions().textureRG)
         {
             return gl::error(GL_INVALID_ENUM, false);
         }
@@ -894,7 +795,7 @@ bool ValidateES2TexStorageParameters(gl::Context *context, GLenum target, GLsize
       case GL_DEPTH_COMPONENT16:
       case GL_DEPTH_COMPONENT32_OES:
       case GL_DEPTH24_STENCIL8_OES:
-        if (!context->supportsDepthTextures())
+        if (!context->getExtensions().depthTextures)
         {
             return gl::error(GL_INVALID_ENUM, false);
         }
@@ -938,111 +839,6 @@ bool ValidateES2TexStorageParameters(gl::Context *context, GLenum target, GLsize
     return true;
 }
 
-bool ValidateES2FramebufferTextureParameters(gl::Context *context, GLenum target, GLenum attachment,
-                                             GLenum textarget, GLuint texture, GLint level)
-{
-    META_ASSERT(GL_DRAW_FRAMEBUFFER == GL_DRAW_FRAMEBUFFER_ANGLE && GL_READ_FRAMEBUFFER == GL_READ_FRAMEBUFFER_ANGLE);
-
-    if (target != GL_FRAMEBUFFER && target != GL_DRAW_FRAMEBUFFER && target != GL_READ_FRAMEBUFFER)
-    {
-        return gl::error(GL_INVALID_ENUM, false);
-    }
-
-    if (attachment >= GL_COLOR_ATTACHMENT0 && attachment <= GL_COLOR_ATTACHMENT15)
-    {
-        const unsigned int colorAttachment = (attachment - GL_COLOR_ATTACHMENT0);
-        if (colorAttachment >= context->getMaximumRenderTargets())
-        {
-            return gl::error(GL_INVALID_VALUE, false);
-        }
-    }
-    else
-    {
-        switch (attachment)
-        {
-          case GL_DEPTH_ATTACHMENT:
-          case GL_STENCIL_ATTACHMENT:
-            break;
-          default:
-            return gl::error(GL_INVALID_ENUM, false);
-        }
-    }
-
-    if (texture != 0)
-    {
-        gl::Texture *tex = context->getTexture(texture);
-
-        if (tex == NULL)
-        {
-            return gl::error(GL_INVALID_OPERATION, false);
-        }
-
-        switch (textarget)
-        {
-          case GL_TEXTURE_2D:
-            {
-                if (tex->getTarget() != GL_TEXTURE_2D)
-                {
-                    return gl::error(GL_INVALID_OPERATION, false);
-                }
-                gl::Texture2D *tex2d = static_cast<gl::Texture2D *>(tex);
-                if (tex2d->isCompressed(level))
-                {
-                    return gl::error(GL_INVALID_OPERATION, false);
-                }
-                break;
-            }
-
-          case GL_TEXTURE_CUBE_MAP_POSITIVE_X:
-          case GL_TEXTURE_CUBE_MAP_NEGATIVE_X:
-          case GL_TEXTURE_CUBE_MAP_POSITIVE_Y:
-          case GL_TEXTURE_CUBE_MAP_NEGATIVE_Y:
-          case GL_TEXTURE_CUBE_MAP_POSITIVE_Z:
-          case GL_TEXTURE_CUBE_MAP_NEGATIVE_Z:
-            {
-                if (tex->getTarget() != GL_TEXTURE_CUBE_MAP)
-                {
-                    return gl::error(GL_INVALID_OPERATION, false);
-                }
-                gl::TextureCubeMap *texcube = static_cast<gl::TextureCubeMap *>(tex);
-                if (texcube->isCompressed(textarget, level))
-                {
-                    return gl::error(GL_INVALID_OPERATION, false);
-                }
-                break;
-            }
-
-          default:
-            return gl::error(GL_INVALID_ENUM, false);
-        }
-
-        if (level != 0)
-        {
-            return gl::error(GL_INVALID_VALUE, false);
-        }
-    }
-
-    gl::Framebuffer *framebuffer = NULL;
-    GLuint framebufferHandle = 0;
-    if (target == GL_READ_FRAMEBUFFER)
-    {
-        framebuffer = context->getReadFramebuffer();
-        framebufferHandle = context->getReadFramebufferHandle();
-    }
-    else
-    {
-        framebuffer = context->getDrawFramebuffer();
-        framebufferHandle = context->getDrawFramebufferHandle();
-    }
-
-    if (framebufferHandle == 0 || !framebuffer)
-    {
-        return gl::error(GL_INVALID_OPERATION, false);
-    }
-
-    return true;
-}
-
 // check for combinations of format and type that are valid for ReadPixels
 bool ValidES2ReadFormatType(gl::Context *context, GLenum format, GLenum type)
 {
@@ -1070,7 +866,7 @@ bool ValidES2ReadFormatType(gl::Context *context, GLenum format, GLenum type)
         break;
       case GL_RG_EXT:
       case GL_RED_EXT:
-        if (!context->supportsRGTextures())
+        if (!context->getExtensions().textureRG)
         {
             return false;
         }

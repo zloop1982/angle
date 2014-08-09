@@ -111,6 +111,7 @@ FenceSync::FenceSync(rx::Renderer *renderer, GLuint id)
 
     LARGE_INTEGER counterFreqency = { 0 };
     BOOL success = QueryPerformanceFrequency(&counterFreqency);
+    UNUSED_ASSERTION_VARIABLE(success);
     ASSERT(success);
 
     mCounterFrequency = counterFreqency.QuadPart;
@@ -150,6 +151,7 @@ GLenum FenceSync::clientWait(GLbitfield flags, GLuint64 timeout)
 
     LARGE_INTEGER currentCounter = { 0 };
     BOOL success = QueryPerformanceCounter(&currentCounter);
+    UNUSED_ASSERTION_VARIABLE(success);
     ASSERT(success);
 
     LONGLONG timeoutInSeconds = static_cast<LONGLONG>(timeout) * static_cast<LONGLONG>(1000000ll);
@@ -159,6 +161,7 @@ GLenum FenceSync::clientWait(GLbitfield flags, GLuint64 timeout)
     {
         Sleep(0);
         BOOL success = QueryPerformanceCounter(&currentCounter);
+        UNUSED_ASSERTION_VARIABLE(success);
         ASSERT(success);
     }
 

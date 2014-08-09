@@ -10,10 +10,7 @@
 #define LIBGLESV2_MATHUTIL_H_
 
 #include "common/debug.h"
-
-#if defined(_WIN32)
-#include <intrin.h>
-#endif
+#include "common/platform.h"
 
 #include <limits>
 #include <algorithm>
@@ -112,7 +109,7 @@ inline unsigned int unorm(float x)
 
 inline bool supportsSSE2()
 {
-#if defined(_WIN32) && !defined(_M_ARM)
+#ifdef ANGLE_PLATFORM_WINDOWS
     static bool checked = false;
     static bool supports = false;
 
@@ -521,6 +518,12 @@ T roundUp(const T value, const T alignment)
     return value + alignment - 1 - (value - 1) % alignment;
 }
 
+inline unsigned int UnsignedCeilDivide(unsigned int value, unsigned int divisor)
+{
+    unsigned int divided = value / divisor;
+    return (divided + ((value % divisor == 0) ? 0 : 1));
+}
+
 template <class T>
 inline bool IsUnsignedAdditionSafe(T lhs, T rhs)
 {
@@ -533,6 +536,12 @@ inline bool IsUnsignedMultiplicationSafe(T lhs, T rhs)
 {
     META_ASSERT(!std::numeric_limits<T>::is_signed);
     return (lhs == T(0) || rhs == T(0) || (rhs <= std::numeric_limits<T>::max() / lhs));
+}
+
+template <class SmallIntT, class BigIntT>
+inline bool IsIntegerCastSafe(BigIntT bigValue)
+{
+    return (static_cast<BigIntT>(static_cast<SmallIntT>(bigValue)) == bigValue);
 }
 
 }

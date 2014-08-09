@@ -1,6 +1,6 @@
 #include "precompiled.h"
 //
-// Copyright (c) 2012-2013 The ANGLE Project Authors. All rights reserved.
+// Copyright (c) 2012-2014 The ANGLE Project Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 //
@@ -16,24 +16,26 @@
 #include "libGLESv2/Shader.h"
 
 #if defined (ANGLE_ENABLE_D3D9)
-#include "libGLESv2/renderer/d3d9/Renderer9.h"
+#include "libGLESv2/renderer/d3d/d3d9/Renderer9.h"
 #endif // ANGLE_ENABLE_D3D9
 
 #if defined (ANGLE_ENABLE_D3D11)
-#include "libGLESv2/renderer/d3d11/Renderer11.h"
+#include "libGLESv2/renderer/d3d/d3d11/Renderer11.h"
 #endif // ANGLE_ENABLE_D3D11
 
 #if !defined(ANGLE_DEFAULT_D3D11)
 // Enables use of the Direct3D 11 API for a default display, when available
-#define ANGLE_DEFAULT_D3D11 1
+#define ANGLE_DEFAULT_D3D11 0
 #endif
 
 namespace rx
 {
 
-Renderer::Renderer(egl::Display *display) : mDisplay(display)
+Renderer::Renderer(egl::Display *display)
+    : mDisplay(display),
+      mCapsInitialized(false),
+      mCurrentClientVersion(2)
 {
-    mCurrentClientVersion = 2;
 }
 
 Renderer::~Renderer()
@@ -41,57 +43,110 @@ Renderer::~Renderer()
     gl::Shader::releaseCompiler();
 }
 
+const gl::Caps &Renderer::getRendererCaps() const
+{
+    if (!mCapsInitialized)
+    {
+        generateCaps(&mCaps, &mTextureCaps, &mExtensions);
+        mCapsInitialized = true;
+    }
+
+    return mCaps;
+}
+
+const gl::TextureCapsMap &Renderer::getRendererTextureCaps() const
+{
+    if (!mCapsInitialized)
+    {
+        generateCaps(&mCaps, &mTextureCaps, &mExtensions);
+        mCapsInitialized = true;
+    }
+
+    return mTextureCaps;
+}
+
+const gl::Extensions &Renderer::getRendererExtensions() const
+{
+    if (!mCapsInitialized)
+    {
+        generateCaps(&mCaps, &mTextureCaps, &mExtensions);
+        mCapsInitialized = true;
+    }
+
+    return mExtensions;
+}
+
+typedef Renderer *(*CreateRendererFunction)(egl::Display*, EGLNativeDisplayType, EGLint);
+
+template <typename RendererType>
+Renderer *CreateRenderer(egl::Display *display, EGLNativeDisplayType nativeDisplay, EGLint requestedDisplayType)
+{
+    return new RendererType(display, nativeDisplay, requestedDisplayType);
+}
+
 }
 
 extern "C"
 {
 
-rx::Renderer *glCreateRenderer(egl::Display *display, EGLNativeDisplayType hDc, EGLNativeDisplayType displayId)
+rx::Renderer *glCreateRenderer(egl::Display *display, EGLNativeDisplayType nativeDisplay, EGLint requestedDisplayType)
 {
-#if defined(ANGLE_PLATFORM_WINRT)
-    rx::Renderer11 *renderer = NULL;
-    EGLint status = EGL_BAD_ALLOC;
+    std::vector<rx::CreateRendererFunction> rendererCreationFunctions;
 
-    renderer = new rx::Renderer11(display, hDc);
-    if(renderer)
+#   if defined(ANGLE_ENABLE_D3D11)
+        if (nativeDisplay == EGL_D3D11_ELSE_D3D9_DISPLAY_ANGLE ||
+            nativeDisplay == EGL_D3D11_ONLY_DISPLAY_ANGLE ||
+            requestedDisplayType == EGL_PLATFORM_ANGLE_TYPE_D3D11_ANGLE ||
+            requestedDisplayType == EGL_PLATFORM_ANGLE_TYPE_D3D11_WARP_ANGLE)
+        {
+            rendererCreationFunctions.push_back(rx::CreateRenderer<rx::Renderer11>);
+        }
+#   endif
+
+#   if defined(ANGLE_ENABLE_D3D9)
+        if (nativeDisplay == EGL_D3D11_ELSE_D3D9_DISPLAY_ANGLE ||
+            requestedDisplayType == EGL_PLATFORM_ANGLE_TYPE_D3D9_ANGLE)
+        {
+            rendererCreationFunctions.push_back(rx::CreateRenderer<rx::Renderer9>);
+        }
+#   endif
+
+    if (nativeDisplay != EGL_D3D11_ELSE_D3D9_DISPLAY_ANGLE &&
+        nativeDisplay != EGL_D3D11_ONLY_DISPLAY_ANGLE &&
+        requestedDisplayType == EGL_PLATFORM_ANGLE_TYPE_DEFAULT_ANGLE)
     {
-        status = renderer->initialize();
+        // The default display is requested, try the D3D9 and D3D11 renderers, order them using
+        // the definition of ANGLE_DEFAULT_D3D11
+#       if ANGLE_DEFAULT_D3D11
+#           if defined(ANGLE_ENABLE_D3D11)
+                rendererCreationFunctions.push_back(rx::CreateRenderer<rx::Renderer11>);
+#           endif
+#           if defined(ANGLE_ENABLE_D3D9)
+                rendererCreationFunctions.push_back(rx::CreateRenderer<rx::Renderer9>);
+#           endif
+#       else
+#           if defined(ANGLE_ENABLE_D3D9)
+                rendererCreationFunctions.push_back(rx::CreateRenderer<rx::Renderer9>);
+#           endif
+#           if defined(ANGLE_ENABLE_D3D11)
+                rendererCreationFunctions.push_back(rx::CreateRenderer<rx::Renderer11>);
+#           endif
+#       endif
     }
 
-    return status == EGL_SUCCESS ? renderer : NULL;
-#elif defined(ANGLE_ENABLE_D3D11)
-    if (ANGLE_DEFAULT_D3D11 ||
-        displayId == EGL_D3D11_ELSE_D3D9_DISPLAY_ANGLE ||
-        displayId == EGL_D3D11_ONLY_DISPLAY_ANGLE)
+    for (size_t i = 0; i < rendererCreationFunctions.size(); i++)
     {
-        rx::Renderer11 *renderer = new rx::Renderer11(display, hDc);
+        rx::Renderer *renderer = rendererCreationFunctions[i](display, nativeDisplay, requestedDisplayType);
         if (renderer->initialize() == EGL_SUCCESS)
         {
             return renderer;
         }
         else
         {
-            // Failed to create a D3D11 renderer, try D3D9
+            // Failed to create the renderer, try the next
             SafeDelete(renderer);
         }
     }
-#endif
-
-#if defined(ANGLE_ENABLE_D3D9)
-    if (displayId != EGL_D3D11_ONLY_DISPLAY_ANGLE)
-    {
-        bool softwareDevice = (displayId == EGL_SOFTWARE_DISPLAY_ANGLE);
-        rx::Renderer9 *renderer = new rx::Renderer9(display, hDc, softwareDevice);
-        if (renderer->initialize() == EGL_SUCCESS)
-        {
-            return renderer;
-        }
-        else
-        {
-            SafeDelete(renderer);
-        }
-    }
-#endif
 
     return NULL;
 }

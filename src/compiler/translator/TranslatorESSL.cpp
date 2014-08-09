@@ -7,9 +7,10 @@
 #include "compiler/translator/TranslatorESSL.h"
 
 #include "compiler/translator/OutputESSL.h"
+#include "angle_gl.h"
 
-TranslatorESSL::TranslatorESSL(ShShaderType type, ShShaderSpec spec)
-    : TCompiler(type, spec) {
+TranslatorESSL::TranslatorESSL(sh::GLenum type, ShShaderSpec spec)
+    : TCompiler(type, spec, SH_ESSL_OUTPUT) {
 }
 
 void TranslatorESSL::translate(TIntermNode* root) {
@@ -20,7 +21,7 @@ void TranslatorESSL::translate(TIntermNode* root) {
 
     // Write emulated built-in functions if needed.
     getBuiltInFunctionEmulator().OutputEmulatedFunctionDefinition(
-        sink, getShaderType() == SH_FRAGMENT_SHADER);
+        sink, getShaderType() == GL_FRAGMENT_SHADER);
 
     // Write array bounds clamping emulation if needed.
     getArrayBoundsClamper().OutputClampingFunctionDefinition(sink);

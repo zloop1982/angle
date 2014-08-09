@@ -62,7 +62,7 @@
                 {
                     'OutputDirectory': '$(SolutionDir)$(ConfigurationName)_$(Platform)',
                     'IntermediateDirectory': '$(OutDir)\\obj\\$(ProjectName)',
-                    'CharacterSet': '1',    # UNICODE
+                    'CharacterSet': '0',    # ASCII
                 },
                 'msvs_settings':
                 {
@@ -71,8 +71,7 @@
                         'AdditionalOptions': ['/MP'],
                         'BufferSecurityCheck': 'true',
                         'DebugInformationFormat': '3',
-                        # TODO(alokp): Disable exceptions before integrating with chromium.
-                        #'ExceptionHandling': '0',
+                        'ExceptionHandling': '0',
                         'EnableFunctionLevelLinking': 'true',
                         'MinimalRebuild': 'false',
                         'RuntimeTypeInfo': 'true',
@@ -195,7 +194,7 @@
             },
             'conditions':
             [
-                [ 'OS == "win" and MSVS_VERSION != "2010e" and MSVS_VERSION != "2012e"',
+                [ 'OS == "win" and MSVS_VERSION != "2010e"',
                 {
                     'Debug_x64':
                     {
@@ -216,6 +215,12 @@
             'target_defaults':
             {
                 'msvs_cygwin_dirs': ['../third_party/cygwin'],
+            },
+        },
+        { # OS != win
+            'target_defaults':
+            {
+                'cflags': [ '-fPIC' ],
             },
         }],
         ['OS != "win" and OS != "mac"',
