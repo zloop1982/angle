@@ -1,6 +1,8 @@
 #ifndef __eglext_h_
 #define __eglext_h_ 1
 
+#include <EGL/eglplatform.h>
+
 #ifdef __cplusplus
 extern "C" {
 #endif
@@ -35,8 +37,6 @@ extern "C" {
 **
 ** Khronos $Revision: 27018 $ on $Date: 2014-06-10 08:06:12 -0700 (Tue, 10 Jun 2014) $
 */
-
-#include <EGL/eglplatform.h>
 
 #define EGL_EGLEXT_VERSION 20140610
 
