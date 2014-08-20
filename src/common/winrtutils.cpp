@@ -16,7 +16,7 @@
 #include <windows.applicationmodel.core.h>
 #include <math.h>
 
-#include "common/winrtplatform.h"
+#include "common/platform.h"
 
 #if !defined(ANGLE_PLATFORM_WP8)
 #include <windows.ui.xaml.media.dxinterop.h>
