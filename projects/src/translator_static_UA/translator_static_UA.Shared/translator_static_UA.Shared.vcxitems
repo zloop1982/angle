@@ -3,9 +3,9 @@
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{e2361617-06b0-46a9-b3ea-1c72a8cf7ddf}</ItemsProjectGuid>
-    <ItemsRootNamespace>translator_UA</ItemsRootNamespace>
-    <ItemsProjectName>translator_UA.Shared</ItemsProjectName>
+    <ItemsProjectGuid>{67eccaa3-7732-4f34-83b8-68922d762e82}</ItemsProjectGuid>
+    <ItemsRootNamespace>translator_static_UA</ItemsRootNamespace>
+    <ItemsProjectName>translator_static_UA.Shared</ItemsProjectName>
     <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
   </PropertyGroup>
   <ItemDefinitionGroup>

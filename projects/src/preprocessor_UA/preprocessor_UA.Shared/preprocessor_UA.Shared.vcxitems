@@ -14,35 +14,37 @@
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ProjectCapability Include="SourceItemsFromImports" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\angle.gyp"/>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\ExpressionParser.y"/>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Tokenizer.l"/>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DiagnosticsBase.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DirectiveHandlerBase.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DirectiveParser.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\ExpressionParser.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Input.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Lexer.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Macro.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\MacroExpander.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Preprocessor.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Token.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Tokenizer.cpp" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Tokenizer.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Lexer.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Token.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Preprocessor.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\ExpressionParser.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\MacroExpander.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Macro.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\pp_utils.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Input.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\SourceLocation.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\numeric_lex.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DirectiveParser.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DiagnosticsBase.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DirectiveHandlerBase.h"/>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DiagnosticsBase.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DirectiveHandlerBase.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DirectiveParser.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\ExpressionParser.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Input.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Lexer.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Macro.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\MacroExpander.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\numeric_lex.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\pp_utils.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Preprocessor.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\SourceLocation.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Token.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Tokenizer.h" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\ExpressionParser.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Input.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Tokenizer.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DirectiveHandlerBase.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Lexer.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Token.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Macro.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DiagnosticsBase.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\Preprocessor.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\DirectiveParser.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\compiler\preprocessor\MacroExpander.cpp"/>
   </ItemGroup>
 </Project>
