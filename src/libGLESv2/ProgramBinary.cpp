@@ -1379,6 +1379,8 @@ bool ProgramBinary::load(InfoLog &infoLog, const void *binary, GLsizei length)
         infoLog.append("Invalid program binary.");
         return false;
     }
+#else
+    (void)binaryIdentifier;
 #endif // #if !defined(ANGLE_PLATFORM_WINRT)
 
 
