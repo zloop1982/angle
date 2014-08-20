@@ -442,6 +442,9 @@ int VariableSortOrder(GLenum type)
 std::string getTempPath()
 {
 #ifdef ANGLE_PLATFORM_WINDOWS
+#   ifdef ANGLE_PLATFORM_WINRT
+    return "";
+#   else
     char path[MAX_PATH];
     DWORD pathLen = GetTempPathA(sizeof(path) / sizeof(path[0]), path);
     if (pathLen == 0)
@@ -458,6 +461,7 @@ std::string getTempPath()
     }
 
     return path;
+#   endif
 #else
     UNIMPLEMENTED();
     return "";
