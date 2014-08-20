@@ -30,32 +30,31 @@
 
 #pragma once
 
-#include <windows.h>
-
+#include <winapifamily.h>
 #if defined(WINAPI_FAMILY)
 #if !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 
-namespace ThreadEmulation
-{
-    #ifndef CREATE_SUSPENDED
-    #define CREATE_SUSPENDED 0x00000004
-    #endif
+#include <stdlib.h>
 
-#if 0
-    HANDLE WINAPI CreateThread(_In_opt_ LPSECURITY_ATTRIBUTES unusedThreadAttributes, _In_ SIZE_T unusedStackSize, _In_ LPTHREAD_START_ROUTINE lpStartAddress, _In_opt_ LPVOID lpParameter, _In_ DWORD dwCreationFlags, _Out_opt_ LPDWORD unusedThreadId);
-    DWORD WINAPI ResumeThread(_In_ HANDLE hThread);
-    BOOL WINAPI SetThreadPriority(_In_ HANDLE hThread, _In_ int nPriority);
+#define TLS_OUT_OF_INDEXES -1
+
+#ifndef CREATE_SUSPENDED
+#define CREATE_SUSPENDED 0x00000004
 #endif
 
+namespace ThreadEmulation
+{
+    void Sleep(_In_ unsigned long dwMilliseconds);
 
-    VOID WINAPI Sleep(_In_ DWORD dwMilliseconds);
+    unsigned long TlsAlloc();
+    int TlsFree(_In_ unsigned long dwTlsIndex);
+    void* TlsGetValue(_In_ unsigned long dwTlsIndex);
+    int TlsSetValue(_In_ unsigned long dwTlsIndex, _In_opt_ void* lpTlsValue);
 
-    DWORD WINAPI TlsAlloc();
-    BOOL WINAPI TlsFree(_In_ DWORD dwTlsIndex);
-    LPVOID WINAPI TlsGetValue(_In_ DWORD dwTlsIndex);
-    BOOL WINAPI TlsSetValue(_In_ DWORD dwTlsIndex, _In_opt_ LPVOID lpTlsValue);
-    
-    void WINAPI TlsShutdown();
+    void TlsShutdown();
+
+    inline void * LocalAlloc(unsigned int uFlags, size_t size) { return malloc(size); };
+    inline void LocalFree(void* index) { free((void*)index); };
 }
 
 #endif

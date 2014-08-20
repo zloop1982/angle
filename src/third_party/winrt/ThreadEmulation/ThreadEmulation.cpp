@@ -23,8 +23,6 @@ using namespace ABI::Windows::System::Threading;
 
 namespace ThreadEmulation
 {
-
-    
     // Thread local storage.
     typedef vector<void*> ThreadLocalData;
 
@@ -34,9 +32,7 @@ namespace ThreadEmulation
     static vector<DWORD> freeTlsIndices;
     static mutex tlsAllocationLock;
 
-
-
-    _Use_decl_annotations_ VOID WINAPI Sleep(DWORD dwMilliseconds)
+    _Use_decl_annotations_ void Sleep(unsigned long dwMilliseconds)
     {
         static HANDLE singletonEvent = nullptr;
 
@@ -64,11 +60,8 @@ namespace ThreadEmulation
         WaitForSingleObjectEx(sleepEvent, dwMilliseconds, false);
     }
 
-
-    DWORD WINAPI TlsAlloc()
+    unsigned long TlsAlloc()
     {
-        lock_guard<mutex> lock(tlsAllocationLock);
-        
         // Can we reuse a previously freed TLS slot?
         if (!freeTlsIndices.empty())
         {
@@ -81,11 +74,8 @@ namespace ThreadEmulation
         return nextTlsIndex++;
     }
 
-
-    _Use_decl_annotations_ BOOL WINAPI TlsFree(DWORD dwTlsIndex)
+    _Use_decl_annotations_ int TlsFree(unsigned long dwTlsIndex)
     {
-        lock_guard<mutex> lock(tlsAllocationLock);
-
         assert(dwTlsIndex < nextTlsIndex);
         assert(find(freeTlsIndices.begin(), freeTlsIndices.end(), dwTlsIndex) == freeTlsIndices.end());
 
@@ -111,8 +101,7 @@ namespace ThreadEmulation
         return true;
     }
 
-
-    _Use_decl_annotations_ LPVOID WINAPI TlsGetValue(DWORD dwTlsIndex)
+    _Use_decl_annotations_ void* TlsGetValue(unsigned long dwTlsIndex)
     {
         ThreadLocalData* threadData = currentThreadData;
 
@@ -128,8 +117,7 @@ namespace ThreadEmulation
         }
     }
 
-
-    _Use_decl_annotations_ BOOL WINAPI TlsSetValue(DWORD dwTlsIndex, LPVOID lpTlsValue)
+    _Use_decl_annotations_ int TlsSetValue(unsigned long dwTlsIndex, void* lpTlsValue)
     {
         ThreadLocalData* threadData = currentThreadData;
 
@@ -140,7 +128,7 @@ namespace ThreadEmulation
             {
                 threadData = new ThreadLocalData(dwTlsIndex + 1, nullptr);
                 
-                lock_guard<mutex> lock(tlsAllocationLock);
+                //lock_guard<mutex> lock(tlsAllocationLock);
 
                 allThreadData.insert(threadData);
 
@@ -159,7 +147,7 @@ namespace ThreadEmulation
             // This thread already has a TLS data block, but it must be expanded to fit the specified slot.
             try
             {
-                lock_guard<mutex> lock(tlsAllocationLock);
+                //lock_guard<mutex> lock(tlsAllocationLock);
 
                 threadData->resize(dwTlsIndex + 1, nullptr);
             }
@@ -175,9 +163,8 @@ namespace ThreadEmulation
         return true;
     }
 
-
     // Called at thread exit to clean up TLS allocations.
-    void WINAPI TlsShutdown()
+    void TlsShutdown()
     {
         ThreadLocalData* threadData = currentThreadData;
 
