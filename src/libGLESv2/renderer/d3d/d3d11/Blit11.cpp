@@ -59,15 +59,15 @@
 #include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/swizzlei2darrayps.h"
 #include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/swizzleui2darrayps.h"
 #else
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthrough2d11vs.h"
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthroughrgba2d11ps.h"
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthroughrgb2d11ps.h"
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthroughrg2d11ps.h"
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthroughr2d11ps.h"
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthroughlum2d11ps.h"
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthroughlumalpha2d11ps.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/passthrough2d11vs.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/passthroughrgba2d11ps.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/passthroughrgb2d11ps.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/passthroughrg2d11ps.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/passthroughr2d11ps.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/passthroughlum2d11ps.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/passthroughlumalpha2d11ps.h"
 
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/swizzlef2dps.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/swizzlef2dps.h"
 #endif
 
 namespace rx

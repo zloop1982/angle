@@ -16,8 +16,8 @@
 #include "common/winrtutils.h"
 #include "common/winrtangle.h"
 #include "common/winrtangleutils.h"
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthrough2d11vs.h"
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/passthroughrgba2d11ps.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/passthrough2d11vs.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/passthroughrgba2d11ps.h"
 #if !defined(ANGLE_PLATFORM_WP8)
 #include <windows.ui.xaml.media.dxinterop.h>
 #endif // #if !defined(ANGLE_PLATFORM_WP8)

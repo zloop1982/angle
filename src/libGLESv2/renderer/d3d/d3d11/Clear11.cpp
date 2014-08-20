@@ -17,8 +17,8 @@
 #include "libGLESv2/FramebufferAttachment.h"
 
 #if defined(ANGLE_PLATFORM_WINRT)
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/clearfloat11vs.h"
-#include "libGLESv2/renderer/d3d11/shaders/compiled/winrt/clearfloat11ps.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/clearfloat11vs.h"
+#include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/winrt/clearfloat11ps.h"
 #else
 #include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/clearfloat11vs.h"
 #include "libGLESv2/renderer/d3d/d3d11/shaders/compiled/clearfloat11ps.h"

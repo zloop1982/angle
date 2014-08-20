@@ -62,6 +62,10 @@ bool HLSLCompiler::initialize()
         mD3DCompilerModule = LoadPackagedLibrary(D3DCOMPILER_DLL, 0);
 #endif //WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
     }
+#else
+	    mD3DCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
+    }
+#endif // defined(ANGLE_PLATFORM_WINRT)
 
     if (!mD3DCompilerModule)
     {
@@ -69,9 +73,6 @@ bool HLSLCompiler::initialize()
 		mHasCompiler = false;
         return false;
     }
-#else
-	mD3DCompilerModule = LoadLibrary(D3DCOMPILER_DLL);
-#endif // defined(ANGLE_PLATFORM_WINRT)
 
     mD3DCompileFunc = reinterpret_cast<CompileFuncPtr>(GetProcAddress(mD3DCompilerModule, "D3DCompile"));
     ASSERT(mD3DCompileFunc);
