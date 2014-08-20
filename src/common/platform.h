@@ -33,7 +33,7 @@
 #   error Unsupported platform.
 #endif
 
-#ifdef ANGLE_PLATFORM_WINDOWS
+#if defined(ANGLE_PLATFORM_WINDOWS)
 #   ifndef STRICT
 #       define STRICT 1
 #   endif
@@ -46,6 +46,14 @@
 
 #   include <windows.h>
 #   include <intrin.h>
+#   if !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
+#       define ANGLE_PLATFORM_WINRT 1
+#       include "third_party/winrt/ThreadEmulation/ThreadEmulation.h"
+        using namespace ThreadEmulation;
+#       if NTDDI_VERSION < NTDDI_WINBLUE && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_PHONE)
+#           define ANGLE_PLATFORM_WP8 1
+#       endif
+#   endif
 
 #   if defined(ANGLE_ENABLE_D3D9) || defined(ANGLE_ENABLE_PERF)
 #       include <d3d9.h>
@@ -53,11 +61,17 @@
 #   endif
 
 #   if defined(ANGLE_ENABLE_D3D11)
-#       include <d3d10_1.h>
-#       include <d3d11.h>
-#       include <dxgi.h>
+#       if !defined(ANGLE_PLATFORM_WINRT)
+#           include <d3d10_1.h>
+#           include <d3d11.h>
+#           include <dxgi.h>
+#       else
+#           include <d3d11_1.h>
+#       endif
 #       include <dxgi1_2.h>
-#       include <d3dcompiler.h>
+#       if !defined(ANGLE_PLATFORM_WP8)
+#           include <d3dcompiler.h>
+#       endif
 #   endif
 
 #   undef near
