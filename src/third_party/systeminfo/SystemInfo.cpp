@@ -47,6 +47,7 @@ static bool IsWindowsVistaOrGreater()
 
 bool isWindowsVistaOrGreater()
 {
+#if WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
     static bool initialized = false;
     static bool cachedIsWindowsVistaOrGreater;
 
@@ -55,6 +56,9 @@ bool isWindowsVistaOrGreater()
         cachedIsWindowsVistaOrGreater = IsWindowsVistaOrGreater();
     }
     return cachedIsWindowsVistaOrGreater;
+#else
+    return true;
+#endif
 }
 
 } // namespace rx
