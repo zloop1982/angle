@@ -48,7 +48,7 @@
 #   include <intrin.h>
 #   if !WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #       define ANGLE_PLATFORM_WINRT 1
-#       include "third_party/winrt/ThreadEmulation/ThreadEmulation.h"
+#       include "third_party/ThreadEmulation/ThreadEmulation.h"
         using namespace ThreadEmulation;
 #       if NTDDI_VERSION < NTDDI_WINBLUE && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_PHONE)
 #           define ANGLE_PLATFORM_WP8 1
