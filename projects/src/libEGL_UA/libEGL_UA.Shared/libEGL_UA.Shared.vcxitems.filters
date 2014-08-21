@@ -63,9 +63,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\libEGL.cpp">
       <Filter>src\libEGL</Filter>
     </ClCompile>
-    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\libEGL.def">
-      <Filter>src\libEGL</Filter>
-    </None>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
@@ -149,6 +146,19 @@
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\egl.h">
       <Filter>include\EGL</Filter>
+    </ClInclude>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\libEGL_winrt.def">
+      <Filter>src\libEGL</Filter>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h">
+      <Filter>src\common</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

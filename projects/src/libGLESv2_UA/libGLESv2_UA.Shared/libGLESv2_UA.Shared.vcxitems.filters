@@ -61,6 +61,9 @@
     <Filter Include="include\EGL">
       <UniqueIdentifier>{79AE79DD-7922-70CC-3439-C9B3586338EF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\third_party\ThreadEmulation">
+      <UniqueIdentifier>{db0372a2-48ed-4344-8f88-5f43f89af048}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\angle.gyp">
@@ -141,9 +144,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\ProgramBinary.h">
       <Filter>src\libGLESv2</Filter>
     </ClInclude>
-    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\libGLESv2.def">
-      <Filter>src\libGLESv2</Filter>
-    </None>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\validationES3.cpp">
       <Filter>src\libGLESv2</Filter>
     </ClCompile>
@@ -870,14 +870,31 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglplatform.h">
       <Filter>include\EGL</Filter>
     </ClInclude>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\libGLESv2_winrt.def">
+      <Filter>src\libGLESv2</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.cpp">
+      <Filter>src\third_party\ThreadEmulation</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.h">
+      <Filter>src\third_party\ThreadEmulation</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.h">
       <Filter>src\common</Filter>
     </ClInclude>
   </ItemGroup>

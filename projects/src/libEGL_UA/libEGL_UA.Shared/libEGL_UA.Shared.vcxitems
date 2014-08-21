@@ -17,49 +17,51 @@
     <ProjectCapability Include="SourceItemsFromImports" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\angle.gyp"/>
-    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\libEGL.def"/>
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\angle.gyp" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\libEGL_winrt.def" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Surface.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\resource.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Config.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\main.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Display.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\platform.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\version.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\utilities.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\tls.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\angleutils.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\angle_gl.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\KHR\khrplatform.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLSLANG\ShaderLang.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLSLANG\ShaderVars.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2platform.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2ext.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3ext.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3platform.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglext.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglplatform.h"/>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\egl.h"/>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Surface.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\resource.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Config.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\main.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Display.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\platform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\version.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\utilities.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\tls.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\angleutils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\angle_gl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\KHR\khrplatform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLSLANG\ShaderLang.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLSLANG\ShaderVars.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2platform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES2\gl2ext.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3ext.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\GLES3\gl3platform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglext.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglplatform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\egl.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Surface.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Config.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\main.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Display.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\libEGL.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\tls.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.cpp"/>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\utilities.cpp"/>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Surface.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Config.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\main.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Display.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\libEGL.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\tls.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\utilities.cpp" />
   </ItemGroup>
 </Project>

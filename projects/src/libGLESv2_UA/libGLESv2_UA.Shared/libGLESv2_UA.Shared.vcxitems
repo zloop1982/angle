@@ -18,12 +18,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\angle.gyp" />
-    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\libGLESv2.def" />
+    <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\libGLESv2_winrt.def" />
     <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\loadimage.inl" />
     <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\generatemip.inl" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\Shader.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\BinaryStream.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\resource.h" />
@@ -232,9 +234,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglext.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\egl.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglplatform.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\validationES2.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\precompiled.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\DynamicHLSL.cpp" />
@@ -354,5 +359,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\blocklayout.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\systeminfo\SystemInfo.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\murmurhash\MurmurHash3.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.cpp" />
   </ItemGroup>
 </Project>
