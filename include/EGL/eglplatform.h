@@ -86,7 +86,7 @@ typedef HWND    EGLNativeWindowType;
 #include <wrl\client.h>
 #define WINRT_EGL_IUNKNOWN(x) reinterpret_cast<IUnknown *>(x)
 typedef Microsoft::WRL::ComPtr<IUnknown> EGLNativeWindowType;
-typedef HDC EGLNativeDisplayType;
+typedef IUnknown *EGLNativeDisplayType;
 typedef HBITMAP EGLNativePixmapType;
 
 #endif
