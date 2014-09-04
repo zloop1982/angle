@@ -25,7 +25,7 @@
 
 #include <windows.h>
 
-#if _WIN32_WINNT_WINBLUE
+#if _WIN32_WINNT_WINBLUE && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 #include <versionhelpers.h>
 #endif
 
