@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{9258fa5c-e335-4419-bf3c-e6130c84b5b5}</ItemsProjectGuid>
+    <ItemsProjectGuid>{48431a18-8612-444b-b511-db6137d533ea}</ItemsProjectGuid>
     <ItemsRootNamespace>libEGL_UA</ItemsRootNamespace>
     <ItemsProjectName>libEGL_UA.Shared</ItemsProjectName>
     <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
@@ -22,6 +22,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Surface.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\resource.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Config.h" />
@@ -49,9 +51,12 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglext.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\eglplatform.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\include\EGL\egl.h" />
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Surface.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\Config.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libEGL\main.cpp" />
@@ -63,5 +68,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\debug.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\utilities.cpp" />
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.cpp" />
   </ItemGroup>
 </Project>

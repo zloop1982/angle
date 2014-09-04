@@ -3,7 +3,7 @@
   <PropertyGroup Label="Globals">
     <MSBuildAllProjects>$(MSBuildAllProjects);$(MSBuildThisFileFullPath)</MSBuildAllProjects>
     <HasSharedItems>true</HasSharedItems>
-    <ItemsProjectGuid>{8c4995fb-813c-4f26-b9e4-6af2664495f7}</ItemsProjectGuid>
+    <ItemsProjectGuid>{253c228b-542d-4e39-8e2e-1f5331eea504}</ItemsProjectGuid>
     <ItemsRootNamespace>libGLESv2_UA</ItemsRootNamespace>
     <ItemsProjectName>libGLESv2_UA.Shared</ItemsProjectName>
     <CodeSharingProject>248F659F-DAC5-46E8-AC09-60EC9FC95053</CodeSharingProject>
@@ -156,59 +156,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d11\shaders\compiled\buffertotexture11_ps_4ui.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d11\shaders\compiled\passthroughr3di11ps.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d11\shaders\compiled\passthrough3d11gs.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\renderer9_utils.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\TextureStorage9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\IndexBuffer9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\ShaderCache.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Fence9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexArray9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Renderer9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Blit9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexDeclarationCache.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Image9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexBuffer9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\formatutils9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Query9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\RenderTarget9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\SwapChain9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Buffer9.h">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\standardvs.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\luminanceps.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\componentmaskps.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\passthroughps.h" />
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\flipyvs.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\tls.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\mathutil.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\blocklayout.h" />
@@ -305,51 +252,6 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d11\RenderTarget11.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d11\Fence11.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d11\Clear11.cpp" />
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexDeclarationCache.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Query9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexBuffer9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Fence9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Image9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\renderer9_utils.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\TextureStorage9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Renderer9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\RenderTarget9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\formatutils9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Buffer9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\ShaderExecutable9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\SwapChain9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Blit9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\IndexBuffer9.cpp">
-      <ExcludedFromBuild>true</ExcludedFromBuild>
-    </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\event_tracer.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\RefCountObject.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\tls.cpp" />

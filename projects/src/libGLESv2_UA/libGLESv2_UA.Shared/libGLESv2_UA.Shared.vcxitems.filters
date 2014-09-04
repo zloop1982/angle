@@ -22,15 +22,6 @@
     <Filter Include="src\libGLESv2\renderer\d3d\d3d11\shaders\compiled">
       <UniqueIdentifier>{F444E9E6-7D51-0546-F1E4-B6C8FCDA5FC6}</UniqueIdentifier>
     </Filter>
-    <Filter Include="src\libGLESv2\renderer\d3d\d3d9">
-      <UniqueIdentifier>{8BB193D2-4A8B-A094-A81E-D5E262AB1F92}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\libGLESv2\renderer\d3d\d3d9\shaders">
-      <UniqueIdentifier>{467D5622-06CC-2CF1-19E5-3CDD46A4008C}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="src\libGLESv2\renderer\d3d\d3d9\shaders\compiled">
-      <UniqueIdentifier>{F444E9E6-7D51-0546-F1E4-B6C8FCDA5FC6}</UniqueIdentifier>
-    </Filter>
     <Filter Include="src\common">
       <UniqueIdentifier>{2F5FD094-EF52-77F7-7AA8-4327A01BF747}</UniqueIdentifier>
     </Filter>
@@ -660,114 +651,6 @@
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d11\shaders\compiled\passthrough3d11gs.h">
       <Filter>src\libGLESv2\renderer\d3d\d3d11\shaders\compiled</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\renderer9_utils.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\TextureStorage9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexDeclarationCache.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Query9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\IndexBuffer9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\ShaderCache.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexBuffer9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Fence9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexArray9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Fence9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Image9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Renderer9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\renderer9_utils.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Blit9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexDeclarationCache.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Image9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\TextureStorage9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\VertexBuffer9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Renderer9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\formatutils9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\RenderTarget9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\formatutils9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Buffer9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\ShaderExecutable9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Query9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\RenderTarget9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\SwapChain9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\SwapChain9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Blit9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\IndexBuffer9.cpp">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClCompile>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\Buffer9.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\standardvs.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9\shaders\compiled</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\luminanceps.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9\shaders\compiled</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\componentmaskps.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9\shaders\compiled</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\passthroughps.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9\shaders\compiled</Filter>
-    </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\libGLESv2\renderer\d3d\d3d9\shaders\compiled\flipyvs.h">
-      <Filter>src\libGLESv2\renderer\d3d\d3d9\shaders\compiled</Filter>
-    </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\tls.h">
       <Filter>src\common</Filter>
     </ClInclude>
@@ -875,26 +758,30 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.cpp">
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
-    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp" />
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.cpp">
       <Filter>src\third_party\ThreadEmulation</Filter>
     </ClCompile>
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.h">
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h">
       <Filter>src\common</Filter>
     </ClInclude>
-    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h" />
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.h">
       <Filter>src\third_party\ThreadEmulation</Filter>
     </ClInclude>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.h">
       <Filter>src\common</Filter>
     </ClInclude>
   </ItemGroup>

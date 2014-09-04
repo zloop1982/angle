@@ -28,6 +28,12 @@
     <Filter Include="include\EGL">
       <UniqueIdentifier>{79AE79DD-7922-70CC-3439-C9B3586338EF}</UniqueIdentifier>
     </Filter>
+    <Filter Include="src\third_party">
+      <UniqueIdentifier>{4237e095-61a2-4653-971b-bc1f27fc589f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src\third_party\ThreadEmulation">
+      <UniqueIdentifier>{ea725fda-27a6-4af2-88ae-0d7c31ded3c8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="$(MSBuildThisFileDirectory)..\..\..\..\src\angle.gyp">
@@ -155,9 +161,27 @@
     <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.cpp">
       <Filter>src\common</Filter>
     </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.cpp">
+      <Filter>src\third_party\ThreadEmulation</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
+    <ClCompile Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.cpp">
+      <Filter>src\common</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangle.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\third_party\ThreadEmulation\ThreadEmulation.h">
+      <Filter>src\third_party\ThreadEmulation</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtutils.h">
+      <Filter>src\common</Filter>
+    </ClInclude>
+    <ClInclude Include="$(MSBuildThisFileDirectory)..\..\..\..\src\common\winrtangleutils.h">
       <Filter>src\common</Filter>
     </ClInclude>
   </ItemGroup>
