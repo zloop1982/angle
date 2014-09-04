@@ -9,16 +9,10 @@
 #include "libEGL/main.h"
 
 #include "common/debug.h"
-#include "common/winrtplatform.h"
 #include "common/tls.h"
 
 
-#if defined(ANGLE_PLATFORM_WINRT)
-#include "TLSWinrt.h"
-extern __declspec( thread ) DWORD currentTLS;
-#else
 static TLSIndex currentTLS = TLS_OUT_OF_INDEXES;
-#endif // #if defined(ANGLE_PLATFORM_WINRT)
 
 
 namespace egl
