@@ -529,7 +529,7 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
             swapChainDesc.BufferCount = 2;
             swapChainDesc.Flags = 0;
             swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_SEQUENTIAL; //must be used for winrt
-            swapChainDesc.Scaling = isPanel ? DXGI_SCALING_STRETCH : DXGI_SCALING_NONE;
+            swapChainDesc.Scaling = DXGI_SCALING_STRETCH;
             swapChainDesc.AlphaMode = DXGI_ALPHA_MODE_IGNORE;
 
             if (isPanel)
@@ -573,6 +573,8 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
                 // TODO: fix this!!!
                 //mSwapChain->SetRotation(DXGI_MODE_ROTATION_ROTATE270);
             }
+            if(mSwapChain)
+                iWinRTWindow->SetAngleSwapChain(mSwapChain);
         }
 #endif // #if !defined(ANGLE_PLATFORM_WINRT)
 

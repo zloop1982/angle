@@ -125,6 +125,16 @@ public:
 		m_angleD3DDevice = device;
     }
 
+    virtual Microsoft::WRL::ComPtr<IUnknown> __stdcall GetAngleSwapChain() override
+    {
+		return m_angleSwapChain;
+    }
+    
+    virtual void __stdcall SetAngleSwapChain(Microsoft::WRL::ComPtr<IUnknown> swapChain) override
+    {
+		m_angleSwapChain = swapChain;
+    }
+
     virtual void __stdcall SetWindowDimensions(int width, int height)
     {
         m_width = width;
@@ -141,6 +151,7 @@ private:
     ANGLE_D3D_FEATURE_LEVEL m_featureLevel;
     ComPtr<IUnknown> m_windowInterface;
     ComPtr<IUnknown> m_angleD3DDevice;
+    ComPtr<IUnknown> m_angleSwapChain;
     int m_width;
     int m_height;
 };
