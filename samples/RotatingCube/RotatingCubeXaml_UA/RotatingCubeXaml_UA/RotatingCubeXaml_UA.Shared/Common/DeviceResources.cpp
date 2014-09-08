@@ -60,10 +60,15 @@ DX::DeviceResources::DeviceResources() :
 	m_dpi(-1.0f),
 	m_compositionScaleX(1.0f),
 	m_compositionScaleY(1.0f),
-	m_deviceNotify(nullptr)
+	m_deviceNotify(nullptr),
+    m_eglWindow(nullptr),
+    mContext(nullptr),
+    mDisplay(nullptr),
+    mSurface(nullptr),
+    m_bAngleInitialized(false)
 {
-	CreateDeviceIndependentResources();
-	CreateDeviceResources();
+	//CreateDeviceIndependentResources();
+	//CreateDeviceResources();
 }
 
 // Configures resources that don't depend on the Direct3D device.
@@ -211,7 +216,7 @@ void DX::DeviceResources::CreateDeviceResources()
 #ifdef TARGET_WP8
     featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
 #endif
-    HRESULT hr = CreateWinrtEglWindowWithDimensions(WINRT_EGL_IUNKNOWN(m_swapChainPanel), featureLevel, 1600, 900, m_eglWindow.GetAddressOf());
+    HRESULT hr = CreateWinrtEglWindow(WINRT_EGL_IUNKNOWN(m_swapChainPanel), featureLevel, m_eglWindow.GetAddressOf());
     if (FAILED(hr)){
         throw std::runtime_error("DeviceResouces: couldn't create EGL window");
     }
@@ -300,6 +305,8 @@ void DX::DeviceResources::CreateDeviceResources()
 
     // Turn off vsync
     //eglSwapInterval(mDisplay, 0);
+
+    m_bAngleInitialized = true;
 }
 
 // These resources need to be recreated every time the window size is changed.
@@ -580,7 +587,8 @@ void DX::DeviceResources::SetSwapChainPanel(SwapChainPanel^ panel)
 	m_compositionScaleY = panel->CompositionScaleY;
 	m_dpi = currentDisplayInformation->LogicalDpi;
 	//m_d2dContext->SetDpi(m_dpi, m_dpi);
-
+    
+    CreateDeviceResources();
 	CreateWindowSizeDependentResources();
 }
 
