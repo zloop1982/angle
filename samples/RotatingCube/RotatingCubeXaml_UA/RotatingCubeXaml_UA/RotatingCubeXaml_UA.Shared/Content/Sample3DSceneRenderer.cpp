@@ -21,7 +21,7 @@ uniform mat4 u_projection;
 void main(void)
 {
     gl_Position = u_projection * u_view * u_model * vec4(a_position, 1);
-    v_color = vec4(a_color, 1);
+    v_color = a_color;
 }
 );
 
@@ -185,7 +185,7 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 
 	XMStoreFloat4x4(
 		&m_constantBufferData.projection,
-		XMMatrixTranspose(perspectiveMatrix * orientationMatrix)
+		perspectiveMatrix * orientationMatrix
 		);
 
 	// Eye is at (0,0.7,1.5), looking at point (0,-0.1,0) with the up-vector along the y-axis.
@@ -193,7 +193,7 @@ void Sample3DSceneRenderer::CreateWindowSizeDependentResources()
 	static const XMVECTORF32 at = { 0.0f, -0.1f, 0.0f, 0.0f };
 	static const XMVECTORF32 up = { 0.0f, 1.0f, 0.0f, 0.0f };
 
-	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixTranspose(XMMatrixLookAtRH(eye, at, up)));
+	XMStoreFloat4x4(&m_constantBufferData.view, XMMatrixLookAtRH(eye, at, up));
 }
 
 // Called once per frame, rotates the cube and calculates the model and view matrices.
@@ -214,7 +214,7 @@ void Sample3DSceneRenderer::Update(DX::StepTimer const& timer)
 void Sample3DSceneRenderer::Rotate(float radians)
 {
 	// Prepare to pass the updated model matrix to the shader
-	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixTranspose(XMMatrixRotationY(radians)));
+	XMStoreFloat4x4(&m_constantBufferData.model, XMMatrixRotationY(radians));
 }
 
 void Sample3DSceneRenderer::StartTracking()
@@ -240,7 +240,7 @@ void Sample3DSceneRenderer::StopTracking()
 // Renders one frame using the vertex and pixel shaders.
 void Sample3DSceneRenderer::Render()
 {
-    glClearColor(0.098f, 0.098f, 0.439f, 1.000f);
+    glClearColor(0, 0, 0, 1.000f);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 

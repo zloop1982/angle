@@ -9,7 +9,7 @@ using namespace Concurrency;
 
 // Loads and initializes application assets when the application is loaded.
 RotatingCubeXaml_UAMain::RotatingCubeXaml_UAMain(const std::shared_ptr<DX::DeviceResources>& deviceResources) :
-	m_deviceResources(deviceResources), m_pointerLocationX(0.0f)
+	m_deviceResources(deviceResources), m_pointerLocationX(0.0f), m_readyToDraw(false)
 {
 	// Register to be notified if the Device is lost or recreated
 	m_deviceResources->RegisterDeviceNotify(this);
@@ -38,6 +38,7 @@ void RotatingCubeXaml_UAMain::CreateWindowSizeDependentResources()
 {
 	// TODO: Replace this with the size-dependent initialization of your app's content.
 	m_sceneRenderer->CreateWindowSizeDependentResources();
+    m_readyToDraw = true;
 }
 
 void RotatingCubeXaml_UAMain::StartRenderLoop()
@@ -55,11 +56,13 @@ void RotatingCubeXaml_UAMain::StartRenderLoop()
 		while (action->Status == AsyncStatus::Started)
 		{
 			critical_section::scoped_lock lock(m_criticalSection);
+            m_deviceResources->AcquireContext();
 			Update();
 			if (Render())
 			{
 				m_deviceResources->Present();
 			}
+            m_deviceResources->ReleaseContext();
 		}
 	});
 
@@ -98,7 +101,7 @@ void RotatingCubeXaml_UAMain::ProcessInput()
 bool RotatingCubeXaml_UAMain::Render() 
 {
 	// Don't try to render anything before the first Update.
-	if (m_timer.GetFrameCount() == 0)
+	if (m_timer.GetFrameCount() == 0 || !m_readyToDraw)
 	{
 		return false;
 	}
@@ -132,6 +135,7 @@ void RotatingCubeXaml_UAMain::OnDeviceLost()
 {
 	m_sceneRenderer->ReleaseDeviceDependentResources();
 	//m_fpsTextRenderer->ReleaseDeviceDependentResources();
+    m_readyToDraw = false;
 }
 
 // Notifies renderers that device resources may now be recreated.

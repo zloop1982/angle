@@ -95,12 +95,15 @@ DirectXPage::~DirectXPage()
 void DirectXPage::SaveInternalState(IPropertySet^ state)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
+    m_deviceResources->AcquireContext();
 	m_deviceResources->Trim();
 
 	// Stop rendering when the app is suspended.
 	m_main->StopRenderLoop();
 
 	// Put code to save app state here.
+    
+    m_deviceResources->ReleaseContext();
 }
 
 // Loads the current state of the app for resume events.
@@ -132,22 +135,28 @@ void DirectXPage::OnVisibilityChanged(CoreWindow^ sender, VisibilityChangedEvent
 void DirectXPage::OnDpiChanged(DisplayInformation^ sender, Object^ args)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
+    m_deviceResources->AcquireContext();
 	m_deviceResources->SetDpi(sender->LogicalDpi);
 	m_main->CreateWindowSizeDependentResources();
+    m_deviceResources->ReleaseContext();
 }
 
 void DirectXPage::OnOrientationChanged(DisplayInformation^ sender, Object^ args)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
+    m_deviceResources->AcquireContext();
 	m_deviceResources->SetCurrentOrientation(sender->CurrentOrientation);
 	m_main->CreateWindowSizeDependentResources();
+    m_deviceResources->ReleaseContext();
 }
 
 
 void DirectXPage::OnDisplayContentsInvalidated(DisplayInformation^ sender, Object^ args)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
+    m_deviceResources->AcquireContext();
 	m_deviceResources->ValidateDevice();
+    m_deviceResources->ReleaseContext();
 }
 
 void DirectXPage::OnPointerPressed(Object^ sender, PointerEventArgs^ e)
@@ -174,15 +183,19 @@ void DirectXPage::OnPointerReleased(Object^ sender, PointerEventArgs^ e)
 void DirectXPage::OnCompositionScaleChanged(SwapChainPanel^ sender, Object^ args)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
+    m_deviceResources->AcquireContext();
 	m_deviceResources->SetCompositionScale(sender->CompositionScaleX, sender->CompositionScaleY);
 	m_main->CreateWindowSizeDependentResources();
+    m_deviceResources->ReleaseContext();
 }
 
 void DirectXPage::OnSwapChainPanelSizeChanged(Object^ sender, SizeChangedEventArgs^ e)
 {
 	critical_section::scoped_lock lock(m_main->GetCriticalSection());
+    m_deviceResources->AcquireContext();
 	m_deviceResources->SetLogicalSize(e->NewSize);
 	m_main->CreateWindowSizeDependentResources();
+    m_deviceResources->ReleaseContext();
 }
 
 // Uncomment this if using the app bar in your phone application.

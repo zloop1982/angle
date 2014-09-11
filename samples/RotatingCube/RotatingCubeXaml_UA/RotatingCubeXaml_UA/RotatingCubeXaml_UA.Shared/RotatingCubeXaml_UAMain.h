@@ -46,5 +46,7 @@ namespace RotatingCubeXaml_UA
 
 		// Track current input pointer position.
 		float m_pointerLocationX;
+
+        bool m_readyToDraw;
 	};
 }

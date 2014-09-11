@@ -50,7 +50,7 @@ namespace ScreenRotation
 
 // Constructor for DeviceResources.
 DX::DeviceResources::DeviceResources() : 
-	m_screenViewport(),
+	//m_screenViewport(),
 	m_d3dFeatureLevel(D3D_FEATURE_LEVEL_9_1),
 	m_d3dRenderTargetSize(),
 	m_outputSize(),
@@ -216,28 +216,28 @@ void DX::DeviceResources::CreateDeviceResources()
 #ifdef TARGET_WP8
     featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
 #endif
-    HRESULT hr = CreateWinrtEglWindow(WINRT_EGL_IUNKNOWN(m_swapChainPanel), featureLevel, m_eglWindow.GetAddressOf());
+    HRESULT hr = CreateWinrtEglWindowWithDimensions(WINRT_EGL_IUNKNOWN(m_swapChainPanel), featureLevel, 800, 450, m_eglWindow.GetAddressOf());
     if (FAILED(hr)){
         throw std::runtime_error("DeviceResouces: couldn't create EGL window");
     }
     mDisplay = eglGetDisplay(m_eglWindow.Get());
     if (mDisplay == EGL_NO_DISPLAY)
     {
-        //destroyGL();
+        destroyGL();
         throw std::runtime_error("DeviceResouces: couldn't get EGL display");
     }
 
     EGLint majorVersion, minorVersion;
     if (!eglInitialize(mDisplay, &majorVersion, &minorVersion))
     {
-        //destroyGL();
+        destroyGL();
         throw std::runtime_error("DeviceResouces: failed to initialize EGL");
     }
 
     eglBindAPI(EGL_OPENGL_ES_API);
     if (eglGetError() != EGL_SUCCESS)
     {
-        //destroyGL();
+        destroyGL();
         throw std::runtime_error("DeviceResouces: failed to bind OpenGL ES API");
     }
 
@@ -256,7 +256,7 @@ void DX::DeviceResources::CreateDeviceResources()
     EGLint configCount;
     if (!eglChooseConfig(mDisplay, configAttributes, &mConfig, 1, &configCount) || (configCount != 1))
     {
-        //destroyGL();
+        destroyGL();
         throw std::runtime_error("DeviceResouces: failed to choose configuration");
     }
 
@@ -275,7 +275,7 @@ void DX::DeviceResources::CreateDeviceResources()
 
     if (eglGetError() != EGL_SUCCESS)
     {
-        //destroyGL();
+        destroyGL();
         throw std::runtime_error("DeviceResouces: failed to create EGL window surface");
     }
 
@@ -287,7 +287,7 @@ void DX::DeviceResources::CreateDeviceResources()
     mContext = eglCreateContext(mDisplay, mConfig, NULL, contextAttibutes);
     if (eglGetError() != EGL_SUCCESS)
     {
-        //destroyGL();
+        destroyGL();
         contextAttibutes[1] = 2;
         mContext = eglCreateContext(mDisplay, mConfig, NULL, contextAttibutes);
         if(eglGetError() != EGL_SUCCESS)
@@ -299,7 +299,7 @@ void DX::DeviceResources::CreateDeviceResources()
     eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
     if (eglGetError() != EGL_SUCCESS)
     {
-        //destroyGL();
+        destroyGL();
         throw std::runtime_error("DeviceResouces: failed to make EGL context current");
     }
 
@@ -468,25 +468,31 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 	default:
 		throw ref new FailureException();
 	}
+    
+    ComPtr<IWinrtEglWindowDimensions> dimensions;
+    HRESULT result = m_eglWindow.As(&dimensions);
+    if (SUCCEEDED(result))
+    {
+        //dimensions->SetWindowDimensions(m_outputSize.Width, m_outputSize.Height);
+        dimensions->SetWindowDimensions(lround(m_d3dRenderTargetSize.Width), lround(m_d3dRenderTargetSize.Height));
+    }
 
-#if 0
-	DX::ThrowIfFailed(
-		m_swapChain->SetRotation(displayRotation)
-		);
+	//DX::ThrowIfFailed(
+	//	m_swapChain->SetRotation(displayRotation)
+	//	);
 
 	// Setup inverse scale on the swap chain
-	DXGI_MATRIX_3X2_F inverseScale = { 0 };
-	inverseScale._11 = 1.0f / m_compositionScaleX;
-	inverseScale._22 = 1.0f / m_compositionScaleY;
-	ComPtr<IDXGISwapChain2> spSwapChain2;
-	DX::ThrowIfFailed(
-		m_swapChain.As<IDXGISwapChain2>(&spSwapChain2)
-		);
+	//DXGI_MATRIX_3X2_F inverseScale = { 0 };
+	//inverseScale._11 = 1.0f / m_compositionScaleX;
+	//inverseScale._22 = 1.0f / m_compositionScaleY;
+	//ComPtr<IDXGISwapChain2> spSwapChain2;
+	//DX::ThrowIfFailed(
+	//	m_eglWindow->GetAngleSwapChain().As<IDXGISwapChain2>(&spSwapChain2)
+	//	);
 
-	DX::ThrowIfFailed(
-		spSwapChain2->SetMatrixTransform(&inverseScale)
-		);
-#endif
+	//DX::ThrowIfFailed(
+	//	spSwapChain2->SetMatrixTransform(&inverseScale)
+	//	);
 	
 
 #if 0
@@ -531,7 +537,6 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 			&m_d3dDepthStencilView
 			)
 		);
-#endif
 	
 	// Set the 3D rendering viewport to target the entire window.
 	m_screenViewport = CD3D11_VIEWPORT(
@@ -541,7 +546,6 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
 		m_d3dRenderTargetSize.Height
 		);
 
-#if 0
 	m_d3dContext->RSSetViewports(1, &m_screenViewport);
 
 	// Create a Direct2D target bitmap associated with the
@@ -589,7 +593,6 @@ void DX::DeviceResources::SetSwapChainPanel(SwapChainPanel^ panel)
 	//m_d2dContext->SetDpi(m_dpi, m_dpi);
     
     CreateDeviceResources();
-	CreateWindowSizeDependentResources();
 }
 
 // This method is called in the event handler for the SizeChanged event.
@@ -687,6 +690,15 @@ void DX::DeviceResources::ValidateDevice()
 		HandleDeviceLost();
 	}
 #endif
+    if(m_eglWindow)
+    {
+        ComPtr<ID3D11Device> d3dDevice;
+        m_eglWindow->GetAngleD3DDevice().As(&d3dDevice);
+        if(FAILED(d3dDevice->GetDeviceRemovedReason()))
+        {
+            HandleDeviceLost();
+        }
+    }
 }
 
 // Recreate all device resources and set them back to the current state.
@@ -698,6 +710,7 @@ void DX::DeviceResources::HandleDeviceLost()
 	{
 		m_deviceNotify->OnDeviceLost();
 	}
+    destroyGL();
 
 	CreateDeviceResources();
 	//m_d2dContext->SetDpi(m_dpi, m_dpi);
@@ -819,4 +832,27 @@ DXGI_MODE_ROTATION DX::DeviceResources::ComputeDisplayRotation()
 		break;
 	}
 	return rotation;
+}
+
+void DX::DeviceResources::destroyGL()
+{
+    eglDestroySurface(mDisplay, mSurface);
+    mSurface = 0;
+
+    eglDestroyContext(mDisplay, mContext);
+    mContext = 0;
+
+    eglMakeCurrent(mDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
+    eglTerminate(mDisplay);
+    mDisplay = EGL_NO_DISPLAY;
+}
+
+void DX::DeviceResources::AcquireContext()
+{
+    eglMakeCurrent(mDisplay, mSurface, mSurface, mContext);
+}
+
+void DX::DeviceResources::ReleaseContext()
+{
+    eglMakeCurrent(mDisplay, EGL_NO_SURFACE, EGL_NO_SURFACE, EGL_NO_CONTEXT);
 }

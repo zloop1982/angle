@@ -43,7 +43,7 @@ namespace DX
 		//D3D_FEATURE_LEVEL		GetDeviceFeatureLevel() const			{ return m_d3dFeatureLevel; }
 		//ID3D11RenderTargetView*	GetBackBufferRenderTargetView() const	{ return m_d3dRenderTargetView.Get(); }
 		//ID3D11DepthStencilView* GetDepthStencilView() const				{ return m_d3dDepthStencilView.Get(); }
-		D3D11_VIEWPORT			GetScreenViewport() const				{ return m_screenViewport; }
+		//D3D11_VIEWPORT			GetScreenViewport() const				{ return m_screenViewport; }
 		DirectX::XMFLOAT4X4		GetOrientationTransform3D() const		{ return m_orientationTransform3D; }
 
 		// D2D Accessors.
@@ -54,12 +54,16 @@ namespace DX
 		//IDWriteFactory2*		GetDWriteFactory() const				{ return m_dwriteFactory.Get();	 }
 		//IWICImagingFactory2*	GetWicImagingFactory() const			{ return m_wicFactory.Get(); }
 		D2D1::Matrix3x2F		GetOrientationTransform2D() const		{ return m_orientationTransform2D; }
+        
+        void AcquireContext();
+        void ReleaseContext();
 
 	private:
 		void CreateDeviceIndependentResources();
 		void CreateDeviceResources();
 		void CreateWindowSizeDependentResources();
 		DXGI_MODE_ROTATION ComputeDisplayRotation();
+        void destroyGL();
         
         // EGL stuff
         bool m_bAngleInitialized;
@@ -77,7 +81,7 @@ namespace DX
 		// Direct3D rendering objects. Required for 3D.
 		//Microsoft::WRL::ComPtr<ID3D11RenderTargetView>	m_d3dRenderTargetView;
 		//Microsoft::WRL::ComPtr<ID3D11DepthStencilView>	m_d3dDepthStencilView;
-		D3D11_VIEWPORT									m_screenViewport;
+		//D3D11_VIEWPORT									m_screenViewport;
 
 		// Direct2D drawing components.
 		//Microsoft::WRL::ComPtr<ID2D1Factory2>		m_d2dFactory;
