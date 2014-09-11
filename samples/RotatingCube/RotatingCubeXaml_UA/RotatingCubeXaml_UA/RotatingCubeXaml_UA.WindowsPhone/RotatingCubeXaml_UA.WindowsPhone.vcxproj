@@ -147,7 +147,7 @@
     <ProjectReference Include="..\..\..\..\..\projects\src\libEGL_UA\libEGL_UA.WindowsPhone\libEGL_UA.WindowsPhone.vcxproj">
       <Project>{7b445cfe-055b-4959-b47c-f935e40c2d2f}</Project>
       <Private>false</Private>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
@@ -155,7 +155,7 @@
     <ProjectReference Include="..\..\..\..\..\projects\src\libGLESv2_UA\libGLESv2_UA.WindowsPhone\libGLESv2_UA.WindowsPhone.vcxproj">
       <Project>{93545cb7-b74c-4712-bb32-2f47ea2162f8}</Project>
       <Private>false</Private>
-      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+      <ReferenceOutputAssembly>true</ReferenceOutputAssembly>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>
       <UseLibraryDependencyInputs>false</UseLibraryDependencyInputs>
