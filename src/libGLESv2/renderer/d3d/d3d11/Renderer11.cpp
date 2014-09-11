@@ -1987,6 +1987,10 @@ unsigned int Renderer11::getMaxVertexShaderUniformBuffers() const
       case D3D_FEATURE_LEVEL_10_1:
       case D3D_FEATURE_LEVEL_10_0:
         return D3D10_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - getReservedVertexUniformBuffers();
+      case D3D_FEATURE_LEVEL_9_3:
+      case D3D_FEATURE_LEVEL_9_2:
+      case D3D_FEATURE_LEVEL_9_1:
+        return 0;
       default: UNREACHABLE();
         return 0;
     }
@@ -2004,6 +2008,10 @@ unsigned int Renderer11::getMaxFragmentShaderUniformBuffers() const
       case D3D_FEATURE_LEVEL_10_1:
       case D3D_FEATURE_LEVEL_10_0:
         return D3D10_COMMONSHADER_CONSTANT_BUFFER_API_SLOT_COUNT - getReservedFragmentUniformBuffers();
+      case D3D_FEATURE_LEVEL_9_3:
+      case D3D_FEATURE_LEVEL_9_2:
+      case D3D_FEATURE_LEVEL_9_1:
+        return 0;
       default: UNREACHABLE();
         return 0;
     }
@@ -2041,6 +2049,10 @@ unsigned int Renderer11::getMaxTransformFeedbackBuffers() const
         return D3D10_1_SO_BUFFER_SLOT_COUNT;
       case D3D_FEATURE_LEVEL_10_0:
         return D3D10_SO_BUFFER_SLOT_COUNT;
+      case D3D_FEATURE_LEVEL_9_3:
+      case D3D_FEATURE_LEVEL_9_2:
+      case D3D_FEATURE_LEVEL_9_1:
+        return 0;
       default: UNREACHABLE();
         return 0;
     }
@@ -2083,6 +2095,10 @@ unsigned int Renderer11::getMaxUniformBufferSize() const
       case D3D_FEATURE_LEVEL_10_1:
       case D3D_FEATURE_LEVEL_10_0:
         return D3D10_REQ_CONSTANT_BUFFER_ELEMENT_COUNT * bytesPerComponent;
+      case D3D_FEATURE_LEVEL_9_3:
+      case D3D_FEATURE_LEVEL_9_2:
+      case D3D_FEATURE_LEVEL_9_1:
+        return 0;
       default: UNREACHABLE();
         return 0;
     }
@@ -2129,7 +2145,7 @@ int Renderer11::getMajorShaderModel() const
       case D3D_FEATURE_LEVEL_10_0: return D3D10_SHADER_MAJOR_VERSION;   // 4
       case D3D_FEATURE_LEVEL_9_3:
       case D3D_FEATURE_LEVEL_9_2:
-      case D3D_FEATURE_LEVEL_9_1:  return 2;
+      case D3D_FEATURE_LEVEL_9_1:  return 4;
       default: UNREACHABLE();      return 0;
     }
 }
