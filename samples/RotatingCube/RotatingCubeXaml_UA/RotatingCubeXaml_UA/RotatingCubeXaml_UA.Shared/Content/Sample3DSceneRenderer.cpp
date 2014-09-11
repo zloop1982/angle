@@ -240,7 +240,7 @@ void Sample3DSceneRenderer::StopTracking()
 // Renders one frame using the vertex and pixel shaders.
 void Sample3DSceneRenderer::Render()
 {
-    glClearColor(0, 0, 0, 1.000f);
+    glClearColor(0.392156899f, 0.584313750f, 0.929411829f, 1.000000000f);
 
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
