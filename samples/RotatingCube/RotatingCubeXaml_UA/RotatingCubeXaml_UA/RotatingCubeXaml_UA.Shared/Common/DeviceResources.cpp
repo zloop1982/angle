@@ -210,13 +210,13 @@ void DX::DeviceResources::CreateDeviceResources()
 			)
 		);
 #endif
-	ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_11_0;
-    //ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
+	//ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_11_0;
+    ANGLE_D3D_FEATURE_LEVEL featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
 
 #ifdef TARGET_WP8
     featureLevel = ANGLE_D3D_FEATURE_LEVEL::ANGLE_D3D_FEATURE_LEVEL_9_3;
 #endif
-    HRESULT hr = CreateWinrtEglWindowWithDimensions(WINRT_EGL_IUNKNOWN(m_swapChainPanel), featureLevel, 800, 450, m_eglWindow.GetAddressOf());
+    HRESULT hr = CreateWinrtEglWindow(WINRT_EGL_IUNKNOWN(m_swapChainPanel), featureLevel, m_eglWindow.GetAddressOf());
     if (FAILED(hr)){
         throw std::runtime_error("DeviceResouces: couldn't create EGL window");
     }
@@ -287,11 +287,11 @@ void DX::DeviceResources::CreateDeviceResources()
     mContext = eglCreateContext(mDisplay, mConfig, NULL, contextAttibutes);
     if (eglGetError() != EGL_SUCCESS)
     {
-        destroyGL();
         contextAttibutes[1] = 2;
         mContext = eglCreateContext(mDisplay, mConfig, NULL, contextAttibutes);
         if(eglGetError() != EGL_SUCCESS)
         {
+            destroyGL();
             throw std::runtime_error("DeviceResouces: failed to create EGL context");
         }
     }
@@ -473,26 +473,28 @@ void DX::DeviceResources::CreateWindowSizeDependentResources()
     HRESULT result = m_eglWindow.As(&dimensions);
     if (SUCCEEDED(result))
     {
-        //dimensions->SetWindowDimensions(m_outputSize.Width, m_outputSize.Height);
         dimensions->SetWindowDimensions(lround(m_d3dRenderTargetSize.Width), lround(m_d3dRenderTargetSize.Height));
     }
+    
+	ComPtr<IDXGISwapChain2> spSwapChain2;
+	DX::ThrowIfFailed(
+		m_eglWindow->GetAngleSwapChain().As<IDXGISwapChain2>(&spSwapChain2)
+		);
 
-	//DX::ThrowIfFailed(
-	//	m_swapChain->SetRotation(displayRotation)
-	//	);
+	DX::ThrowIfFailed(
+		spSwapChain2->SetRotation(displayRotation)
+		);
 
 	// Setup inverse scale on the swap chain
-	//DXGI_MATRIX_3X2_F inverseScale = { 0 };
-	//inverseScale._11 = 1.0f / m_compositionScaleX;
-	//inverseScale._22 = 1.0f / m_compositionScaleY;
-	//ComPtr<IDXGISwapChain2> spSwapChain2;
-	//DX::ThrowIfFailed(
-	//	m_eglWindow->GetAngleSwapChain().As<IDXGISwapChain2>(&spSwapChain2)
-	//	);
+	DXGI_MATRIX_3X2_F inverseScale = { 0 };
+	inverseScale._11 = 1.0f / m_compositionScaleX;
+	inverseScale._22 = 1.0f / m_compositionScaleY;
 
-	//DX::ThrowIfFailed(
-	//	spSwapChain2->SetMatrixTransform(&inverseScale)
-	//	);
+	DX::ThrowIfFailed(
+		spSwapChain2->SetMatrixTransform(&inverseScale)
+		);
+
+    glViewport(0, 0, lround(m_d3dRenderTargetSize.Width), lround(m_d3dRenderTargetSize.Height));
 	
 
 #if 0
