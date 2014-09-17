@@ -203,6 +203,9 @@ ID3D11ShaderResourceView *TextureStorage11::getSRV(const gl::SamplerState &sampl
     // Make sure there's 'mipLevels' mipmap levels below the base level (offset by the top level,  which corresponds to GL level 0)
     mipLevels = std::min(mipLevels, mMipLevels - mTopLevel - samplerState.baseLevel);
 
+    if(mRenderer->getFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+        mipLevels = -1;
+
     if (swizzleRequired)
     {
         verifySwizzleExists(samplerState.swizzleRed, samplerState.swizzleGreen, samplerState.swizzleBlue, samplerState.swizzleAlpha);
