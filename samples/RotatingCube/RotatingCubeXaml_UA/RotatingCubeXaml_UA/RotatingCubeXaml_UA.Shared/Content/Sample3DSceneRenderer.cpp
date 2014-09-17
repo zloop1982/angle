@@ -14,7 +14,9 @@ const char g_colorVertexShader[] = STRINGIFY(
 precision mediump float;
 attribute vec3 a_position;
 attribute vec3 a_color;
+attribute vec2 a_uv;
 varying vec3 v_color;
+varying vec2 v_uv;
 uniform mat4 u_model;
 uniform mat4 u_view;
 uniform mat4 u_projection;
@@ -22,15 +24,18 @@ void main(void)
 {
     gl_Position = u_projection * u_view * u_model * vec4(a_position, 1);
     v_color = a_color;
+    v_uv = a_uv;
 }
 );
 
 const char g_colorFragmentShader[] = STRINGIFY(
 precision mediump float;
 varying vec3 v_color;
+varying vec2 v_uv;
+uniform sampler2D u_texture;
 void main(void)
 {
-    gl_FragColor = vec4(v_color, 1);
+    gl_FragColor = vec4(v_color, 1) * texture2D(u_texture, v_uv);
 }
 );
 
@@ -248,17 +253,20 @@ void Sample3DSceneRenderer::Render()
     glUniformMatrix4fv(u_model, 1, GL_FALSE, &m_constantBufferData.model.m[0][0]);
     glUniformMatrix4fv(u_view, 1, GL_FALSE, &m_constantBufferData.view.m[0][0]);
     glUniformMatrix4fv(u_projection, 1, GL_FALSE, &m_constantBufferData.projection.m[0][0]);
+    glUniform1i(u_texture, 0);
+    glActiveTexture(GL_TEXTURE0);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
 
     static const VertexPositionColor cubeVertices[] = 
 	{
-		{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f)},
-		{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f)},
-		{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f)},
-		{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f)},
-		{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f)},
-		{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f)},
-		{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f)},
-		{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f)},
+		{XMFLOAT3(-0.5f, -0.5f, -0.5f), XMFLOAT3(0.0f, 0.0f, 0.0f), XMFLOAT2(0, 0)},
+		{XMFLOAT3(-0.5f, -0.5f,  0.5f), XMFLOAT3(0.0f, 0.0f, 1.0f), XMFLOAT2(1, 0)},
+		{XMFLOAT3(-0.5f,  0.5f, -0.5f), XMFLOAT3(0.0f, 1.0f, 0.0f), XMFLOAT2(0, 1)},
+		{XMFLOAT3(-0.5f,  0.5f,  0.5f), XMFLOAT3(0.0f, 1.0f, 1.0f), XMFLOAT2(1, 1)},
+		{XMFLOAT3( 0.5f, -0.5f, -0.5f), XMFLOAT3(1.0f, 0.0f, 0.0f), XMFLOAT2(1, 0)},
+		{XMFLOAT3( 0.5f, -0.5f,  0.5f), XMFLOAT3(1.0f, 0.0f, 1.0f), XMFLOAT2(0, 0)},
+		{XMFLOAT3( 0.5f,  0.5f, -0.5f), XMFLOAT3(1.0f, 1.0f, 0.0f), XMFLOAT2(1, 1)},
+		{XMFLOAT3( 0.5f,  0.5f,  0.5f), XMFLOAT3(1.0f, 1.0f, 1.0f), XMFLOAT2(0, 1)},
 	};
     static const unsigned short cubeIndices[] = 
     {
@@ -284,11 +292,14 @@ void Sample3DSceneRenderer::Render()
 
     glEnableVertexAttribArray(a_positionColor);
     glEnableVertexAttribArray(a_colorColor);
+    glEnableVertexAttribArray(a_uvColor);
     glVertexAttribPointer(a_positionColor, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPositionColor), cubeVertices);
     glVertexAttribPointer(a_colorColor, 3, GL_FLOAT, GL_FALSE, sizeof(VertexPositionColor), reinterpret_cast<const char*>(cubeVertices) + sizeof(XMFLOAT3));
+    glVertexAttribPointer(a_uvColor, 2, GL_FLOAT, GL_FALSE, sizeof(VertexPositionColor), reinterpret_cast<const char*>(cubeVertices) + sizeof(XMFLOAT3) + sizeof(XMFLOAT2));
     glDrawElements(GL_TRIANGLES, ARRAYSIZE(cubeIndices), GL_UNSIGNED_SHORT, cubeIndices);
     glDisableVertexAttribArray(a_positionColor);
     glDisableVertexAttribArray(a_colorColor);
+    glDisableVertexAttribArray(a_uvColor);
 }
 
 void Sample3DSceneRenderer::CreateDeviceDependentResources()
@@ -296,15 +307,27 @@ void Sample3DSceneRenderer::CreateDeviceDependentResources()
     m_colorProgram = LoadProgram(g_colorVertexShader, g_colorFragmentShader);
     a_positionColor = glGetAttribLocation(m_colorProgram, "a_position");
     a_colorColor = glGetAttribLocation(m_colorProgram, "a_color");
+    a_uvColor = glGetAttribLocation(m_colorProgram, "a_uv");
     u_model = glGetUniformLocation(m_colorProgram, "u_model");
     u_view = glGetUniformLocation(m_colorProgram, "u_view");
     u_projection = glGetUniformLocation(m_colorProgram, "u_projection");
+    u_texture = glGetUniformLocation(m_colorProgram, "u_texture");
     glEnable(GL_DEPTH_TEST);
+    unsigned char checkerboard[] = {
+        255, 255, 255, 0, 0, 0,
+        0, 0, 0, 255, 255, 255
+    };
+    glGenTextures(1, &m_texture);
+    glBindTexture(GL_TEXTURE_2D, m_texture);
+    glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 2, 2, 0, GL_RGB, GL_UNSIGNED_BYTE, checkerboard);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
 }
 
 void Sample3DSceneRenderer::ReleaseDeviceDependentResources()
 {
     glDeleteProgram(m_colorProgram);
+    glDeleteTextures(1, &m_texture);
 	//m_vertexShader.Reset();
 	//m_inputLayout.Reset();
 	//m_pixelShader.Reset();

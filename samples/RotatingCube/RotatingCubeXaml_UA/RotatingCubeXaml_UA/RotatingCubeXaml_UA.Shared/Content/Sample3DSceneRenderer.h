@@ -44,9 +44,12 @@ namespace RotatingCubeXaml_UA
         GLuint m_colorProgram;
         GLint a_positionColor;
         GLint a_colorColor;
+        GLint a_uvColor;
         GLint u_model;
         GLint u_view;
         GLint u_projection;
+        GLint u_texture;
+        GLuint m_texture;
 
 		// Variables used with the rendering loop.
 		//bool	m_loadingComplete;
