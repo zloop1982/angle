@@ -184,24 +184,30 @@ RenderTarget11::RenderTarget11(Renderer *renderer, ID3D11RenderTargetView *rtv, 
     mRenderer = Renderer11::makeRenderer11(renderer);
 
     mTexture = resource;
+#ifndef ANGLE_ENABLE_RENDER_TO_BACK_BUFFER
     if (mTexture)
     {
         mTexture->AddRef();
     }
+#endif
 
     mRenderTarget = rtv;
+#ifndef ANGLE_ENABLE_RENDER_TO_BACK_BUFFER
     if (mRenderTarget)
     {
         mRenderTarget->AddRef();
     }
+#endif
 
     mDepthStencil = NULL;
 
     mShaderResource = srv;
+#ifndef ANGLE_ENABLE_RENDER_TO_BACK_BUFFER
     if (mShaderResource)
     {
         mShaderResource->AddRef();
     }
+#endif
 
     mSubresourceIndex = 0;
 

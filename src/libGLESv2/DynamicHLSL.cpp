@@ -691,7 +691,11 @@ bool DynamicHLSL::generateShaderLinkHLSL(InfoLog &infoLog, int registers, const 
                       "    VS_OUTPUT output;\n"
                       "    output.gl_Position = gl_Position;\n"
                       "    output.dx_Position.x = gl_Position.x;\n"
+#ifdef ANGLE_ENABLE_RENDER_TO_BACK_BUFFER
+                      "    output.dx_Position.y = gl_Position.y;\n"
+#else
                       "    output.dx_Position.y = -gl_Position.y;\n"
+#endif
                       "    output.dx_Position.z = (gl_Position.z + gl_Position.w) * 0.5;\n"
                       "    output.dx_Position.w = gl_Position.w;\n";
     }

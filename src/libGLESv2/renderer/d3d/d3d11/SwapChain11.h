@@ -66,9 +66,11 @@ class SwapChain11 : public SwapChain
     ID3D11Texture2D *mBackBufferTexture;
     ID3D11RenderTargetView *mBackBufferRTView;
 
+#ifndef ANGLE_ENABLE_RENDER_TO_BACK_BUFFER
     ID3D11Texture2D *mOffscreenTexture;
     ID3D11RenderTargetView *mOffscreenRTView;
     ID3D11ShaderResourceView *mOffscreenSRView;
+#endif
 
     ID3D11Texture2D *mDepthStencilTexture;
     ID3D11DepthStencilView *mDepthStencilDSView;
