@@ -34,3 +34,5 @@ EXPORTS
 	eglWaitClient                   @16
 	eglWaitGL                       @30
 	eglWaitNative                   @31
+	CreateWinrtEglWindow			@35
+	CreateWinrtEglWindowWithDimensions @36

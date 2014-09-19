@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{D86961E6-4CA4-42B3-838B-3BBFA425957F}</ProjectGuid>
+    <ProjectGuid>{99f6d439-246d-4f66-8b40-32c58a085a11}</ProjectGuid>
     <RootNamespace>libEGL_phone</RootNamespace>
     <DefaultLanguage>en-US</DefaultLanguage>
     <MinimumVisualStudioVersion>11.0</MinimumVisualStudioVersion>
@@ -55,118 +55,174 @@
   <ImportGroup Label="PropertySheets">
     <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
   </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="..\..\..\..\..\..\..\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.Cpp.unicodesupport.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <Import Project="..\..\..\..\..\..\..\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.Cpp.unicodesupport.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="..\..\..\..\..\..\..\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.Cpp.unicodesupport.props" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <Import Project="..\..\..\..\..\..\..\Program Files (x86)\MSBuild\Microsoft.Cpp\v4.0\V110\Microsoft.Cpp.unicodesupport.props" />
+  </ImportGroup>
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
-    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>$(OutDir)obj\libEGL\</IntDir>
-    <TargetName>libEGL</TargetName>
-  </PropertyGroup>
-  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
-    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>$(OutDir)obj\libEGL\</IntDir>
-    <TargetName>libEGL</TargetName>
-  </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>$(OutDir)obj\libEGL\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
     <TargetName>libEGL</TargetName>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
-    <OutDir>$(SolutionDir)$(Configuration)_$(Platform)\</OutDir>
-    <IntDir>$(OutDir)obj\libEGL\</IntDir>
+    <IntDir>$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+    <OutDir>$(SolutionDir)$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
     <TargetName>libEGL</TargetName>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <TargetName>libEGL</TargetName>
+    <IntDir>$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <TargetName>libEGL</TargetName>
+    <IntDir>$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT("d3dcompiler_46.dll"), TEXT("d3dcompiler_43.dll") };UNICODE;_UNICODE;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NOMINMAX;GL_APICALL=;GL_GLEXT_PROTOTYPES=;EGLAPI=;ANGLE_ENABLE_D3D11;ANGLE_ENABLE_RENDER_TO_BACK_BUFFER;_USRDLL;%(PreprocessorDefinitions);%(PreprocessorDefinitions);%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;$(OutDir)obj\global_intermediate;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
-      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4127;4239;4244;4245;4251;4512;4702;4530;4718;4267;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>$(OutDir)libEGL$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>..\..\src\libEGL\libEGL_phone.def</ModuleDefinitionFile>
-      <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
-      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT("d3dcompiler_46.dll"), TEXT("d3dcompiler_43.dll") };UNICODE;_UNICODE;_USRDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NOMINMAX;GL_APICALL=;GL_GLEXT_PROTOTYPES=;EGLAPI=;ANGLE_ENABLE_D3D11;ANGLE_ENABLE_RENDER_TO_BACK_BUFFER;_USRDLL;NDEBUG;%(PreprocessorDefinitions);%(PreprocessorDefinitions);%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;$(OutDir)obj\global_intermediate;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
-      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4127;4239;4244;4245;4251;4512;4702;4530;4718;4267;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>$(OutDir)libEGL$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>..\..\src\libEGL\libEGL_phone.def</ModuleDefinitionFile>
-      <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT("d3dcompiler_46.dll"), TEXT("d3dcompiler_43.dll") };UNICODE;_UNICODE;_USRDLL;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NOMINMAX;GL_APICALL=;GL_GLEXT_PROTOTYPES=;EGLAPI=;ANGLE_ENABLE_D3D11;ANGLE_ENABLE_RENDER_TO_BACK_BUFFER;_USRDLL;%(PreprocessorDefinitions);%(PreprocessorDefinitions);%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
-      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;$(OutDir)obj\global_intermediate;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <DisableSpecificWarnings>4100;4127;4239;4244;4245;4251;4512;4702;4530;4718;4267;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>$(OutDir)libEGL$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>..\..\src\libEGL\libEGL_phone.def</ModuleDefinitionFile>
-      <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
     <ClCompile>
-      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;_HAS_EXCEPTIONS=0;_WINDOWS;NOMINMAX;WIN32;WIN32_LEAN_AND_MEAN;WINVER=0x0600;ANGLE_PRELOADED_D3DCOMPILER_MODULE_NAMES={ TEXT("d3dcompiler_46.dll"), TEXT("d3dcompiler_43.dll") };UNICODE;_UNICODE;_USRDLL;NDEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>NTDDI_WINBLUE=0x06030000;_CRT_SECURE_NO_DEPRECATE;_SCL_SECURE_NO_WARNINGS;NOMINMAX;GL_APICALL=;GL_GLEXT_PROTOTYPES=;EGLAPI=;ANGLE_ENABLE_D3D11;ANGLE_ENABLE_RENDER_TO_BACK_BUFFER;_USRDLL;NDEBUG;%(PreprocessorDefinitions);%(PreprocessorDefinitions);%(PreprocessorDefinitions);%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
-      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
-      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;$(OutDir)obj\global_intermediate;$(ProjectDir);$(GeneratedFilesDir);$(IntDir);%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <CompileAsWinRT>false</CompileAsWinRT>
+      <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
+      <AdditionalIncludeDirectories>..\..\src;..\..\include;..\..\src\libGLESv2;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <WarningLevel>Level4</WarningLevel>
-      <DisableSpecificWarnings>4267;4100;4127;4189;4239;4244;4245;4512;4702;4530;4718</DisableSpecificWarnings>
+      <DisableSpecificWarnings>4100;4127;4239;4244;4245;4251;4512;4702;4530;4718;4267;%(DisableSpecificWarnings)</DisableSpecificWarnings>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <IgnoreAllDefaultLibraries>false</IgnoreAllDefaultLibraries>
       <GenerateWindowsMetadata>false</GenerateWindowsMetadata>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <OutputFile>$(OutDir)libEGL$(TargetExt)</OutputFile>
       <ModuleDefinitionFile>..\..\src\libEGL\libEGL_phone.def</ModuleDefinitionFile>
-      <ImportLibrary>$(OutDir)lib\$(TargetName).lib</ImportLibrary>
       <IgnoreSpecificDefaultLibraries>ole32.lib</IgnoreSpecificDefaultLibraries>
     </Link>
   </ItemDefinitionGroup>
+  <ItemGroup>
+    <None Include="..\..\src\angle.gyp" />
+    <None Include="..\..\src\libEGL\libEGL_phone.def" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\common\winrtangle.h" />
+    <ClInclude Include="..\..\src\common\winrtangleutils.h" />
+    <ClInclude Include="..\..\src\common\winrtutils.h" />
+    <ClInclude Include="..\..\src\libEGL\Surface.h" />
+    <ClInclude Include="..\..\src\libEGL\resource.h" />
+    <ClInclude Include="..\..\src\libEGL\Config.h" />
+    <ClInclude Include="..\..\src\libEGL\main.h" />
+    <ClInclude Include="..\..\src\libEGL\Display.h" />
+    <ClInclude Include="..\..\src\common\RefCountObject.h" />
+    <ClInclude Include="..\..\src\common\debug.h" />
+    <ClInclude Include="..\..\src\common\mathutil.h" />
+    <ClInclude Include="..\..\src\common\event_tracer.h" />
+    <ClInclude Include="..\..\src\common\platform.h" />
+    <ClInclude Include="..\..\src\common\version.h" />
+    <ClInclude Include="..\..\src\common\utilities.h" />
+    <ClInclude Include="..\..\src\common\tls.h" />
+    <ClInclude Include="..\..\src\common\angleutils.h" />
+    <ClInclude Include="..\..\include\angle_gl.h" />
+    <ClInclude Include="..\..\include\KHR\khrplatform.h" />
+    <ClInclude Include="..\..\include\GLSLANG\ShaderLang.h" />
+    <ClInclude Include="..\..\include\GLSLANG\ShaderVars.h" />
+    <ClInclude Include="..\..\include\GLES2\gl2.h" />
+    <ClInclude Include="..\..\include\GLES2\gl2platform.h" />
+    <ClInclude Include="..\..\include\GLES2\gl2ext.h" />
+    <ClInclude Include="..\..\include\GLES3\gl3ext.h" />
+    <ClInclude Include="..\..\include\GLES3\gl3.h" />
+    <ClInclude Include="..\..\include\GLES3\gl3platform.h" />
+    <ClInclude Include="..\..\include\EGL\eglext.h" />
+    <ClInclude Include="..\..\include\EGL\eglplatform.h" />
+    <ClInclude Include="..\..\include\EGL\egl.h" />
+    <ClInclude Include="..\..\src\third_party\ThreadEmulation\ThreadEmulation.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="..\..\src\common\winrtangle.cpp" />
+    <ClCompile Include="..\..\src\common\winrtangleutils.cpp" />
+    <ClCompile Include="..\..\src\common\winrtutils.cpp" />
+    <ClCompile Include="..\..\src\libEGL\Surface.cpp" />
+    <ClCompile Include="..\..\src\libEGL\Config.cpp" />
+    <ClCompile Include="..\..\src\libEGL\main.cpp" />
+    <ClCompile Include="..\..\src\libEGL\Display.cpp" />
+    <ClCompile Include="..\..\src\libEGL\libEGL.cpp" />
+    <ClCompile Include="..\..\src\common\mathutil.cpp" />
+    <ClCompile Include="..\..\src\common\RefCountObject.cpp" />
+    <ClCompile Include="..\..\src\common\tls.cpp" />
+    <ClCompile Include="..\..\src\common\debug.cpp" />
+    <ClCompile Include="..\..\src\common\event_tracer.cpp" />
+    <ClCompile Include="..\..\src\common\utilities.cpp" />
+    <ClCompile Include="..\..\src\third_party\ThreadEmulation\ThreadEmulation.cpp" />
+  </ItemGroup>
   <ItemGroup>
     <Reference Include="Windows">
       <IsWinMDFile>true</IsWinMDFile>
@@ -177,60 +233,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <None Include="..\..\src\angle.gyp" />
-    <None Include="..\..\src\libEGL\libEGL_phone.def" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="..\..\src\common\winrtangle.h" />
-    <ClInclude Include="..\..\src\common\winrtangleutils.h" />
-    <ClInclude Include="..\..\src\common\winrtplatform.h" />
-    <ClInclude Include="..\..\src\common\winrtutils.h" />
-    <ClInclude Include="..\..\src\libEGL\main.h" />
-    <ClInclude Include="..\..\src\libEGL\Surface.h" />
-    <ClInclude Include="..\..\src\libEGL\resource.h" />
-    <ClInclude Include="..\..\src\libEGL\Display.h" />
-    <ClInclude Include="..\..\src\libEGL\Config.h" />
-    <ClInclude Include="..\..\src\common\event_tracer.h" />
-    <ClInclude Include="..\..\src\common\version.h" />
-    <ClInclude Include="..\..\src\common\RefCountObject.h" />
-    <ClInclude Include="..\..\src\common\debug.h" />
-    <ClInclude Include="..\..\src\common\angleutils.h" />
-    <ClInclude Include="..\..\include\KHR\khrplatform.h" />
-    <ClInclude Include="..\..\include\GLSLANG\ShaderLang.h" />
-    <ClInclude Include="..\..\include\GLES2\gl2.h" />
-    <ClInclude Include="..\..\include\GLES2\gl2platform.h" />
-    <ClInclude Include="..\..\include\GLES2\gl2ext.h" />
-    <ClInclude Include="..\..\include\EGL\egl.h" />
-    <ClInclude Include="..\..\include\EGL\eglext.h" />
-    <ClInclude Include="..\..\include\EGL\eglplatform.h" />
-    <ClInclude Include="..\..\src\libEGL\TLSWinrt.h" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClCompile Include="..\..\src\common\winrtangle.cpp" />
-    <ClCompile Include="..\..\src\common\winrtangleutils.cpp" />
-    <ClCompile Include="..\..\src\common\winrtutils.cpp" />
-    <ClCompile Include="..\..\src\libEGL\Surface.cpp" />
-    <ClCompile Include="..\..\src\libEGL\Config.cpp" />
-    <ClCompile Include="..\..\src\libEGL\libEGL.cpp" />
-    <ClCompile Include="..\..\src\libEGL\main.cpp" />
-    <ClCompile Include="..\..\src\libEGL\Display.cpp" />
-    <ClCompile Include="..\..\src\common\event_tracer.cpp" />
-    <ClCompile Include="..\..\src\common\RefCountObject.cpp" />
-    <ClCompile Include="..\..\src\common\debug.cpp" />
-    <ClCompile Include="..\..\src\libEGL\TLSWinrt.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ResourceCompile Include="..\..\src\libEGL\libEGL.rc">
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">true</ExcludedFromBuild>
-      <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">true</ExcludedFromBuild>
-    </ResourceCompile>
-  </ItemGroup>
-  <ItemGroup>
     <ProjectReference Include="libGLESv2_phone.vcxproj">
-      <Project>{4bfdea95-3142-4e67-adbd-35c9f4935e21}</Project>
-      <Private>true</Private>
+      <Project>{36f00d45-106c-47b4-af55-986d7e6ef0dc}</Project>
+      <Private>false</Private>
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
       <CopyLocalSatelliteAssemblies>false</CopyLocalSatelliteAssemblies>
       <LinkLibraryDependencies>true</LinkLibraryDependencies>

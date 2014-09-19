@@ -1,90 +1,42 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup>
-    <Filter Include="compiler">
-      <UniqueIdentifier>{041FFD28-E4BD-ABC0-5AF7-A6D1560FAC0E}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="compiler\preprocessor">
-      <UniqueIdentifier>{56A90BCD-B311-1BEE-A8AC-25D8344BCE41}</UniqueIdentifier>
+    <Filter Include="Resource Files">
+      <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
+      <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\src\compiler\preprocessor\ExpressionParser.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\Input.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\Tokenizer.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\DirectiveHandlerBase.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\Lexer.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\Token.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\Macro.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\DiagnosticsBase.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\Preprocessor.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\DirectiveParser.cpp" />
+    <ClCompile Include="..\..\src\compiler\preprocessor\MacroExpander.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="..\..\src\compiler\preprocessor\Tokenizer.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\Lexer.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\Token.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\Preprocessor.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\ExpressionParser.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\MacroExpander.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\Macro.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\pp_utils.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\Input.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\SourceLocation.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\numeric_lex.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\DirectiveParser.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\DiagnosticsBase.h" />
+    <ClInclude Include="..\..\src\compiler\preprocessor\DirectiveHandlerBase.h" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\src\angle.gyp" />
-    <ClCompile Include="..\..\src\compiler\preprocessor\ExpressionParser.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\compiler\preprocessor\Input.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\compiler\preprocessor\Tokenizer.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\src\compiler\preprocessor\Tokenizer.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\compiler\preprocessor\Lexer.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\src\compiler\preprocessor\DirectiveHandlerBase.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\src\compiler\preprocessor\Token.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\src\compiler\preprocessor\Lexer.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\src\compiler\preprocessor\Preprocessor.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\compiler\preprocessor\ExpressionParser.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\compiler\preprocessor\MacroExpander.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\compiler\preprocessor\Macro.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\src\compiler\preprocessor\Token.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\compiler\preprocessor\Macro.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClCompile Include="..\..\src\compiler\preprocessor\DiagnosticsBase.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\src\compiler\preprocessor\pp_utils.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\src\compiler\preprocessor\Preprocessor.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\src\compiler\preprocessor\Input.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\compiler\preprocessor\SourceLocation.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\compiler\preprocessor\numeric_lex.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\src\compiler\preprocessor\DirectiveParser.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\src\compiler\preprocessor\DirectiveParser.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\src\compiler\preprocessor\DiagnosticsBase.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
-    <ClCompile Include="..\..\src\compiler\preprocessor\MacroExpander.cpp">
-      <Filter>compiler\preprocessor</Filter>
-    </ClCompile>
-    <ClInclude Include="..\..\src\compiler\preprocessor\DirectiveHandlerBase.h">
-      <Filter>compiler\preprocessor</Filter>
-    </ClInclude>
     <None Include="..\..\src\compiler\preprocessor\ExpressionParser.y" />
     <None Include="..\..\src\compiler\preprocessor\Tokenizer.l" />
   </ItemGroup>
