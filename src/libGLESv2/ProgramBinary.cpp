@@ -254,6 +254,10 @@ rx::ShaderExecutable *ProgramBinary::getPixelExecutableForOutputLayout(const std
         }
     }
 
+#ifdef ANGLE_PLATFORM_WP8
+    return NULL;
+#else
+
     std::string finalPixelHLSL = mDynamicHLSL->generatePixelShaderForOutputSignature(mPixelHLSL, mPixelShaderKey, mUsesFragDepth,
                                                                                      outputSignature);
 
@@ -276,6 +280,7 @@ rx::ShaderExecutable *ProgramBinary::getPixelExecutableForOutputLayout(const std
     }
 
     return pixelExecutable;
+#endif
 }
 
 rx::ShaderExecutable *ProgramBinary::getVertexExecutableForInputLayout(const VertexFormat inputLayout[MAX_VERTEX_ATTRIBS])
