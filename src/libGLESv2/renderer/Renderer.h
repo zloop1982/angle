@@ -15,6 +15,8 @@
 #include "libGLESv2/Caps.h"
 
 #if defined(ANGLE_PLATFORM_WP8)
+#define D3DCOMPILE_OPTIMIZATION_LEVEL1            0
+#define D3DCOMPILE_OPTIMIZATION_LEVEL2            ((1 << 14) | (1 << 15))
 #define D3DCOMPILE_OPTIMIZATION_LEVEL3            (1 << 15)
 #endif // #if defined(ANGLE_PLATFORM_WP8)
 #if !defined(ANGLE_COMPILE_OPTIMIZATION_LEVEL)
