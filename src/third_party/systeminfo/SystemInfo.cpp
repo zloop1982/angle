@@ -31,7 +31,7 @@
 
 namespace rx {
 
-#ifndef _WIN32_WINNT_WINBLUE
+#if !defined(_WIN32_WINNT_WINBLUE) && WINAPI_FAMILY_PARTITION(WINAPI_PARTITION_DESKTOP)
 static bool IsWindowsVistaOrGreater()
 {
     OSVERSIONINFOEXW osvi = { };
