@@ -206,7 +206,7 @@ bool AngleBase::InitializeAngle()
         CreateWinrtEglWindow(WINRT_EGL_IUNKNOWN(m_eglPhoneWindow.Get()), featureLevel, m_eglWindow.GetAddressOf())
         );
 
-	display = eglGetDisplay(m_eglWindow);
+	display = eglGetDisplay(m_eglWindow.Get());
 	if(display == EGL_NO_DISPLAY){
 		//ofLogError("ofAppWinRTWindow") << "couldn't get EGL display";
 		return false;
@@ -216,6 +216,12 @@ bool AngleBase::InitializeAngle()
 		//ofLogError("ofAppWinRTWindow") << "failed to initialize EGL";
 		return false;
 	}
+    
+    eglBindAPI(EGL_OPENGL_ES_API);
+    if (eglGetError() != EGL_SUCCESS)
+    {
+        return false;
+    }
 
 	// Get configs
 	if ( !eglGetConfigs(display, NULL, 0, &numConfigs) ){

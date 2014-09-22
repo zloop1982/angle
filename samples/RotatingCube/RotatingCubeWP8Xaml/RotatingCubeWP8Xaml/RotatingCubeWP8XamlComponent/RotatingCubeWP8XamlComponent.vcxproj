@@ -30,7 +30,7 @@
     <!-- If OutDir was set outside of the project file, then we will append ProjectName -->
     <OutDir Condition="'$(OutDirWasSpecified)' == 'true'">$(OutDir)\$(MSBuildProjectName)\</OutDir>
     <!-- else, OutDir needs to have project specific directory in order to handle files with unique names -->
-    <OutDir Condition="'$(OutDirWasSpecified)' != 'true' and '$(Platform)' == 'Win32'">$(SolutionDir)$(Configuration)\$(MSBuildProjectName)\</OutDir>
+    <OutDir Condition="'$(OutDirWasSpecified)' != 'true' and '$(Platform)' == 'Win32'">$(SolutionDir)$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
     <OutDir Condition="'$(OutDirWasSpecified)' != 'true' and '$(Platform)' != 'Win32'">$(SolutionDir)$(Platform)\$(Configuration)\$(MSBuildProjectName)\</OutDir>
     <!-- After OutDir has been fixed, disable Microsoft.common.targets from fixing it again -->
     <OutDirWasSpecified>false</OutDirWasSpecified>
@@ -65,6 +65,18 @@
   <PropertyGroup>
     <GenerateManifest>false</GenerateManifest>
   </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|ARM'">
+    <IntDir>$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|ARM'">
+    <IntDir>$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <IntDir>$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <IntDir>$(Platform)\$(Configuration)\$(MSBuildProjectName)\</IntDir>
+  </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
     <ClCompile>
       <PreprocessorDefinitions>_WINRT_DLL;GL_GLEXT_PROTOTYPES;%(PreprocessorDefinitions)</PreprocessorDefinitions>
@@ -89,7 +101,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
-      <AdditionalIncludeDirectories>../../../../include;../../../../src/common;$(ProjectDir)../../gles2_book/Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\include;$(ProjectDir)..\..\..\..\..\src\common;$(ProjectDir)..\..\..\..\gles2_book\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -106,7 +118,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
-      <AdditionalIncludeDirectories>../../../../include;../../../../src/common;$(ProjectDir)../../gles2_book/Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\include;$(ProjectDir)..\..\..\..\..\src\common;$(ProjectDir)..\..\..\..\gles2_book\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -123,7 +135,7 @@
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
       <AdditionalUsingDirectories>$(WindowsSDK_MetadataPath);$(AdditionalUsingDirectories)</AdditionalUsingDirectories>
       <CompileAsWinRT>true</CompileAsWinRT>
-      <AdditionalIncludeDirectories>../../../../include;../../../../src/common;$(ProjectDir)../../gles2_book/Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(ProjectDir)..\..\..\..\..\include;$(ProjectDir)..\..\..\..\..\src\common;$(ProjectDir)..\..\..\..\gles2_book\Common;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -160,14 +172,11 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\..\src\libEGL\libEGL_phone.vcxproj">
-      <Project>{ab42a170-e370-4707-8cc6-1c51349c146f}</Project>
+    <ProjectReference Include="..\..\..\..\..\projects\src\libEGL_phone.vcxproj">
+      <Project>{99f6d439-246d-4f66-8b40-32c58a085a11}</Project>
     </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\src\libGLESv2\libGLESv2_phone.vcxproj">
-      <Project>{0592f9c3-d727-4d41-bc9e-e43b269ad877}</Project>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\gles2_book\Common\esUtil_phone.vcxproj">
-      <Project>{d2d857bf-346e-4014-b9cf-50d5e1f8a357}</Project>
+    <ProjectReference Include="..\..\..\..\..\projects\src\libGLESv2_phone.vcxproj">
+      <Project>{36f00d45-106c-47b4-af55-986d7e6ef0dc}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

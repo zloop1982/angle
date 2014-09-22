@@ -1,6 +1,6 @@
 ﻿#include "pch.h"
 #include "CubeRenderer.h"
-#include "..\..\..\shader.h"
+#include "..\..\..\shader_wp8.h"
 
 using namespace DirectX;
 using namespace Microsoft::WRL;
