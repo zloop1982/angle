@@ -612,13 +612,16 @@ EGLint SwapChain11::reset(int backbufferWidth, int backbufferHeight, EGLint swap
             }
         }
 
-        result = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBufferTexture);
-        ASSERT(SUCCEEDED(result));
-        d3d11::SetDebugName(mBackBufferTexture, "Back buffer texture");
+        if(mSwapChain)
+        {
+            result = mSwapChain->GetBuffer(0, __uuidof(ID3D11Texture2D), (LPVOID*)&mBackBufferTexture);
+            ASSERT(SUCCEEDED(result));
+            d3d11::SetDebugName(mBackBufferTexture, "Back buffer texture");
 
-        result = device->CreateRenderTargetView(mBackBufferTexture, NULL, &mBackBufferRTView);
-        ASSERT(SUCCEEDED(result));
-        d3d11::SetDebugName(mBackBufferRTView, "Back buffer render target");
+            result = device->CreateRenderTargetView(mBackBufferTexture, NULL, &mBackBufferRTView);
+            ASSERT(SUCCEEDED(result));
+            d3d11::SetDebugName(mBackBufferRTView, "Back buffer render target");
+        }
     }
 
     // If we are resizing the swap chain, we don't wish to recreate all the static resources
@@ -816,10 +819,11 @@ EGLint SwapChain11::swapRect(EGLint x, EGLint y, EGLint width, EGLint height)
 
 #endif
 
+    if(mSwapChain)
 #ifdef ANGLE_FORCE_VSYNC_OFF
-    result = mSwapChain->Present(0, 0);
+        result = mSwapChain->Present(0, 0);
 #else
-    result = mSwapChain->Present(mSwapInterval, 0);
+        result = mSwapChain->Present(mSwapInterval, 0);
 #endif
 
     if (result == DXGI_ERROR_DEVICE_REMOVED)
