@@ -214,7 +214,7 @@ bool InitializeAngle(EGLDisplay& display, EGLContext& context, ANGLE_D3D_FEATURE
         return false;
     }
 
-	display = eglGetDisplay(eglWindow);
+	display = eglGetDisplay(eglWindow.Get());
 	if(display == EGL_NO_DISPLAY){
         cout << "InitializeAngle: couldn't get EGL display" << endl;
 		return false;
@@ -224,6 +224,12 @@ bool InitializeAngle(EGLDisplay& display, EGLContext& context, ANGLE_D3D_FEATURE
         cout << "InitializeAngle: failed to initialize EGL" << endl;
 		return false;
 	}
+    
+    eglBindAPI(EGL_OPENGL_ES_API);
+    if (eglGetError() != EGL_SUCCESS)
+    {
+        return false;
+    }
 
 	// Get configs
 	if ( !eglGetConfigs(display, NULL, 0, &numConfigs) ){
