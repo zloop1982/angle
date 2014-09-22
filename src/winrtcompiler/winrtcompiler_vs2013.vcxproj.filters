@@ -4,32 +4,8 @@
     <Filter Include="libEGL_winrt">
       <UniqueIdentifier>{cc8a906f-0d0c-47fd-ba87-eccf33fed050}</UniqueIdentifier>
     </Filter>
-    <Filter Include="libEGL_winrt\Header Files">
-      <UniqueIdentifier>{ed857852-b63c-4370-ae00-a61a71ad47bf}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libEGL_winrt\Source Files">
-      <UniqueIdentifier>{80ee1fa0-7675-44f2-85ab-e5be86236876}</UniqueIdentifier>
-    </Filter>
     <Filter Include="libGLESv2_winrt">
       <UniqueIdentifier>{62bb7088-d0e9-4d16-a246-5caa27727463}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libGLESv2_winrt\Renderer">
-      <UniqueIdentifier>{042220f2-a1aa-4697-b190-63ff046c793f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libGLESv2_winrt\Renderer11">
-      <UniqueIdentifier>{64d3596d-178e-41f9-880d-a3d1329bc179}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libGLESv2_winrt\Third Party">
-      <UniqueIdentifier>{db0e6496-7cb6-4493-8dbf-f034e432e5c2}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libGLESv2_winrt\Third Party\MurmurHash">
-      <UniqueIdentifier>{79929305-add2-4ed2-9634-19c8b143f143}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libGLESv2_winrt\Third Party\winrt">
-      <UniqueIdentifier>{34ab74cc-3abe-4329-98d0-28612764f3eb}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libGLESv2_winrt\Third Party\winrt\ThreadEmulation">
-      <UniqueIdentifier>{648d64f3-f1e7-4b73-9c7c-c4a20a5dcf28}</UniqueIdentifier>
     </Filter>
     <Filter Include="preprocessor">
       <UniqueIdentifier>{3d8050c9-31a2-4bb5-918d-a66188adfd0e}</UniqueIdentifier>
@@ -43,129 +19,45 @@
     <Filter Include="translator">
       <UniqueIdentifier>{f8a2da84-bbe6-4597-91cc-69dc4138584e}</UniqueIdentifier>
     </Filter>
-    <Filter Include="translator\Header Files">
-      <UniqueIdentifier>{852ee929-c8b9-44ab-809e-a0a448571599}</UniqueIdentifier>
+    <Filter Include="libGLESv2_winrt\renderer">
+      <UniqueIdentifier>{d7dcce3c-93f6-4223-adc6-2de6579d1646}</UniqueIdentifier>
     </Filter>
-    <Filter Include="translator\Source Files">
-      <UniqueIdentifier>{1bd1dfc9-fbcb-48a4-9b27-79221a255c13}</UniqueIdentifier>
+    <Filter Include="libGLESv2_winrt\renderer\d3d">
+      <UniqueIdentifier>{d3d8be90-beab-4127-8cae-f6494ac77a9a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="translator\third_party">
-      <UniqueIdentifier>{4016fd44-a3b2-4811-973e-de0f4e70e0fb}</UniqueIdentifier>
+    <Filter Include="libGLESv2_winrt\renderer\d3d\d3d11">
+      <UniqueIdentifier>{92237df1-94af-4938-86e1-032a31bf5092}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="translator\depgraph">
+      <UniqueIdentifier>{9a369b6b-a6e0-4955-9c9a-0fbc099a10a8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="translator\timing">
+      <UniqueIdentifier>{3b8e18c5-6e3c-4ba3-94a9-eaff70b955b5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party">
+      <UniqueIdentifier>{dd6f6fcc-bc53-446a-8a4c-cb3ad52a414c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\compiler">
+      <UniqueIdentifier>{86ce561f-2a96-47da-8339-d7e1c7439318}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\murmurhash">
+      <UniqueIdentifier>{1ad28381-2450-4b19-90bd-0f20a0b0177c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\systeminfo">
+      <UniqueIdentifier>{138de709-a616-410b-96a8-76e8d5cd993e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\ThreadEmulation">
+      <UniqueIdentifier>{27af5011-ef84-4287-a95b-0eed1664a511}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="third_party\trace_event">
+      <UniqueIdentifier>{78fd70b8-61e2-4064-87e3-8cf43ad5450a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="common">
+      <UniqueIdentifier>{40b84381-7ea1-4fd3-8827-7817652be34b}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp" />
-    <ClCompile Include="..\common\debug.cpp">
-      <Filter>libEGL_winrt\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\winrtangleutils.cpp">
-      <Filter>libEGL_winrt\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\winrtutils.cpp">
-      <Filter>libEGL_winrt\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libEGL\Config.cpp">
-      <Filter>libEGL_winrt\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libEGL\Display.cpp">
-      <Filter>libEGL_winrt\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libEGL\libEGL.cpp">
-      <Filter>libEGL_winrt\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libEGL\Surface.cpp">
-      <Filter>libEGL_winrt\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libEGL\TLSWinrt.cpp">
-      <Filter>libEGL_winrt\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\BufferStorage.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\Image.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\IndexBuffer.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\IndexDataManager.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\IndexRangeCache.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\Renderer.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\TextureStorage.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\VertexBuffer.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\VertexDataManager.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\third_party\murmurhash\MurmurHash3.cpp">
-      <Filter>libGLESv2_winrt\Third Party\MurmurHash</Filter>
-    </ClCompile>
-    <ClCompile Include="..\third_party\winrt\ThreadEmulation\ThreadEmulation.cpp">
-      <Filter>libGLESv2_winrt\Third Party\winrt\ThreadEmulation</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Buffer.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Context.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Fence.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Float16ToFloat32.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Framebuffer.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\HandleAllocator.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\libGLESv2.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\precompiled.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Program.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\ProgramBinary.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Query.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Renderbuffer.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\ResourceManager.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Shader.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Texture.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\TLSWinrt.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\Uniform.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\winrtangle.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
     <ClCompile Include="..\compiler\preprocessor\DiagnosticsBase.cpp">
       <Filter>preprocessor\Source Files</Filter>
     </ClCompile>
@@ -199,40 +91,91 @@
     <ClCompile Include="..\compiler\preprocessor\Tokenizer.cpp">
       <Filter>preprocessor\Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\event_tracer.cpp">
-      <Filter>libGLESv2_winrt</Filter>
+    <ClCompile Include="..\libEGL\Config.cpp">
+      <Filter>libEGL_winrt</Filter>
     </ClCompile>
-    <ClCompile Include="..\common\RefCountObject.cpp">
-      <Filter>libGLESv2_winrt</Filter>
+    <ClCompile Include="..\libEGL\Display.cpp">
+      <Filter>libEGL_winrt</Filter>
     </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\copyimage.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
+    <ClCompile Include="..\libEGL\libEGL.cpp">
+      <Filter>libEGL_winrt</Filter>
     </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\loadimage.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\loadimageSSE2.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
+    <ClCompile Include="..\libEGL\Surface.cpp">
+      <Filter>libEGL_winrt</Filter>
     </ClCompile>
     <ClCompile Include="..\libGLESv2\angletypes.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\Buffer.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\Caps.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\Context.cpp">
       <Filter>libGLESv2_winrt</Filter>
     </ClCompile>
     <ClCompile Include="..\libGLESv2\DynamicHLSL.cpp">
       <Filter>libGLESv2_winrt</Filter>
     </ClCompile>
+    <ClCompile Include="..\libGLESv2\Fence.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\Float16ToFloat32.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
     <ClCompile Include="..\libGLESv2\formatutils.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\Framebuffer.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\FramebufferAttachment.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\HandleAllocator.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\libGLESv2.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\precompiled.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\Program.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\ProgramBinary.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\Query.cpp">
       <Filter>libGLESv2_winrt</Filter>
     </ClCompile>
     <ClCompile Include="..\libGLESv2\queryconversions.cpp">
       <Filter>libGLESv2_winrt</Filter>
     </ClCompile>
-    <ClCompile Include="..\libGLESv2\RenderbufferProxySet.cpp">
+    <ClCompile Include="..\libGLESv2\Renderbuffer.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\ResourceManager.cpp">
       <Filter>libGLESv2_winrt</Filter>
     </ClCompile>
     <ClCompile Include="..\libGLESv2\Sampler.cpp">
       <Filter>libGLESv2_winrt</Filter>
     </ClCompile>
+    <ClCompile Include="..\libGLESv2\Shader.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\State.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\Texture.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
     <ClCompile Include="..\libGLESv2\TransformFeedback.cpp">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\Uniform.cpp">
       <Filter>libGLESv2_winrt</Filter>
     </ClCompile>
     <ClCompile Include="..\libGLESv2\validationES.cpp">
@@ -247,293 +190,332 @@
     <ClCompile Include="..\libGLESv2\VertexArray.cpp">
       <Filter>libGLESv2_winrt</Filter>
     </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d\HLSLCompiler.cpp">
-      <Filter>libGLESv2_winrt\Renderer</Filter>
+    <ClCompile Include="..\libGLESv2\VertexAttribute.cpp">
+      <Filter>libGLESv2_winrt</Filter>
     </ClCompile>
-    <ClCompile Include="..\compiler\translator\BlockLayoutEncoder.cpp">
-      <Filter>translator\Source Files</Filter>
+    <ClCompile Include="..\libGLESv2\renderer\copyimage.cpp">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\Image.cpp">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\IndexRangeCache.cpp">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\loadimage.cpp">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\loadimageSSE2.cpp">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\Renderer.cpp">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\BufferD3D.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\HLSLCompiler.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\ImageD3D.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\IndexBuffer.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\IndexDataManager.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\MemoryBuffer.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\TextureD3D.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\TextureStorage.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\VertexBuffer.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\VertexDataManager.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\Blit11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\Buffer11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\Clear11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\Fence11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\formatutils11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\Image11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\IndexBuffer11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\InputLayoutCache.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\PixelTransfer11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\Query11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\Renderer11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\renderer11_utils.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\RenderStateCache.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\RenderTarget11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\ShaderExecutable11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\SwapChain11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\TextureStorage11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClCompile>
+    <ClCompile Include="..\libGLESv2\renderer\d3d\d3d11\VertexBuffer11.cpp">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\BuiltInFunctionEmulator.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\CodeGen.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\Compiler.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\compilerdebug.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\DetectCallDepth.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\DetectDiscontinuity.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\Diagnostics.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\DirectiveHandler.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\FlagStd140Structs.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\ForLoopUnroll.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\glslang_lex.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\glslang_tab.cpp">
-      <Filter>translator\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\compiler\translator\HLSLLayoutEncoder.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\InfoSink.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\Initialize.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\InitializeDll.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\InitializeParseContext.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\InitializeVariables.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\Intermediate.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\intermOut.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\IntermTraverse.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\LoopInfo.cpp">
-      <Filter>translator\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\compiler\translator\ossource_win.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\OutputESSL.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\OutputGLSL.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\OutputGLSLBase.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\OutputHLSL.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\parseConst.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\ParseContext.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\PoolAlloc.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\QualifierAlive.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\compiler\translator\RegenerateStructNames.cpp">
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\RemoveTree.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\RewriteElseBlocks.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\compiler\translator\ScalarizeVecAndMatConstructorArgs.cpp">
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\SearchSymbol.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\ShaderLang.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
-    <ClCompile Include="..\compiler\translator\ShaderVariable.cpp">
-      <Filter>translator\Source Files</Filter>
+    <ClCompile Include="..\compiler\translator\ShaderVars.cpp">
+      <Filter>translator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\compiler\translator\StructureHLSL.cpp">
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\SymbolTable.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\TranslatorESSL.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\TranslatorGLSL.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\TranslatorHLSL.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\compiler\translator\Types.cpp">
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\UnfoldShortCircuit.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\UnfoldShortCircuitAST.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\compiler\translator\UniformHLSL.cpp">
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\util.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
+    </ClCompile>
+    <ClCompile Include="..\compiler\translator\UtilsHLSL.cpp">
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\ValidateLimitations.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\ValidateOutputs.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\VariableInfo.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\VariablePacker.cpp">
-      <Filter>translator\Source Files</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\VersionGLSL.cpp">
-      <Filter>translator\Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\Blit11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\BufferStorage11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\Clear11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\Fence11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\formatutils11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\Image11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\IndexBuffer11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\InputLayoutCache.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\PixelTransfer11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\Query11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\Renderer11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\renderer11_utils.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\RenderStateCache.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\RenderTarget11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\ShaderExecutable11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\SwapChain11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\TextureStorage11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\libGLESv2\renderer\d3d11\VertexBuffer11.cpp">
-      <Filter>libGLESv2_winrt\Renderer11</Filter>
-    </ClCompile>
-    <ClCompile Include="..\common\utilities.cpp">
-      <Filter>libGLESv2_winrt</Filter>
-    </ClCompile>
-    <ClCompile Include="..\third_party\compiler\ArrayBoundsClamper.cpp">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\depgraph\DependencyGraph.cpp">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\depgraph</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\depgraph\DependencyGraphBuilder.cpp">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\depgraph</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\depgraph\DependencyGraphOutput.cpp">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\depgraph</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\depgraph\DependencyGraphTraverse.cpp">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\depgraph</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\timing\RestrictFragmentShaderTiming.cpp">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\timing</Filter>
     </ClCompile>
     <ClCompile Include="..\compiler\translator\timing\RestrictVertexShaderTiming.cpp">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\timing</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\compiler\ArrayBoundsClamper.cpp">
+      <Filter>third_party\compiler</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\murmurhash\MurmurHash3.cpp">
+      <Filter>third_party\murmurhash</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\systeminfo\SystemInfo.cpp">
+      <Filter>third_party\systeminfo</Filter>
+    </ClCompile>
+    <ClCompile Include="..\third_party\ThreadEmulation\ThreadEmulation.cpp">
+      <Filter>third_party\ThreadEmulation</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\blocklayout.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\debug.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\event_tracer.cpp">
+      <Filter>common</Filter>
     </ClCompile>
     <ClCompile Include="..\common\mathutil.cpp">
-      <Filter>libGLESv2_winrt</Filter>
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\RefCountObject.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\tls.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\utilities.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\winrtangle.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\winrtangleutils.cpp">
+      <Filter>common</Filter>
+    </ClCompile>
+    <ClCompile Include="..\common\winrtutils.cpp">
+      <Filter>common</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Text Include="README.txt" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\libEGL\Config.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libEGL\Display.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libEGL\main.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libEGL\resource.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libEGL\Surface.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\libEGL\TLSWinrt.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\debug.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\version.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\winrtangleutils.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\winrtplatform.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\winrtutils.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\common\angleutils.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\EGL\egl.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\EGL\eglext.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\..\include\EGL\eglplatform.h">
-      <Filter>libEGL_winrt\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\third_party\murmurhash\MurmurHash3.h">
-      <Filter>libGLESv2_winrt\Third Party\MurmurHash</Filter>
-    </ClInclude>
-    <ClInclude Include="..\third_party\winrt\ThreadEmulation\ThreadEmulation.h">
-      <Filter>libGLESv2_winrt\Third Party\winrt\ThreadEmulation</Filter>
-    </ClInclude>
     <ClInclude Include="..\compiler\preprocessor\DiagnosticsBase.h">
       <Filter>preprocessor\Header Files</Filter>
     </ClInclude>
@@ -579,199 +561,532 @@
     <ClInclude Include="..\compiler\preprocessor\Tokenizer.h">
       <Filter>preprocessor\Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\compiler\translator\BaseTypes.h">
-      <Filter>translator\Header Files</Filter>
+    <ClInclude Include="..\libEGL\Config.h">
+      <Filter>libEGL_winrt</Filter>
     </ClInclude>
-    <ClInclude Include="..\compiler\translator\BlockLayoutEncoder.h">
-      <Filter>translator\Header Files</Filter>
+    <ClInclude Include="..\libEGL\Display.h">
+      <Filter>libEGL_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libEGL\main.h">
+      <Filter>libEGL_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libEGL\resource.h">
+      <Filter>libEGL_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libEGL\Surface.h">
+      <Filter>libEGL_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\angletypes.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\BinaryStream.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Buffer.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Caps.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Constants.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Context.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\DynamicHLSL.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Fence.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\formatutils.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Framebuffer.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\FramebufferAttachment.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\HandleAllocator.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\main.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\precompiled.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Program.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\ProgramBinary.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Query.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\queryconversions.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Renderbuffer.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\resource.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\ResourceManager.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Sampler.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Shader.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\State.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Texture.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\TLSWinrt.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\TransformFeedback.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\Uniform.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\validationES.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\validationES2.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\validationES3.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\VertexArray.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\VertexAttribute.h">
+      <Filter>libGLESv2_winrt</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\BufferImpl.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\copyimage.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\copyvertex.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\FenceImpl.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\generatemip.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\Image.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\imageformats.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\IndexRangeCache.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\loadimage.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\QueryImpl.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\Renderer.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\RenderTarget.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\ShaderExecutable.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\SwapChain.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\TextureImpl.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\VertexArrayImpl.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\vertexconversion.h">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\BufferD3D.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\HLSLCompiler.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\ImageD3D.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\IndexBuffer.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\IndexDataManager.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\MemoryBuffer.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\TextureD3D.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\TextureStorage.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\VertexBuffer.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\VertexDataManager.h">
+      <Filter>libGLESv2_winrt\renderer\d3d</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\Blit11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\Buffer11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\Clear11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\Fence11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\formatutils11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\Image11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\IndexBuffer11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\InputLayoutCache.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\PixelTransfer11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\Query11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\Renderer11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\renderer11_utils.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\RenderStateCache.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\RenderTarget11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\ShaderExecutable11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\SwapChain11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\TextureStorage11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\VertexArray11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\libGLESv2\renderer\d3d\d3d11\VertexBuffer11.h">
+      <Filter>libGLESv2_winrt\renderer\d3d\d3d11</Filter>
+    </ClInclude>
+    <ClInclude Include="..\compiler\translator\BaseTypes.h">
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\BuiltInFunctionEmulator.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\Common.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\compiler\translator\Compiler.h">
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\compilerdebug.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\ConstantUnion.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\DetectCallDepth.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\DetectDiscontinuity.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\Diagnostics.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\DirectiveHandler.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\ExtensionBehavior.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\FlagStd140Structs.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\ForLoopUnroll.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\glslang.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\glslang_tab.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\HashNames.h">
-      <Filter>translator\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\compiler\translator\HLSLLayoutEncoder.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\InfoSink.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\Initialize.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\InitializeDll.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\InitializeGlobals.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\InitializeParseContext.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\InitializeVariables.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\intermediate.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\length_limits.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\localintermediate.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\LoopInfo.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\MMap.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\NodeSearch.h">
-      <Filter>translator\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\compiler\translator\osinclude.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\OutputESSL.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\OutputGLSL.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\OutputGLSLBase.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\OutputHLSL.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\ParseContext.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\PoolAlloc.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\Pragma.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\QualifierAlive.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\compiler\translator\RegenerateStructNames.h">
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\RemoveTree.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\RenameFunction.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\RewriteElseBlocks.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\compiler\translator\ScalarizeVecAndMatConstructorArgs.h">
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\SearchSymbol.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\ShaderVariable.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
-    <ClInclude Include="..\compiler\translator\ShHandle.h">
-      <Filter>translator\Header Files</Filter>
+    <ClInclude Include="..\compiler\translator\StructureHLSL.h">
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\SymbolTable.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\TranslatorESSL.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\TranslatorGLSL.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\TranslatorHLSL.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\Types.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\UnfoldShortCircuit.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\UnfoldShortCircuitAST.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\compiler\translator\UniformHLSL.h">
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\util.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
+    </ClInclude>
+    <ClInclude Include="..\compiler\translator\UtilsHLSL.h">
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\ValidateLimitations.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\ValidateOutputs.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\VariableInfo.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\VariablePacker.h">
-      <Filter>translator\Header Files</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\VersionGLSL.h">
-      <Filter>translator\Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="..\third_party\compiler\ArrayBoundsClamper.h">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\depgraph\DependencyGraph.h">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\depgraph</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\depgraph\DependencyGraphBuilder.h">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\depgraph</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\depgraph\DependencyGraphOutput.h">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\depgraph</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\timing\RestrictFragmentShaderTiming.h">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\timing</Filter>
     </ClInclude>
     <ClInclude Include="..\compiler\translator\timing\RestrictVertexShaderTiming.h">
-      <Filter>translator\third_party</Filter>
+      <Filter>translator\timing</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\compiler\ArrayBoundsClamper.h">
+      <Filter>third_party\compiler</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\murmurhash\MurmurHash3.h">
+      <Filter>third_party\murmurhash</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\systeminfo\SystemInfo.h">
+      <Filter>third_party\systeminfo</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\ThreadEmulation\ThreadEmulation.h">
+      <Filter>third_party\ThreadEmulation</Filter>
+    </ClInclude>
+    <ClInclude Include="..\third_party\trace_event\trace_event.h">
+      <Filter>third_party\trace_event</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\angleutils.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\blocklayout.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\commit.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\debug.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\event_tracer.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\mathutil.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\platform.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\RefCountObject.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\tls.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\utilities.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\version.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\winrtangle.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\winrtangleutils.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\winrtplatform.h">
+      <Filter>common</Filter>
+    </ClInclude>
+    <ClInclude Include="..\common\winrtutils.h">
+      <Filter>common</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="..\compiler\preprocessor\Tokenizer.l">
       <Filter>preprocessor\Source Files</Filter>
+    </None>
+    <None Include="..\libGLESv2\renderer\generatemip.inl">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </None>
+    <None Include="..\libGLESv2\renderer\loadimage.inl">
+      <Filter>libGLESv2_winrt\renderer</Filter>
+    </None>
+    <None Include="..\compiler\translator\glslang.l">
+      <Filter>translator</Filter>
+    </None>
+    <None Include="..\compiler\translator\64bit-lexer-safety.patch">
+      <Filter>translator</Filter>
+    </None>
+    <None Include="..\compiler\translator\generate_parser.sh">
+      <Filter>translator</Filter>
+    </None>
+    <None Include="..\compiler\translator\glslang.y">
+      <Filter>translator</Filter>
     </None>
   </ItemGroup>
 </Project>
