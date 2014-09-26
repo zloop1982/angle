@@ -724,6 +724,8 @@ void Buffer11::NativeBuffer11::fillBufferDesc(D3D11_BUFFER_DESC* bufferDesc, Ren
       case BUFFER_USAGE_VERTEX_OR_TRANSFORM_FEEDBACK:
         bufferDesc->Usage = D3D11_USAGE_DEFAULT;
         bufferDesc->BindFlags = D3D11_BIND_VERTEX_BUFFER | D3D11_BIND_STREAM_OUTPUT;
+        if(Renderer11::makeRenderer11(renderer)->getFeatureLevel() < D3D_FEATURE_LEVEL_10_0)
+            bufferDesc->BindFlags = D3D11_BIND_VERTEX_BUFFER;
         bufferDesc->CPUAccessFlags = 0;
         break;
 
